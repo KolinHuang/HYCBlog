@@ -1,12 +1,12 @@
 ---
-title: Leetcode Solutions
+title: Leetcode题解
 author: Kolin Huang
 date: 2020-08-23 20:44:00 +0800
 categories: [Blogging, leetcode]
-tags: [leetcode]
+tags: [算法题解]
 comments: true
 math: true
-image: /HYCBlog/assets/img/leetcode/cover.jpg
+image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 ---
 
 
