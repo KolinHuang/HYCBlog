@@ -8,4 +8,12 @@ title: About
 # MIT License
 ---
 
-> **Note**: Add Markdown syntax content to file `tabs/about.md` and it will show up on this page.
+
+有任何问题或需求请联系：
+
+GitHub: [KolinHuang](https://github.com/KolinHuang)
+
+Email: yc_huang97@163.com
+
+![about](/HYCBlog/assets/img/daliy/about.jpg)
+
