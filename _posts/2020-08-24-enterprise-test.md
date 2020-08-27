@@ -9,6 +9,8 @@ math: true
 image: /HYCBlog/assets/img/leetcode/ptoffer_cover.jpg
 ---
 
+
+
 ## 京东-2020-8-6
 
 
@@ -618,7 +620,7 @@ class Solution {
 ##### 用map+栈
 以下代码需要放入
 
-        
+​        
 
 ```java
 class Solution {
@@ -1267,3 +1269,60 @@ a = kb + r (k为整数，r为a除以b所得余数)=> r = a - kb = xg - kyg = (x 
 
 [最大公约数GCD的三种求法](https://www.jianshu.com/p/25d0ca88a4a1)
 
+
+
+
+
+## 京东-2020-8-27
+
+
+
+## 逆序五进制
+
+编写一个程序，首先将一个十进制正整数逆序【需要去掉前导0】，然后转换成五进制正整数，最后输出该五进制正整数。
+
+
+
+输入描述
+
+```java
+单组输入。
+每组测试数据的输入占一行，输入一个十进制正整数n。（n <= 100000）
+```
+
+输出描述
+
+```java
+每组测试数据的输出占一行，输出转换后所得的五进制正整数。
+```
+
+样例：
+
+```java
+1000	1
+77267	4420102
+```
+
+
+
+```java
+public class Main {
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        StringBuilder sb = new StringBuilder(String.valueOf(n));
+        int n1 = Integer.parseInt(sb.reverse().toString());
+        sb.delete(0, sb.length());
+        while (n1 != 0) {
+            sb.append(n1 % 5);
+            n1 /= 5;
+        }
+        System.out.println(Integer.valueOf(sb.reverse().toString()));
+    }
+}
+```
+
+
+
+还有一题智障题，就不贴了。

@@ -27,8 +27,9 @@ layout: default
           {% else %}
             {{ site.author }}
           {% endif %}
-          </span>
         </div>
+
+        
 
         <!-- lastmod -->
         {%- capture filename -%}
@@ -74,6 +75,7 @@ layout: default
         {% endif %}
       </div>
 
+
       <div class="post-tail-wrapper text-muted">
 
         <!-- categories -->
@@ -86,6 +88,9 @@ layout: default
           {% endfor %}
         </div>
         {% endif %}
+
+
+
 
         <!-- tags -->
         {% if page.tags.size > 0 %}
@@ -119,11 +124,15 @@ layout: default
     </div> <!-- .post -->
 
 
+
   </div> <!-- #post-wrapper -->
 
   {% include panel.html %}
 
 </div> <!-- .row -->
+
+
+
 
 <div class="row">
   <div class="col-12 col-lg-11 col-xl-8">
@@ -142,5 +151,7 @@ layout: default
   </div> <!-- .col-* -->
 
 </div> <!-- .row -->
+
+
 
 {% include lozad.html %}

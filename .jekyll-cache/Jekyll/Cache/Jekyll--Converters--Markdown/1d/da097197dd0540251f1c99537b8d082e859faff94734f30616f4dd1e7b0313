@@ -1,0 +1,87 @@
+I"<h2 id="解决centos误删系统自带python后yum不可用的问题">解决centOS误删系统自带python后，yum不可用的问题</h2>
+
+<p>前几天手贱，为了装python3把系统自带的2.7给删了，今天才发现yum用不了了…</p>
+
+<p>报如下错误：</p>
+
+<p><img src="/HYCBlog/assets/img/web/centos_yum报错.png" alt="centos_yum报错" /></p>
+
+<p>上网查了发现，是因为yum依赖了系统自带的python，于是我就去找了2.7.5的python包，安装了之后还是报上面的错…</p>
+
+<p>试着在2.7.5下import yum，发现不存在这个模块。所以只能去下载<a href="http://vault.centos.org/7.3.1611/os/x86_64/Packages/">源码包</a>安装了。</p>
+
+<h3 id="第一步">第一步</h3>
+
+<p>首先卸载python:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>rpm <span class="nt">-qa</span>|grep python|xargs rpm <span class="nt">-e</span> <span class="nt">--allmatches</span> <span class="nt">--nodeps</span>
+whereis python|xargs <span class="nb">rm</span> <span class="nt">-fr</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>再卸载yum:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>rpm <span class="nt">-qa</span>|grep yum|xargs rpm <span class="nt">-e</span> <span class="nt">--allmatches</span> <span class="nt">--nodeps</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /etc/yum.repos.d/<span class="k">*</span>
+whereis yum|xargs <span class="nb">rm</span> <span class="nt">-fr</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="第二步">第二步</h3>
+
+<p>在<code class="language-plaintext highlighter-rouge">/usr/local/src/</code>目录下新建两个子目录<code class="language-plaintext highlighter-rouge">python</code>和<code class="language-plaintext highlighter-rouge">yum</code></p>
+
+<p>去<a href="http://vault.centos.org/7.3.1611/os/x86_64/Packages/">网址</a>里下载以下安装包放入<code class="language-plaintext highlighter-rouge">python</code>子目录：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>python-libs-2.7.5-48.el7.x86_64.rpm，被python依赖
+python-2.7.5-48.el7.x86_64.rpm
+python-iniparse-0.4-9.el7.noarch.rpm， 被yum依赖
+python-pycurl-7.19.0-19.el7.x86_64.rpm, 被python-urlgrabber依赖
+python-urlgrabber-3.10-8.el7.noarch.rpm ， 被yum依赖
+rpm-python-4.11.3-21.el7.x86_64.rpm ， 被yum依赖
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>再下载以下安装包放入<code class="language-plaintext highlighter-rouge">yum</code>目录：</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>yum-3.4.3-150.el7.centos.noarch.rpm, 就是它依赖了上面的python库
+yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
+yum-plugin-fastestmirror-1.1.31-40.el7.noarch.rpm
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="第三步">第三步</h3>
+
+<p>接下来分别进入<code class="language-plaintext highlighter-rouge">python</code>和<code class="language-plaintext highlighter-rouge">yum</code>子目录执行：</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>rpm <span class="nt">-ivh</span> xxx.rpm
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>注意，安装yum时需要同时安装三个包，这样可以避免相互依赖导致安装出错。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>rpm <span class="nt">-ivh</span> yum-3.4.3-150.el7.centos.noarch.rpm yum-metadata-parser-1.1.4-10.el7.x86_64.rpm yum-plugin-fastestmirror-1.1.31-40.el7.noarch.rpm
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>至此，测试<code class="language-plaintext highlighter-rouge">python</code>和<code class="language-plaintext highlighter-rouge">yum</code>均可正常执行！</p>
+
+<p>参考链接：</p>
+
+<p><a href="https://www.jianshu.com/p/89df82a5d74b">Centos7卸载Python2.7之后恢复yum</a></p>
+
+<p>淦！！！防火墙也挂了，我🤮了啊，以后不随便在服务器改python版本了😭</p>
+
+<p><img src="/HYCBlog/assets/img/web/centos_防火墙报错.png" alt="centos_防火墙报错" /></p>
+
+:ET

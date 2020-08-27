@@ -65,7 +65,7 @@ google_analytics:
     cache: false  # pv data local cache, good for the users from GFW area.
 
 disqus:
-  comments: true  # boolean type, the global switch for posts comments.
+  comments: false  # boolean type, the global switch for posts comments.
   shortname: ''    # Fill with your Disqus shortname. › https://help.disqus.com/en/articles/1717111-what-s-a-shortname
 
 
@@ -101,9 +101,21 @@ kramdown:
       line_numbers: true
       start_line: 1
 
+# firebase:
+#   enable: true
+#   project_id: hycblog-c6f56
+#   api_key: AIzaSyBL0rKtjuPD4Pb5tmA-XYCeHPulALdyXRo
+#   sender_id: 766465956493
+#   app_id: 1:766465956493:web:0ebff2a7f0b0cbd804e0c4
+#   measurement_id: G-W140H1K2K7
+
 # DO NOT change this unless you're a Pro user on Jekyll and Web development,
 # or you think you're smart enough to change other relevant URLs within this template.
 permalink: /posts/:title/
+
+
+
+
 
 defaults:
   -

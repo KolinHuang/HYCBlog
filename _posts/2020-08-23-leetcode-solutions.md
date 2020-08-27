@@ -11,6 +11,9 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 
 
+
+
+
 ##  16.最接近三数之和
 
 给定一个包括 n 个整数的数组 nums 和 一个目标值 target。找出 nums 中的三个整数，使得它们的和与 target 最接近。返回这三个数的和。假定每组输入只存在唯一答案。
@@ -112,6 +115,80 @@ int min = Integer.MAX_VALUE;
         }
         return best;
 ```
+
+
+
+## 17.电话号码的字母组合
+
+给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+
+
+示例:
+
+```java
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+```
+
+说明:
+尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+
+
+### 回溯法
+
+```java
+class Solution {
+    Map<Integer,String> map = new HashMap<>();
+    String s;
+    List<String> res;
+    public List<String> letterCombinations(String digits) {
+        if(digits.length() == 0)    return new ArrayList<>();
+        //先建立数字和字符串的映射关系
+        map.put(2,"abc");
+        map.put(3,"def");
+        map.put(4,"ghi");
+        map.put(5,"jkl");
+        map.put(6,"mno");
+        map.put(7,"pqrs");
+        map.put(8,"tuv");
+        map.put(9,"wxyz");
+        s = digits;
+        res = new ArrayList<>();
+        //取出第一个数字对应的字符串
+        int num = s.charAt(0) - '0';
+        String s1 = map.get(num);
+        //以字符串的第i位字符作为根节点，开始回溯
+        for(int i = 0; i < s1.length();++i){
+            StringBuffer sb = new StringBuffer();
+            sb.append(s1.charAt(i));
+            backtrack(sb,1);
+        }
+        return res;
+    }
+
+    void backtrack(StringBuffer sb, int cur){
+        //若已访问到根节点，就将这个字符串记录到res中
+        if(sb.length() == s.length())
+            res.add(sb.toString());
+        for(int i = cur; i < s.length(); ++i){
+            int num = s.charAt(i) - '0';
+            String s1 = map.get(num);
+            //回溯
+            for(int j = 0; j < s1.length(); ++j){
+                sb.append(s1.charAt(j));
+                backtrack(sb,i+1);
+                sb.delete(sb.length()-1,sb.length());
+            }
+        }
+    }
+}
+```
+
+
 
 
 
@@ -2003,6 +2080,214 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+## 332. 重新安排行程
+
+给定一个机票的字符串二维数组 [from, to]，子数组中的两个成员分别表示飞机出发和降落的机场地点，对该行程进行重新规划排序。所有这些机票都属于一个从 JFK（肯尼迪国际机场）出发的先生，所以该行程必须从 JFK 开始。
+
+说明:
+
+1. 如果存在多种有效的行程，你可以按字符自然排序返回最小的行程组合。例如，行程 ["JFK", "LGA"] 与 ["JFK", "LGB"] 相比就更小，排序更靠前
+2. 所有的机场都用三个大写字母表示（机场代码）。
+3. 假定所有机票至少存在一种合理的行程。
+
+示例 1:
+
+```markdown
+输入: [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]
+输出: ["JFK", "MUC", "LHR", "SFO", "SJC"]
+```
+
+
+示例 2:
+
+```markdown
+输入: [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+输出: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+解释: 另一种有效的行程是 ["JFK","SFO","ATL","JFK","ATL","SFO"]。但是它自然排序更大更靠后。
+```
+
+
+
+化简题意：
+
+```markdown
+给定一个n个点m条边的图，要求从指定顶点出发，经过所有边恰好一次，并且路径的字典序最小。
+```
+
+这种「一笔画」问题与欧拉图或者半欧拉图有着紧密的联系：
+
+```markdown
+*	通过图中所有边恰好一次且行遍所有顶点的通路称为欧拉通路。
+*	通过图中所有边恰好一次且行遍所有顶点的回路称为欧拉回路。
+*	具有欧拉回路的无向图称为欧拉图。
+*	具有欧拉通路但不具有欧拉回路的无向图称为半欧拉图。
+```
+
+因为本题保证至少存在一种合理的路径，也就告诉了我们，这张图是一个欧拉图或者半欧拉图。
+
+![leetcode_重新安排行程_1](/HYCBlog/assets/img/leetcode/leetcode_重新安排行程_1.png)
+
+![leetcode_重新安排行程_2](/HYCBlog/assets/img/leetcode/leetcode_重新安排行程_2.png)
+
+
+
+### 排序
+
+```java
+public List<String> findItinerary(List<List<String>> tickets) {
+        // 因为逆序插入，所以用链表
+        List<String> res = new LinkedList<>();
+        if (tickets == null || tickets.size() == 0)
+            return res;
+        Map<String, List<String>> graph = new HashMap<>();
+        //将tickets中的所有边和点都对应存入graph中
+        for (List<String> pair : tickets) {
+            // 因为涉及删除操作，我们用链表
+            //当key不存在时，向map中插入(key=value);当key存在时，返回旧值
+//            List<String> nbr = graph.computeIfAbsent(pair.get(0), k -> new LinkedList<>());
+            //所以理论上还可以这样写
+            if(!graph.containsKey(pair.get(0))){//不存在此key
+                //新建一项
+                graph.put(pair.get(0),new LinkedList<>());
+            }
+            //获取邻居列表，并添加项
+            List<String> nbr = graph.get(pair.get(0));
+            nbr.add(pair.get(1));
+        }
+        // 将每个邻居节点列表按字典序排序
+        graph.values().forEach(x -> x.sort(String::compareTo));
+        visit(graph, "JFK", res);
+        return res;
+    }
+    // DFS方式遍历图，当走到不能走为止，再将节点加入到答案
+    private void visit(Map<String, List<String>> graph, String src, List<String> res) {
+        //获取src的邻居列表
+        List<String> nbr = graph.get(src);
+        //nbr为空时，说明这个顶点从始至终都没有邻居，nbr.size等于0时，说明这个顶点的邻居已经被访问完了
+        while (nbr != null && nbr.size() > 0) {
+            //访问一个邻居
+            String dest = nbr.remove(0);
+            //DFS
+            visit(graph, dest, res);
+        }
+        res.add(0, src); // 逆序插入
+    }
+```
+
+### 最小堆/优先队列代替排序：
+
+```java
+public List<String> findItinerary(List<List<String>> tickets) {
+        // 因为逆序插入，所以用链表
+        List<String> res = new LinkedList<>();
+        if (tickets == null || tickets.size() == 0)
+            return res;
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+        //将tickets中的所有边和点都对应存入graph中
+        for (List<String> pair : tickets) {
+            // 因为涉及删除操作，我们用链表
+            //当key不存在时，向map中插入(key=value);当key存在时，返回旧值
+//            List<String> nbr = graph.computeIfAbsent(pair.get(0), k -> new LinkedList<>());
+            //所以理论上还可以这样写
+            if(!graph.containsKey(pair.get(0))){//不存在此key
+                //新建一项
+                graph.put(pair.get(0),new PriorityQueue<>());
+            }
+            //获取邻居列表，并添加项
+            PriorityQueue<String> nbr = graph.get(pair.get(0));
+            nbr.add(pair.get(1));
+        }
+        // 将每个邻居节点列表按字典序排序
+//        graph.values().forEach(x -> x.sort(String::compareTo));
+        visit(graph, "JFK", res);
+        return res;
+    }
+    // DFS方式遍历图，当走到不能走为止，再将节点加入到答案
+    private void visit(Map<String, PriorityQueue<String>> graph, String src, List<String> res) {
+        //获取src的邻居列表
+        PriorityQueue<String> nbr = graph.get(src);
+        //nbr为空时，说明这个顶点从始至终都没有邻居，nbr.size等于0时，说明这个顶点的邻居已经被访问完了
+        while (nbr != null && nbr.size() > 0) {
+            //访问一个邻居
+            String dest = nbr.poll();
+            //DFS
+            visit(graph, dest, res);
+        }
+        res.add(0, src); // 逆序插入
+    }
+```
+
+### 用stack实现迭代代替递归
+
+```java
+public List<String> findItinerary(List<List<String>> tickets) {
+        // 因为逆序插入，所以用链表
+        List<String> res = new LinkedList<>();
+        if (tickets == null || tickets.size() == 0)
+            return res;
+        Map<String, PriorityQueue<String>> graph = new HashMap<>();
+        //将tickets中的所有边和点都对应存入graph中
+        for (List<String> pair : tickets) {
+            // 因为涉及删除操作，我们用链表
+            //当key不存在时，向map中插入(key=value);当key存在时，返回旧值
+//            List<String> nbr = graph.computeIfAbsent(pair.get(0), k -> new LinkedList<>());
+            //所以理论上还可以这样写
+            if(!graph.containsKey(pair.get(0))){//不存在此key
+                //新建一项
+                graph.put(pair.get(0),new PriorityQueue<>());
+            }
+            //获取邻居列表，并添加项
+            PriorityQueue<String> nbr = graph.get(pair.get(0));
+            nbr.add(pair.get(1));
+        }
+        // 将每个邻居节点列表按字典序排序
+//        graph.values().forEach(x -> x.sort(String::compareTo));
+        visit(graph, "JFK", res);
+        return res;
+    }
+    // DFS方式遍历图，当走到不能走为止，再将节点加入到答案
+    private void visit(Map<String, PriorityQueue<String>> graph, String src, List<String> res) {
+        Stack<String> stack = new Stack<>();
+
+        stack.push(src);
+
+        while (!stack.isEmpty()) {
+            PriorityQueue<String> nbr;
+
+            while ((nbr = graph.get(stack.peek())) != null &&
+                    nbr.size() > 0) {
+                stack.push(nbr.poll());
+            }
+            res.add(0, stack.pop());
+        }
+
+    }
+```
+
+
+
+```markdown
+如果没有保证至少存在一种合理的路径，我们需要判别这张图是否是欧拉图或者半欧拉图，具体地：
+
+* 对于无向图 GG，GG 是欧拉图当且仅当 GG 是连通的且没有奇度顶点。
+* 对于无向图 GG，GG 是半欧拉图当且仅当 GG 是连通的且 GG 中恰有 22 个奇度顶点。
+* 对于有向图 GG，GG 是欧拉图当且仅当 GG 的所有顶点属于同一个强连通分量且每个顶点的入度和出度相同。
+* 对于有向图 GG，GG 是半欧拉图当且仅当 GG 的所有顶点属于同一个强连通分量且
+* 恰有一个顶点的出度与入度差为 11；
+* 恰有一个顶点的入度与出度差为 11；
+* 所有其他顶点的入度和出度相同。
+```
+
+
+
+
+
+
 
 
 
