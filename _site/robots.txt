@@ -2,4 +2,4 @@ User-agent: *
 
 Disallow: /norobots/
 
-Sitemap: http://localhost:4000/HYCBlog/sitemap.xml
+Sitemap: www.yucaihuang.com/HYCBlog/sitemap.xml

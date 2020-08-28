@@ -6,7 +6,6 @@ categories: [Blogging, web]
 tags: [web]
 comments: true
 math: true
-toc: true
 ---
 
 
