@@ -1458,7 +1458,7 @@ a = kb + r (k为整数，r为a除以b所得余数)=&gt; r = a - kb = xg - kyg = 
         <span class="o">}</span>
         <span class="k">return</span> <span class="n">a</span><span class="o">;</span>
     <span class="o">}</span>
-</pre></table></code></div></div><p>其实，只要知道了a,b的最大公约数，那最小公倍数不就是a * b / gcd(a, b)吗？</p><p>参考链接：</p><p><a href="https://www.jianshu.com/p/25d0ca88a4a1">最大公约数GCD的三种求法</a></p><h2 id="京东-2020-8-27">京东-2020-8-27</h2><h2 id="逆序五进制">逆序五进制</h2><p>编写一个程序，首先将一个十进制正整数逆序【需要去掉前导0】，然后转换成五进制正整数，最后输出该五进制正整数。</p><p>输入描述</p><div class="language-java highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></table></code></div></div><p>其实，只要知道了a,b的最大公约数，那最小公倍数不就是a * b / gcd(a, b)吗？</p><p>参考链接：</p><p><a href="https://www.jianshu.com/p/25d0ca88a4a1">最大公约数GCD的三种求法</a></p><h2 id="京东-2020-8-27">京东-2020-8-27</h2><h3 id="逆序五进制">逆序五进制</h3><p>编写一个程序，首先将一个十进制正整数逆序【需要去掉前导0】，然后转换成五进制正整数，最后输出该五进制正整数。</p><p>输入描述</p><div class="language-java highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 </pre><td class="rouge-code"><pre><span class="n">单组输入</span><span class="err">。</span>
 <span class="n">每组测试数据的输入占一行</span><span class="err">，</span><span class="n">输入一个十进制正整数n</span><span class="err">。（</span><span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">100000</span><span class="err">）</span>
@@ -1498,4 +1498,228 @@ a = kb + r (k为整数，r为a除以b所得余数)=&gt; r = a - kb = xg - kyg = 
         <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">sb</span><span class="o">.</span><span class="na">reverse</span><span class="o">().</span><span class="na">toString</span><span class="o">()));</span>
     <span class="o">}</span>
 <span class="o">}</span>
-</pre></table></code></div></div><p>还有一题智障题，就不贴了。</p></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/HYCBlog/categories/blogging/'>Blogging</a>, <a href='/HYCBlog/categories/%E4%BC%81%E4%B8%9A%E7%AC%94%E8%AF%95/'>企业笔试</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/" class="post-tag no-text-decoration" >算法题解</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> by the author.</div><!-- Post sharing snippet v2.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2019 Cotes Chung Published under the MIT License --><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=2020秋招企业笔试题 - 黄玉才的博客&url=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=2020秋招企业笔试题 - 黄玉才的博客&u=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=2020秋招企业笔试题 - 黄玉才的博客&url=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank"> <i class="fa-fw fab fa-telegram"></i> </a> <i class="fa-fw fas fa-link small" onclick="copyLink()" data-toggle="tooltip" data-placement="top" title="Copy link"></i> </span></div></div></div></div></div><!-- The Pannel on right side (Desktop views) v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"><h3 data-toc-skip>Recent Update</h3><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/HYCBlog/posts/web-delete-system-python-in-centos/">centOS误删系统自带python</a></li><li><a href="/HYCBlog/posts/leetcode-solutions/">Leetcode题解</a></li><li><a href="/HYCBlog/posts/point-to-offers/">剑指offer题解</a></li><li><a href="/HYCBlog/posts/enterprise-test/">2020秋招企业笔试题</a></li></ul></div><div id="access-tags"><h3 data-toc-skip>Trending Tags</h3><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a> <a class="post-tag" href="/HYCBlog/tags/web/">web</a> <a class="post-tag" href="/HYCBlog/tags/security/">security</a> <a class="post-tag" href="/HYCBlog/tags/java%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">Java源码学习</a></div></div></div><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><h3 data-toc-skip class="pl-3 pt-2 mb-2">Contents</h3><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="post-extend-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"> <!-- Recommend the other 3 posts according to the tags and categories of the current post, if the number is not enough, use the other latest posts to supplement. v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2019 Cotes Chung Published under the MIT License --><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/HYCBlog/posts/leetcode-solutions/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 23 <i class="unloaded">2020-08-23T20:44:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Leetcode题解</h3><div class="text-muted small"><p> 目录 5.最长回文子串 16.最接近三数之和 17.电话号码的字母组合 43.字符串相乘 63.含障碍物网格中的不同路径 67.二进制求和 93. 恢复IP地址 96. 不同的二叉搜索树 100. 相同的树 108. 将有序数组转换为二叉搜索树 109. 有序链表转换二叉搜索树 110.平衡二叉树 111. 二叉树的最小深度 112. 路径总和 120.三角形...</p></div></div></a></div><div class="card"> <a href="/HYCBlog/posts/point-to-offers/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 24 <i class="unloaded">2020-08-24T15:00:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>剑指offer题解</h3><div class="text-muted small"><p> 剑指 Offer 03. 数组中重复的数字 找出数组中重复的数字。 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。 示例 1： 输入： [2, 3, 1, 0, 2, 5, 3] 输出：2 或 3 限制： 2 &lt;= n &lt;= ...</p></div></div></a></div><div class="card"> <a href="/HYCBlog/posts/algorithm-manacher/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 29 <i class="unloaded">2020-08-29T13:49:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Manacher算法：线性时间内找到最大回文子串</h3><div class="text-muted small"><p> 5.最长回文子串 给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。 示例 1： 1 2 3 输入: "babad" 输出: "bab" 注意: "aba" 也是一个有效答案。 示例 2： 1 2 输入: "cbbd" 输出: "bb" 求解这个问题的方法有很多：动态规划、中心扩散、KMP等。 今天主要分析Manacher算法。 Ma...</p></div></div></a></div></div></div><!-- Navigation buttons at the bottom of the post. v2.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --><div class="post-navigation d-flex justify-content-between"> <a href="/HYCBlog/posts/web-url-with-chinese-string/" class="btn btn-outline-primary"><p>URL包含中文，请求资源404</p></a> <a href="/HYCBlog/posts/security-arp-hijack/" class="btn btn-outline-primary"><p>内网渗透：记一次局域网arp劫持测试</p></a></div></div></div></div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script> <script type="text/javascript"> const imgs = document.querySelectorAll('#post-wrapper img'); const observer = lozad(imgs); observer.observe(); </script> <!-- The Footer v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center"><div class="footer-left"><p class="mb-0"> © 2020 <a href="">Yucai Huang</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy/">Chirpy</a> theme.</p></div></div></footer></div><!-- The Search results v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-xl-11 post-content"><div id="search-hints"><h4 class="text-muted mb-4">Trending Tags</h4><a class="post-tag" href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a> <a class="post-tag" href="/HYCBlog/tags/web/">web</a> <a class="post-tag" href="/HYCBlog/tags/security/">security</a> <a class="post-tag" href="/HYCBlog/tags/java%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">Java源码学习</a></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <!-- The GA snippet v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --> <script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', '', 'auto'); ga('send', 'pageview'); </script> <!-- Jekyll Simple Search loader v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.7.3/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/HYCBlog/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="www.yucaihuang.com{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"><div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>{categories}</div><div><i class="fa fa-tag fa-fw"></i>{tags}</div></div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>' }); </script>
+</pre></table></code></div></div><p>还有一题智障题，就不贴了。</p><h2 id="美团-2020-8-29">美团-2020-8-29</h2><h3 id="1最长的被加密字符串">1.最长的被加密字符串</h3><p>对一个字符串加密，规则如下：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre><td class="rouge-code"><pre><span class="p">1.</span> 添加一个首部。首部至少包含一个“MT”子序列，且以“T”结尾。
+<span class="p">2.</span> 添加一个尾部。尾部至少包含一个“MT”子序列，且以“M”开头。
+<span class="p">3.</span> 首部和尾部要尽量短。
+</pre></table></code></div></div><p>现在给定一个加密后的字符串，请找出被加密的字符串S。</p><p>输入描述：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>输入第一行是一个正整数n，标识加密后的字符串总长度。（1&lt;=n&lt;=100000）
+输入第二行是一个长度为n的仅由大写字母组成的字符串T。
+</pre></table></code></div></div><p>输出描述：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>输出仅包含一个字符串S。
+</pre></table></code></div></div><p>样例：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre>10
+MMATSATMMT
+
+SATM
+</pre></table></code></div></div><p>暴力法，果然超时了…我太菜了。</p><div class="language-java highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+</pre><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Scanner</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+
+
+    <span class="kd">static</span> <span class="nc">String</span> <span class="nf">solution</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">){</span>
+        <span class="c1">//找出最短头部</span>
+        <span class="kt">int</span> <span class="n">pos_T</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();){</span>
+            <span class="n">pos_T</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">'T'</span><span class="o">);</span>
+            <span class="c1">//判断在i到posT的之中是否有M</span>
+            <span class="nc">String</span> <span class="n">sub</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span><span class="n">pos_T</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">sub</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">'M'</span><span class="o">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">){</span>
+                <span class="c1">//找到了头部的结尾</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">pos_T</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">StringBuffer</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuffer</span><span class="o">();</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();++</span><span class="n">i</span><span class="o">){</span>
+            <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">));</span>
+        <span class="o">}</span>
+				<span class="c1">//问题应该出在这里了，字符串长度为100000时，reverse是很恐怖的..</span>
+      	<span class="c1">//后面再改改吧，应该可以有其他办法改进</span>
+        <span class="nc">String</span> <span class="n">reverse</span> <span class="o">=</span> <span class="n">sb</span><span class="o">.</span><span class="na">reverse</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+        <span class="c1">//找出最短尾部</span>
+        <span class="kt">int</span> <span class="n">pos_M</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">reverse</span><span class="o">.</span><span class="na">length</span><span class="o">();){</span>
+            <span class="n">pos_M</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">'M'</span><span class="o">);</span>
+            <span class="c1">//判断在i到posT的之中是否有M</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">reverse</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span><span class="n">pos_M</span><span class="o">+</span><span class="mi">1</span><span class="o">).</span><span class="na">indexOf</span><span class="o">(</span><span class="sc">'T'</span><span class="o">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">){</span>
+                <span class="c1">//找到了头部的结尾</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">pos_M</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">pos_T</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()-</span><span class="n">pos_M</span><span class="o">-</span><span class="n">pos_T</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Scanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+        <span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+<span class="c1">//        String s = "MMATSATMMT";</span>
+        <span class="nc">String</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Main</span><span class="o">().</span><span class="na">solution</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">res</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>正则表达式：</p><div class="language-java highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">java.util.Scanner</span><span class="o">;</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+		
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">reveString</span><span class="o">(</span><span class="nc">String</span> <span class="n">string</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">StringBuilder</span><span class="o">(</span><span class="n">string</span><span class="o">).</span><span class="na">reverse</span><span class="o">().</span><span class="na">toString</span><span class="o">();</span>
+    <span class="o">}</span>
+
+  	
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">solve</span><span class="o">(</span><span class="nc">String</span> <span class="n">string</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="na">replaceFirst</span><span class="o">(</span><span class="s">"^.*?M.*?T"</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reveString</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">replaceFirst</span><span class="o">(</span><span class="s">"^.*?T.*?M"</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">reveString</span><span class="o">(</span><span class="n">result</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Scanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+        <span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">solve</span><span class="o">(</span><span class="n">s</span><span class="o">));</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></table></code></div></div><p>为啥这边reverse不会有问题，难道我跟大佬的差距就是一个正则表达式？奥利给，明天肝正则！！！</p><h3 id="2小团的选调计划">2.小团的选调计划</h3><p>美团打算把n个人分配到n个不同的业务区域，能者优先，n个人的业务能力排行为1～n。编号考前的人具有优先选择的权力。每个人填一个意向。这个意向是一个1～n的排列，表示一个人希望的业务区域顺序。有两个人同时希望去某一个业务区域则有限满足编号小的人。</p><p>输入：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>第一行n
+n行，每行n个整数，即一个1～n的排列，第i行表示i-1号业务骨干的意向顺序。
+</pre></table></code></div></div><p>输出：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>n个正整数，第i个表示第i号人去的区域编号。
+</pre></table></code></div></div><p>样例：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre><td class="rouge-code"><pre>5
+1 5 3 4 2
+2 3 5 4 1
+5 4 1 2 3
+1 2 5 4 3
+1 4 5 2 3
+
+输出：1 2 5 4 3
+</pre></table></code></div></div><h3 id="3树节点追逐">3.树节点追逐</h3><p>A追逐B。A和B在一颗有n个结点的树上，A位于x位置，B位于y位置，A和B每个单位时间内都可以选择不动活着向相邻的位置转移，假设A足够聪明，很显然B会无路可逃，请问最多经过多少个单位时间后，B会被追上？</p><p>输入：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>第一行包含三个整数n,x,y，分别表示树上的结点数量，A所在的位置和B所在的位置(1 &lt;= n &lt;= 50000)
+接下来有n-1行，每行两个整数u,v，表示u号位置和v号位置之间有一条边，即u号位置和v号位置彼此相邻。
+</pre></table></code></div></div><p>输出：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>一个整数，最多的单位时间。
+</pre></table></code></div></div><p>样例：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre><td class="rouge-code"><pre>5 1 2
+2 1
+3 1
+4 2
+5 3
+
+输出 2 
+</pre></table></code></div></div><h3 id="4小团的默契游戏">4.小团的默契游戏</h3><p>有一个长度为n的序列，最大值不超过m。</p><p>A和B各自选择一个[1,m]之间的整数，设A选择的是l，B选择的是r，满足以下条件则为一个有效二元组：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre><span class="p">1.</span> l &lt;= r
+<span class="p">2.</span> 对于序列中的元素x, 如果0&lt;x&lt;l，或r &lt; x &lt; m+1，则x按其顺序保留下来，要求保留下来的子序列单调不下降。
+</pre></table></code></div></div><p>请问这样的二元组有多少种？</p><p>输入：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre><td class="rouge-code"><pre>输入第一行，m,n，表示序列元素的最大值和序列的长度(1 &lt;= n,m &lt;= 100000)
+第二行n个整数，表示序列。
+</pre></table></code></div></div><p>输出：</p><div class="language-markdown highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre><td class="rouge-code"><pre>一个整数，符合要求的有效二元组数量。
+</pre></table></code></div></div><p>样例：</p><div class="language-java highlighter-rouge"><div class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre><td class="rouge-code"><pre><span class="mi">5</span> <span class="mi">5</span>
+<span class="mi">4</span> <span class="mi">1</span> <span class="mi">4</span> <span class="mi">1</span> <span class="mi">2</span>
+
+<span class="n">输出</span> <span class="mi">10</span>
+</pre></table></code></div></div></div><div class="post-tail-wrapper text-muted"><div class="post-meta mb-3"> <i class="far fa-folder-open fa-fw mr-1"></i> <a href='/HYCBlog/categories/blogging/'>Blogging</a>, <a href='/HYCBlog/categories/%E4%BC%81%E4%B8%9A%E7%AC%94%E8%AF%95/'>企业笔试</a></div><div class="post-tags"> <i class="fa fa-tags fa-fw mr-1"></i> <a href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/" class="post-tag no-text-decoration" >算法题解</a></div><div class="post-tail-bottom d-flex justify-content-between align-items-center mt-3 pt-5 pb-2"><div class="license-wrapper"> This post is licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> by the author.</div><!-- Post sharing snippet v2.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2019 Cotes Chung Published under the MIT License --><div class="share-wrapper"> <span class="share-label text-muted mr-1">Share</span> <span class="share-icons"> <a href="https://twitter.com/intent/tweet?text=2020秋招企业笔试题 - 黄玉才的博客&url=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank"> <i class="fa-fw fab fa-twitter"></i> </a> <a href="https://www.facebook.com/sharer/sharer.php?title=2020秋招企业笔试题 - 黄玉才的博客&u=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Facebook" target="_blank"> <i class="fa-fw fab fa-facebook-square"></i> </a> <a href="https://telegram.me/share?text=2020秋招企业笔试题 - 黄玉才的博客&url=www.yucaihuang.com/HYCBlog/posts/enterprise-test/" data-toggle="tooltip" data-placement="top" title="Telegram" target="_blank"> <i class="fa-fw fab fa-telegram"></i> </a> <i class="fa-fw fas fa-link small" onclick="copyLink()" data-toggle="tooltip" data-placement="top" title="Copy link"></i> </span></div></div></div></div></div><!-- The Pannel on right side (Desktop views) v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><div id="panel-wrapper" class="col-xl-3 pl-2 text-muted topbar-down"><div class="access"><div id="access-lastmod" class="post"><h3 data-toc-skip>Recent Update</h3><ul class="post-content pl-0 pb-1 ml-1 mt-2"><li><a href="/HYCBlog/posts/point-to-offers/">剑指offer题解</a></li><li><a href="/HYCBlog/posts/leetcode-solutions/">Leetcode题解</a></li><li><a href="/HYCBlog/posts/web-delete-system-python-in-centos/">centOS误删系统自带python</a></li><li><a href="/HYCBlog/posts/enterprise-test/">2020秋招企业笔试题</a></li></ul></div><div id="access-tags"><h3 data-toc-skip>Trending Tags</h3><div class="d-flex flex-wrap mt-3 mb-1 mr-3"> <a class="post-tag" href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a> <a class="post-tag" href="/HYCBlog/tags/web/">web</a> <a class="post-tag" href="/HYCBlog/tags/security/">security</a> <a class="post-tag" href="/HYCBlog/tags/java%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">Java源码学习</a></div></div></div><div id="toc-wrapper" class="pl-0 pr-4 mb-5"><h3 data-toc-skip class="pl-3 pt-2 mb-2">Contents</h3><nav id="toc" data-toggle="toc"></nav></div></div></div><div class="row"><div class="col-12 col-lg-11 col-xl-8"><div id="post-extend-wrapper" class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-4 pr-md-4"> <!-- Recommend the other 3 posts according to the tags and categories of the current post, if the number is not enough, use the other latest posts to supplement. v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2019 Cotes Chung Published under the MIT License --><div id="related-posts" class="mt-5 mb-2 mb-sm-4"><h3 class="pt-2 mt-1 mb-4 ml-1" data-toc-skip>Further Reading</h3><div class="card-deck mb-4"><div class="card"> <a href="/HYCBlog/posts/leetcode-solutions/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 23 <i class="unloaded">2020-08-23T20:44:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Leetcode题解</h3><div class="text-muted small"><p> 目录 5.最长回文子串 16.最接近三数之和 17.电话号码的字母组合 43.字符串相乘 63.含障碍物网格中的不同路径 67.二进制求和 93. 恢复IP地址 96. 不同的二叉搜索树 100. 相同的树 108. 将有序数组转换为二叉搜索树 109. 有序链表转换二叉搜索树 110.平衡二叉树 111. 二叉树的最小深度 112. 路径总和 120.三角形...</p></div></div></a></div><div class="card"> <a href="/HYCBlog/posts/point-to-offers/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 24 <i class="unloaded">2020-08-24T15:00:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>剑指offer题解</h3><div class="text-muted small"><p> 剑指 Offer 03. 数组中重复的数字 找出数组中重复的数字。 在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。 示例 1： 输入： [2, 3, 1, 0, 2, 5, 3] 输出：2 或 3 限制： 2 &lt;= n &lt;= ...</p></div></div></a></div><div class="card"> <a href="/HYCBlog/posts/algorithm-manacher/"><div class="card-body"> <!-- Date format snippet v2.4.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --> <span class="timeago small" > Aug 29 <i class="unloaded">2020-08-29T13:49:00+08:00</i> </span><h3 class="pt-0 mt-1 mb-3" data-toc-skip>Manacher算法：线性时间内找到最大回文子串</h3><div class="text-muted small"><p> 5.最长回文子串 给定一个字符串 s，找到 s 中最长的回文子串。你可以假设 s 的最大长度为 1000。 示例 1： 1 2 3 输入: "babad" 输出: "bab" 注意: "aba" 也是一个有效答案。 示例 2： 1 2 输入: "cbbd" 输出: "bb" 求解这个问题的方法有很多：动态规划、中心扩散、KMP等。 今天主要分析Manacher算法。 Ma...</p></div></div></a></div></div></div><!-- Navigation buttons at the bottom of the post. v2.1 https://github.com/cotes2020/jekyll-theme-chirpy © 2020 Cotes Chung MIT License --><div class="post-navigation d-flex justify-content-between"> <a href="/HYCBlog/posts/web-url-with-chinese-string/" class="btn btn-outline-primary"><p>URL包含中文，请求资源404</p></a> <a href="/HYCBlog/posts/security-arp-hijack/" class="btn btn-outline-primary"><p>内网渗透：记一次局域网arp劫持测试</p></a></div></div></div></div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js"></script> <script type="text/javascript"> const imgs = document.querySelectorAll('#post-wrapper img'); const observer = lozad(imgs); observer.observe(); </script> <!-- The Footer v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><footer class="d-flex w-100 justify-content-center"><div class="d-flex justify-content-between align-items-center"><div class="footer-left"><p class="mb-0"> © 2020 <a href="">Yucai Huang</a>. <span data-toggle="tooltip" data-placement="top" title="Except where otherwise noted, the blog posts on this site are licensed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License by the author.">Some rights reserved.</span></p></div><div class="footer-right"><p class="mb-0"> Powered by <a href="https://jekyllrb.com" target="_blank">Jekyll</a> with <a href="https://github.com/cotes2020/jekyll-theme-chirpy/">Chirpy</a> theme.</p></div></div></footer></div><!-- The Search results v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --><div id="search-result-wrapper" class="d-flex justify-content-center unloaded"><div class="col-12 col-xl-11 post-content"><div id="search-hints"><h4 class="text-muted mb-4">Trending Tags</h4><a class="post-tag" href="/HYCBlog/tags/%E7%AE%97%E6%B3%95%E9%A2%98%E8%A7%A3/">算法题解</a> <a class="post-tag" href="/HYCBlog/tags/web/">web</a> <a class="post-tag" href="/HYCBlog/tags/security/">security</a> <a class="post-tag" href="/HYCBlog/tags/java%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">Java源码学习</a></div><div id="search-results" class="d-flex flex-wrap justify-content-center text-muted mt-3"></div></div></div></div><div id="mask"></div><a id="back-to-top" href="#" class="btn btn-lg btn-box-shadow" role="button"> <i class="fas fa-angle-up"></i> </a> <!-- The GA snippet v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --> <script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', '', 'auto'); ga('send', 'pageview'); </script> <!-- Jekyll Simple Search loader v2.0 https://github.com/cotes2020/jekyll-theme-chirpy © 2017-2019 Cotes Chung MIT License --> <script src="https://cdn.jsdelivr.net/npm/simple-jekyll-search@1.7.3/dest/simple-jekyll-search.min.js"></script> <script> SimpleJekyllSearch({ searchInput: document.getElementById('search-input'), resultsContainer: document.getElementById('search-results'), json: '/HYCBlog/assets/js/data/search.json', searchResultTemplate: '<div class="pl-1 pr-1 pl-sm-2 pr-sm-2 pl-lg-4 pr-lg-4 pl-xl-0 pr-xl-0"> <a href="www.yucaihuang.com{url}">{title}</a><div class="post-meta d-flex flex-column flex-sm-row text-muted mt-1 mb-1"><div class="mr-sm-4"><i class="far fa-folder fa-fw"></i>{categories}</div><div><i class="fa fa-tag fa-fw"></i>{tags}</div></div><p>{snippet}</p></div>', noResultsText: '<p class="mt-5">Oops! No result founds.</p>' }); </script>

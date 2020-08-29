@@ -1277,7 +1277,7 @@ a = kb + r (k为整数，r为a除以b所得余数)=> r = a - kb = xg - kyg = (x 
 
 
 
-## 逆序五进制
+### 逆序五进制
 
 编写一个程序，首先将一个十进制正整数逆序【需要去掉前导0】，然后转换成五进制正整数，最后输出该五进制正整数。
 
@@ -1326,3 +1326,238 @@ public class Main {
 
 
 还有一题智障题，就不贴了。
+
+
+
+
+
+## 美团-2020-8-29
+
+
+
+
+
+### 1.最长的被加密字符串
+
+对一个字符串加密，规则如下：
+
+```markdown
+1. 添加一个首部。首部至少包含一个“MT”子序列，且以“T”结尾。
+2. 添加一个尾部。尾部至少包含一个“MT”子序列，且以“M”开头。
+3. 首部和尾部要尽量短。
+```
+
+现在给定一个加密后的字符串，请找出被加密的字符串S。
+
+
+
+输入描述：
+
+```markdown
+输入第一行是一个正整数n，标识加密后的字符串总长度。（1<=n<=100000）
+输入第二行是一个长度为n的仅由大写字母组成的字符串T。
+```
+
+输出描述：
+
+```markdown
+输出仅包含一个字符串S。
+```
+
+样例：
+
+```markdown
+10
+MMATSATMMT
+
+SATM
+```
+
+暴力法，果然超时了...我太菜了。
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+
+
+    static String solution(String s){
+        //找出最短头部
+        int pos_T = 0;
+        for(int i = 0; i < s.length();){
+            pos_T = s.indexOf('T');
+            //判断在i到posT的之中是否有M
+            String sub = s.substring(i,pos_T+1);
+            if(sub.indexOf('M') != -1){
+                //找到了头部的结尾
+                break;
+            }
+            i = pos_T+1;
+        }
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < s.length();++i){
+            sb.append(s.charAt(i));
+        }
+				//问题应该出在这里了，字符串长度为100000时，reverse是很恐怖的..
+      	//后面再改改吧，应该可以有其他办法改进
+        String reverse = sb.reverse().toString();
+        //找出最短尾部
+        int pos_M = 0;
+        for(int i = 0; i < reverse.length();){
+            pos_M = s.indexOf('M');
+            //判断在i到posT的之中是否有M
+            if(reverse.substring(i,pos_M+1).indexOf('T') != -1){
+                //找到了头部的结尾
+                break;
+            }
+            i = pos_M+1;
+        }
+        return s.substring(pos_T+1,s.length()-pos_M-pos_T+1);
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        String s = sc.next();
+//        String s = "MMATSATMMT";
+        String res = new Main().solution(s);
+        System.out.println(res);
+    }
+}
+```
+
+正则表达式：
+
+```java
+import java.util.Scanner;
+public class App {
+		
+    private static String reveString(String string) {
+        return new StringBuilder(string).reverse().toString();
+    }
+
+  	
+    public static String solve(String string) {
+        String result = string.replaceFirst("^.*?M.*?T", "");
+        result = reveString(result);
+        result = result.replaceFirst("^.*?T.*?M", "");
+        result = reveString(result);
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        String s = sc.next();
+        System.out.println(solve(s));
+    }
+}
+```
+
+为啥这边reverse不会有问题，难道我跟大佬的差距就是一个正则表达式？奥利给，明天肝正则！！！
+
+
+
+
+
+
+
+### 2.小团的选调计划
+
+美团打算把n个人分配到n个不同的业务区域，能者优先，n个人的业务能力排行为1～n。编号考前的人具有优先选择的权力。每个人填一个意向。这个意向是一个1～n的排列，表示一个人希望的业务区域顺序。有两个人同时希望去某一个业务区域则有限满足编号小的人。
+
+输入：
+
+```markdown
+第一行n
+n行，每行n个整数，即一个1～n的排列，第i行表示i-1号业务骨干的意向顺序。
+```
+
+输出：
+
+```markdown
+n个正整数，第i个表示第i号人去的区域编号。
+```
+
+样例：
+
+```markdown
+5
+1 5 3 4 2
+2 3 5 4 1
+5 4 1 2 3
+1 2 5 4 3
+1 4 5 2 3
+
+输出：1 2 5 4 3
+```
+
+
+
+### 3.树节点追逐
+
+A追逐B。A和B在一颗有n个结点的树上，A位于x位置，B位于y位置，A和B每个单位时间内都可以选择不动活着向相邻的位置转移，假设A足够聪明，很显然B会无路可逃，请问最多经过多少个单位时间后，B会被追上？
+
+输入：
+
+```markdown
+第一行包含三个整数n,x,y，分别表示树上的结点数量，A所在的位置和B所在的位置(1 <= n <= 50000)
+接下来有n-1行，每行两个整数u,v，表示u号位置和v号位置之间有一条边，即u号位置和v号位置彼此相邻。
+```
+
+输出：
+
+```markdown
+一个整数，最多的单位时间。
+```
+
+样例：
+
+```markdown
+5 1 2
+2 1
+3 1
+4 2
+5 3
+
+输出 2 
+```
+
+
+
+### 4.小团的默契游戏
+
+有一个长度为n的序列，最大值不超过m。
+
+A和B各自选择一个[1,m]之间的整数，设A选择的是l，B选择的是r，满足以下条件则为一个有效二元组：
+
+```markdown
+1. l <= r
+2. 对于序列中的元素x, 如果0<x<l，或r < x < m+1，则x按其顺序保留下来，要求保留下来的子序列单调不下降。
+```
+
+请问这样的二元组有多少种？
+
+输入：
+
+```markdown
+输入第一行，m,n，表示序列元素的最大值和序列的长度(1 <= n,m <= 100000)
+第二行n个整数，表示序列。
+```
+
+输出：
+
+```markdown
+一个整数，符合要求的有效二元组数量。
+```
+
+样例：
+
+```java
+5 5
+4 1 4 1 2
+
+输出 10
+```
+

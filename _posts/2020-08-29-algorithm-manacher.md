@@ -2,7 +2,7 @@
 title: Manacher算法：线性时间内找到最大回文子串
 author: Kolin Huang
 date: 2020-08-29 13:49:00 +0800
-categories: [Blogging, leecode]
+categories: [Blogging, leetcode]
 tags: [算法题解]
 comments: true
 math: true
