@@ -11,7 +11,91 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 
 
+## 目录
 
+[5.最长回文子串](#jump5)
+
+[16.最接近三数之和](#jump16)
+
+[17.电话号码的字母组合](#jump17)
+
+[43.字符串相乘](#jump43)
+
+[63.含障碍物网格中的不同路径](#jump63)
+
+[67.二进制求和](#jump67)
+
+[93. 恢复IP地址](#jump93)
+
+[96. 不同的二叉搜索树](#jump96)
+
+[100. 相同的树](#jump100)
+
+[108. 将有序数组转换为二叉搜索树](#jump108)
+
+[109.  有序链表转换二叉搜索树](#jump109)
+
+[110.平衡二叉树](#jump110)
+
+[111. 二叉树的最小深度](#jump111)
+
+[112. 路径总和](#jump112)
+
+[120.三角形最小路径和](#jump120)
+
+[130.被围绕的区域](#jump130)
+
+[133.克隆图](#jump133)
+
+[139.单词拆分](#jump139)
+
+[201.数字范围按位与](#jump201)
+
+[209.寻找长度最小的子数组](#jump209)
+
+[214.最短回文串](#jump214)
+
+[215.数组中的第K大元素](#jump215)
+
+[309.最佳买卖股票时机含冷冻期](#jump309)
+
+[332.重新安排行程](#jump332)
+
+[336.回文对](#jump336)
+
+[337.打家劫舍3](#jump337)
+
+[378.有序矩阵中第K小元素](#jump378)
+
+[459.重复的子字符串](#jump459)
+
+[491.递增子序列](#jump491)
+
+[529.扫雷游戏](#jump529)
+
+[546.移除盒子](#jump546)
+
+[647.回文子串](#jump647)
+
+[657.机器人能否返回原点](#jump657)
+
+[679.24点游戏](#jump679)
+
+[696.计数二进制子串](#jump696)
+
+[718.最长公共连续子数组](#jump718)
+
+[733.图像渲染](#jump733)
+
+
+
+<span id="jump5"></span>
+
+## 5.最长回文子串
+
+[点这里跳转](/HYCBlog/posts/algorithm-manacher)
+
+<span id="jump16"></span>
 
 
 ##  16.最接近三数之和
@@ -118,6 +202,8 @@ int min = Integer.MAX_VALUE;
 
 
 
+<span id="jump17"></span>
+
 ## 17.电话号码的字母组合
 
 给定一个仅包含数字 `2-9` 的字符串，返回所有它能表示的字母组合。
@@ -190,7 +276,7 @@ class Solution {
 
 
 
-
+<span id="jump43"></span>
 
 ## 43.字符串相乘
 
@@ -280,7 +366,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump63"></span>
 
 ## 63.含障碍物网格中的不同路径
 
@@ -358,7 +444,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump67"></span>
 
 ## 67.二进制求和
 
@@ -471,7 +557,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump93"></span>
 
 ## 93. 恢复IP地址
 
@@ -557,7 +643,7 @@ class RestoreIpAddresses {
 * 思考递归时，不要把问题划分的太细，要一次递归能够处理一个子问题。递归树的每条路径对应一种解法。像这题，我一开始想着从最后一个地址段开始，遍历所有情况，然后用返回值把字符串拼接起来，这种思维非常混乱。
 * 写递归函数，先写满足要求的情况，即递归结束条件；再写特殊情况，最后写一般情况。
 
-
+<span id="jump96"></span>
 
 ## 96. 不同的二叉搜索树
 
@@ -633,7 +719,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump100"></span>
 
 ## 100. 相同的树
 
@@ -747,7 +833,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump108"></span>
 
 ## 108. 将有序数组转换为二叉搜索树
 
@@ -799,7 +885,7 @@ class Solution {
 }
 ```
 
-
+<span id="jump109"></span>
 
 ## 109.  有序链表转换二叉搜索树
 
@@ -887,6 +973,8 @@ class Solution {
 ```
 
 
+
+<span id="jump110"></span>
 
 ## 110.平衡二叉树
 
@@ -983,6 +1071,8 @@ class Solution {
 ```
 
 
+
+<span id="jump111"></span>
 
 ## 111. 二叉树的最小深度
 
@@ -1083,7 +1173,7 @@ class Solution {
 
 
 
-
+<span id="jump112"></span>
 
 ## 112. 路径总和
 
@@ -1142,6 +1232,8 @@ class Solution {
 ```
 
 
+
+<span id="jump120"></span>
 
 ## 120. 三角形最小路径和
 
@@ -1258,6 +1350,8 @@ class Solution {
 
 
 
+<span id="jump130"></span>
+
 ## 130. 被围绕的区域
 
 
@@ -1366,9 +1460,9 @@ https://leetcode-cn.com/problems/surrounded-regions/solution/bfsdi-gui-dfsfei-di
 
 
 
+<span id="jump133"></span>
 
-
-## 130. 克隆图
+## 133. 克隆图
 
 给你无向连通图中一个节点的引用，请你返回该图的深拷贝（克隆）。
 
@@ -1534,7 +1628,7 @@ class Solution {
 
 
 
-
+<span id="jump139"></span>
 
 ## 139.单词拆分
 
@@ -1608,7 +1702,7 @@ class Solution {
 
 
 
-
+<span id="jump201"></span>
 
 ## 201.数字范围按位与
 
@@ -1682,6 +1776,8 @@ class Solution {
 ```
 
 
+
+<span id="jump209"></span>
 
 ## 209.寻找长度最小的子数组
 
@@ -1850,7 +1946,143 @@ class Solution {
 
 
 
+<span id="jump214"></span>
 
+## 214. 最短回文串
+
+给定一个字符串 s，你可以通过在字符串前面添加字符将其转换为回文串。找到并返回可以用这种方式转换的最短回文串。
+
+示例 1:
+
+```java
+输入: "aacecaaa"
+输出: "aaacecaaa"
+```
+
+
+示例 2:
+
+```java
+输入: "abcd"
+输出: "dcbabcd"
+```
+
+
+
+不难分析，“在字符串前添加字符，将其转换为回文串”，并且要求的回文串最短，说明只需要找到以第一个字符为起始的最长回文子串s1，然后将s-s1剩余的子串翻转放到s的前面即可。
+
+找最长回文子串的方法有很多，动态规划、KMP、中心扩展等。[参考第5题。](#jump5)
+
+本题用暴力判断+中心扩展法超时了，所以需要考虑KMP或Manacher算法。
+
+另外，还有一个条件就是最长回文子串必须是以0为起始位置。
+
+```java
+class Solution {
+    public String shortestPalindrome(String s) {
+        if(s.length() == 0) return "";
+        if(s.length() == 1) return s;
+        //找到以第一个元素为起始的最大回文子串的结尾位置
+        int index = longestPalindrome(s);
+
+        StringBuffer sb = new StringBuffer();
+        for(int i = s.length()-1; i >= index;--i){
+            sb.append(s.charAt(i));
+        }
+        return sb.toString() + s;
+
+    }
+    public int longestPalindrome(String s) {
+
+        int len = s.length();
+
+        // 得到预处理字符串
+        String str = addBoundaries(s, '#');
+        // 新字符串的长度
+        int sLen = 2 * len + 1;
+
+        // 数组 p 记录了扫描过的回文子串的信息
+        int[] p = new int[sLen];
+
+        // 双指针，它们是一一对应的，须同时更新
+        int maxRight = 0;
+        int center = 0;
+
+        // 当前遍历的中心最大扩散步数，其值等于原始字符串的最长回文子串的长度
+        int maxLen = 1;
+        // 原始字符串的最长回文子串的起始位置，与 maxLen 必须同时更新
+        int start = 0;
+
+        for (int i = 0; i < sLen; i++) {
+            if (i < maxRight) {
+                int mirror = 2 * center - i;
+                // 这一行代码是 Manacher 算法的关键所在，要结合图形来理解
+                p[i] = Math.min(maxRight - i, p[mirror]);
+            }
+
+            // 下一次尝试扩散的左右起点，能扩散的步数直接加到 p[i] 中
+            //就是为了处理p[mirror] == marRight - i的情况
+            int left = i - (1 + p[i]);
+            int right = i + (1 + p[i]);
+
+            // left >= 0 && right < sLen 保证不越界
+            // str.charAt(left) == str.charAt(right) 表示可以扩散 1 次
+            while (left >= 0 && right < sLen && str.charAt(left) == str.charAt(right)) {
+                p[i]++;
+                left--;
+                right++;
+            }
+            // 根据 maxRight 的定义，它是遍历过的 i 的 i + p[i] 的最大者
+            // 如果 maxRight 的值越大，进入上面 i < maxRight 的判断的可能性就越大，这样就可以重复利用之前判断过的回文信息了
+            //更新maxRight，如果当前遍历到的中心i所能达到的最右端大于maxRight，就更新它
+            if (i + p[i] > maxRight) {
+                // maxRight 和 center 需要同时更新
+                maxRight = i + p[i];
+                center = i;
+            }
+
+            if ( p[i] > maxLen) {
+                // 记录最长回文子串的长度和相应它在原始字符串中的起点
+                if((i - p[i]) / 2 == 0){
+                    maxLen = p[i];
+                    start = (i - maxLen) / 2;
+                }
+
+            }
+        }
+        return start+maxLen;
+    }
+
+
+    /**
+     * 创建预处理字符串
+     */
+    private String addBoundaries(String s, char divide) {
+        int len = s.length();
+        if (len == 0) {
+            return "";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            stringBuilder.append(divide);
+            stringBuilder.append(s.charAt(i));
+        }
+        stringBuilder.append(divide);
+        return stringBuilder.toString();
+    }
+
+}
+```
+
+
+
+
+
+
+
+
+
+<span id="jump215"></span>
 
 ## 215.数组中的第k大元素
 
@@ -1978,7 +2210,7 @@ class Solution {
 
 
 
-
+<span id="jump309"></span>
 
 ## 309.最佳买卖股票时机含冷冻期
 
@@ -2083,7 +2315,7 @@ class Solution {
 
 
 
-
+<span id="jump332"></span>
 
 ## 332. 重新安排行程
 
@@ -2289,7 +2521,7 @@ public List<String> findItinerary(List<List<String>> tickets) {
 
 
 
-
+<span id="jump336"></span>
 
 ## 336. 回文对
 
@@ -2502,6 +2734,8 @@ class Solution {
 
 
 
+<span id="jump337"></span>
+
 ## 337. 打家劫舍 3
 
 在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
@@ -2664,6 +2898,8 @@ public int[] robInternal(TreeNode root) {
 
 
 
+<span id="jump378"></span>
+
 ## 378. 有序矩阵中第k小元素
 
 给定一个 *`n x n`* 矩阵，其中每行和每列元素均按升序排序，找到矩阵中第 `k` 小的元素。
@@ -2810,6 +3046,8 @@ class Solution {
 
 
 
+<span id="jump459"></span>
+
 ## 459.重复的子字符串
 
 给定一个非空的字符串，判断它是否可以由它的一个子串重复多次构成。给定的字符串只含有小写英文字母，并且长度不超过10000。
@@ -2936,7 +3174,7 @@ class Solution {
 
 
 
-
+<span id="jump491"></span>
 
 ## 491.递增子序列
 
@@ -3008,6 +3246,8 @@ class Solution {
 https://leetcode-cn.com/problems/increasing-subsequences/solution/java-di-gui-jie-fa-by-don-vito-corleone-3/
 
 
+
+<span id="jump529"></span>
 
 ## 529. 扫雷游戏
 
@@ -3199,6 +3439,8 @@ class Solution {
 
 
 
+<span id="jump546"></span>
+
 ## 546.移除盒子
 
 给出一些不同颜色的盒子，盒子的颜色由数字表示，即不同的数字表示不同的颜色。
@@ -3262,6 +3504,8 @@ class Solution {
 ```
 
 
+
+<span id="jump647"></span>
 
 ## 647. 回文子串
 
@@ -3438,6 +3682,10 @@ class Solution {
 
 
 
+
+
+<span id="jump657"></span>
+
 ## 657. 机器人能否返回原点
 
 在二维平面上，有一个机器人从原点 (0, 0) 开始。给出它的移动顺序，判断这个机器人在完成移动后是否在 (0, 0) 处结束。
@@ -3497,7 +3745,7 @@ class Solution {
 
 
 
-
+<span id="jump679"></span>
 
 ## 679. 24点游戏
 
@@ -3611,6 +3859,10 @@ class Solution {
 
 
 
+
+
+<span id="jump696"></span>
+
 ## 696. 计数二进制子串
 
 给定一个字符串 s，计算具有相同数量0和1的非空(连续)子字符串的数量，并且这些子字符串中的所有0和所有1都是组合在一起的。
@@ -3707,6 +3959,8 @@ class Solution {
 ```
 
 
+
+<span id="jump718"></span>
 
 ## 718.最长公共连续子数组
 
@@ -3818,6 +4072,8 @@ class Solution {
 
 
 
+
+<span id="jump733"></span>
 
 ## 733. 图像渲染
 

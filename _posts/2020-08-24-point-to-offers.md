@@ -1345,6 +1345,55 @@ class Solution {
 
 
 
+## 剑指 Offer 39. 数组中出现次数超过一半的数字
+
+数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素.
+
+示例 1:
+
+```java
+输入: [1, 2, 3, 2, 2, 2, 5, 4, 2]
+输出: 2
+```
+
+限制：
+
+```java
+1 <= 数组长度 <= 50000
+```
+
+
+
+### 排序+双指针
+
+```java
+class Solution {
+    public int majorityElement(int[] nums) {
+        if(nums.length == 1) return nums[0];
+      	//先排序
+        Arrays.sort(nums);
+      	//双指针搜索 长度大于数组长度一半 的重复子序列
+        for(int low = 0, high =1; high < nums.length;){
+            while(high < nums.length && nums[low] == nums[high]) ++high;
+            if(high - low > (nums.length /2))
+                return nums[low];
+            low = high;
+            high = low + 1;
+        }
+      	//随便return一个值
+        return 0;
+    }
+}
+```
+
+
+
+
+
+
+
 ## 剑指 Offer 40. 最小的k个数
 
 输入整数数组 arr ，找出其中最小的 k 个数。例如，输入4、5、1、6、2、7、3、8这8个数字，则最小的4个数字是1、2、3、4。
@@ -1447,6 +1496,16 @@ class Solution {
 }
 
 ```
+
+
+
+## 剑指 Offer 41. 数据流中的中位数
+
+
+
+[点击跳转](/HYCBlog/posts/priority-queue-src-code-analyze/)
+
+
 
 
 
