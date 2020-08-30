@@ -1503,7 +1503,7 @@ class Solution {
 
 
 
-[点击跳转](/HYCBlog/posts/priority-queue-src-code-analyze/)
+[点击跳转](/posts/priority-queue-src-code-analyze/)
 
 
 
@@ -1594,6 +1594,93 @@ int maxSubSeq(int[] a){
   return max;
 }
 ```
+
+
+
+
+
+## 剑指 Offer 44. 数字序列中某一位的数字
+
+数字以0123456789101112131415…的格式序列化到一个字符序列中。在这个序列中，第5位（从下标0开始计数）是5，第13位是1，第19位是4，等等。
+
+请写一个函数，求任意第n位对应的数字。
+
+ 
+
+示例 1：
+
+```java
+输入：n = 3
+输出：3
+```
+
+
+示例 2：
+
+```java
+输入：n = 11
+输出：0
+```
+
+限制：
+
+```java
+0 <= n < 2^31
+```
+
+
+
+```java
+package leetcode;
+
+/**
+ *  0～9贡献了      10 * 1个字符   k = 0
+ *  10～99贡献了    90 * 2个字符   k = 1
+ *  100～999贡献了  900 * 3个字符  k = 2
+ *  以此类推，容易推出第k个区间贡献的字符数：9 * 10^k * (k+1)
+ *  目标就是将数字n映射到上面的某个区间内，那么就要找到以下几个值：
+ *  k       标识n落在区间[10^k, 9..9(k+1个9)]
+ *  blk_i   标识n这个数字对应于这个区间内的第几个数。（块索引）
+ *  inner_i 标识第n个字符是在这个blk_i块（即一个数字）的第几位。（块内索引）
+ */
+public class NthDigitInSequence {
+    public int findNthDigit(int n) {
+        //前10个字符直接返回
+        if(n < 10)  return n;
+        //当前字符序列的序列长度
+        int sum = 10;
+        //用于标识目标数字所在区间，start元素的后缀0个数
+        //例如[10~99]区间，start元素为10，后缀0个数为1
+        int k = 1;
+        //找到n所在的区间
+        for(k = 1; sum < n; ++k){
+            if(n - 9 * Math.pow(10,k)*(k+1) < 0)
+                break;
+            sum += 9 * Math.pow(10,k)*(k+1);
+        }
+        n -= sum;
+
+        //块索引
+        int blk_i = n / (k+1);
+        //块内索引
+        int inner_i = n % (k+1);
+        //利用块索引找到目标数字
+        int target = (int)Math.pow(10,k) + blk_i;
+        String target_s = target + "";
+        //利用块内索引返回序列的第n个字符
+        return target_s.charAt(inner_i) - '0';
+
+    }
+
+    public static void main(String[] args) {
+        int res = new NthDigitInSequence().findNthDigit(21121);
+//        System.out.println(res);
+    }
+}
+
+```
+
+
 
 
 

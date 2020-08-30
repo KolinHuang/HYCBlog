@@ -75,6 +75,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 [546.移除盒子](#jump546)
 
+[557.反转字符串中的单词 III](#jump557)
+
 [647.回文子串](#jump647)
 
 [657.机器人能否返回原点](#jump657)
@@ -93,7 +95,7 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 ## 5.最长回文子串
 
-[点这里跳转](/HYCBlog/posts/algorithm-manacher)
+[点这里跳转](/posts/algorithm-manacher)
 
 <span id="jump16"></span>
 
@@ -3502,6 +3504,61 @@ class Solution {
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+
+
+
+<span id="jump557"></span>
+
+## 557.反转字符串中的单词 III
+
+给定一个字符串，你需要反转字符串中每个单词的字符顺序，同时仍保留空格和单词的初始顺序。
+
+ 
+
+示例：
+
+```java
+输入："Let's take LeetCode contest"
+输出："s'teL ekat edoCteeL tsetnoc"
+```
+
+
+提示:
+
+在字符串中，每个单词由单个空格分隔，并且字符串中不会有任何额外的空格。
+
+
+
+```java
+class Solution {
+    public String reverseWords(String s) {
+        if(s.length() < 2)    return s;
+        StringBuffer res = new StringBuffer(); 
+        String[] arr = s.split(" ");
+        
+        for(int i = 0; i < arr.length; ++i){
+            if(i == 0)
+                res.append(reverseString(arr[i]));
+            else
+                res.append( " " + reverseString(arr[i]));
+
+        }
+        return res.toString();
+
+    }
+
+    String reverseString(String s){
+        if(s.length() < 2)  return s;
+        StringBuffer sb = new StringBuffer();
+        for(int i = s.length()-1; i >= 0;--i){
+            sb.append(s.charAt(i));
+        }
+        return sb.toString();
+    }
+}
+```
+
+发现字符串直接相加的效率比StringBuffer的append慢多了，以后尽量不用字符串直接相加。
 
 
 
