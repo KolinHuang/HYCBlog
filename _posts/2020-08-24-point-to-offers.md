@@ -1786,6 +1786,122 @@ public class NthDigitInSequence {
 
 
 
+## 剑指 Offer 46. 把数字翻译成字符串
+
+给定一个数字，我们按照如下规则把它翻译为字符串：0 翻译成 “a” ，1 翻译成 “b”，……，11 翻译成 “l”，……，25 翻译成 “z”。一个数字可能有多个翻译。请编程实现一个函数，用来计算一个数字有多少种不同的翻译方法。
+
+ 
+
+示例 1:
+
+```java
+输入: 12258
+输出: 5
+解释: 12258有5种不同的翻译，分别是"bccfi", "bwfi", "bczi", "mcfi"和"mzi"
+```
+
+
+提示：
+
+0 <= num < 2^31
+
+
+
+### dfs解法
+
+遍历每一种有效情况。
+
+```java
+class Solution {
+    int cnt;
+    public int translateNum(int num) {
+        if(num < 10)    return 1;
+        cnt = 0;
+        dfs(num+"", 0);
+        return cnt;
+    }
+		//start为此次搜索的起点
+    void dfs(String num, int start){
+      	//搜索到结尾就计数
+        if(start >= num.length()){
+            cnt++;
+            return;
+        }
+      	//1个字母肯定成立
+        dfs(num,start+1);
+      	//两个字母需要判断是否在区间[10,25]内，因为前导0不符合要求
+        if(start + 1 < num.length() &&
+            num.substring(start,start+2).compareTo("25") <= 0
+            &&num.substring(start,start+2).compareTo("10") >= 0){
+                dfs(num,start+2);
+            }
+    }
+}
+```
+
+### 动态规划解法
+
+```markdown
+设x1x2...xi-2的翻译方案数量为f(i-2)
+设x1x2...xi-1的翻译方案数量为f(i-1)
+当整体翻译xi-1xi时，x1x2...xi-2xi-1xi的方案数为f(i-2)
+当单独翻译xi时，x1x2...xi-2xi-1xi的方案数为f(i-1)
+所以有如下状态方程：
+			｜--  f(i-2) + f(i-1),	若xi-1xi可被整体翻译
+f(i) =｜
+			｜--  f(i-1)，若数字xi-1xi不可被翻译
+```
+
+```java
+class Solution {
+
+    public int translateNum(int num) {
+        if(num < 10)    return 1;
+        String s = num + "";
+        int[] dp = new int[s.length()+1];
+        dp[0] = 1;
+        dp[1] = 1;
+        
+        for(int i = 2; i <= s.length(); ++i){
+            if(s.substring(i-2,i).compareTo("25") <= 0
+            &&s.substring(i-2,i).compareTo("10") >= 0){
+                dp[i] = dp[i-1] + dp[i-2];
+            }else{
+                dp[i] = dp[i-1];
+            }
+        }
+        return dp[s.length()];
+        
+    }
+}
+```
+
+### 数字求余
+
+```java
+class Solution {
+    public int translateNum(int num) {
+        int a = 1, b = 1, x, y = num % 10;
+        while(num != 0) {
+            num /= 10;
+            x = num % 10;
+            int tmp = 10 * x + y;
+            int c = (tmp >= 10 && tmp <= 25) ? a + b : a;
+            b = a;
+            a = c;
+            y = x;
+        }
+        return a;
+    }
+}
+```
+
+
+
+
+
+
+
 
 
 ## 剑指 Offer 47. 礼物的最大价值
