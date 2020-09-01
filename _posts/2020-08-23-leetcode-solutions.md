@@ -69,6 +69,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 [459.重复的子字符串](#jump459)
 
+[486.预测赢家](#jump486)
+
 [491.递增子序列](#jump491)
 
 [529.扫雷游戏](#jump529)
@@ -88,6 +90,10 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 [718.最长公共连续子数组](#jump718)
 
 [733.图像渲染](#jump733)
+
+[841.钥匙和房间](#jump841)
+
+
 
 
 
@@ -3176,6 +3182,95 @@ class Solution {
 
 
 
+<span id = "jump486"></span>
+
+## 486.预测赢家
+
+给定一个表示分数的非负整数数组。 玩家 1 从数组任意一端拿取一个分数，随后玩家 2 继续从剩余数组任意一端拿取分数，然后玩家 1 拿，…… 。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
+
+给定一个表示分数的数组，预测玩家1是否会成为赢家。你可以假设每个玩家的玩法都会使他的分数最大化。
+
+ 
+
+示例 1：
+
+```java
+输入：[1, 5, 2]
+输出：False
+解释：一开始，玩家1可以从1和2中进行选择。
+如果他选择 2（或者 1 ），那么玩家 2 可以从 1（或者 2 ）和 5 中进行选择。如果玩家 2 选择了 5 ，那么玩家 1 则只剩下 1（或者 2 ）可选。
+所以，玩家 1 的最终分数为 1 + 2 = 3，而玩家 2 为 5 。
+因此，玩家 1 永远不会成为赢家，返回 False 。
+```
+
+
+
+
+示例 2：
+
+```java
+输入：[1, 5, 233, 7]
+输出：True
+解释：玩家 1 一开始选择 1 。然后玩家 2 必须从 5 和 7 中进行选择。无论玩家 2 选择了哪个，玩家 1 都可以选择 233 。
+最终，玩家 1（234 分）比玩家 2（12 分）获得更多的分数，所以返回 True，表示玩家 1 可以成为赢家。
+```
+
+
+
+
+提示：
+
+* 1 <= 给定的数组长度 <= 20.
+* 数组里所有分数都为非负数且不会大于 10000000 。
+* 如果最终两个玩家的分数相等，那么玩家 1 仍为赢家。
+
+
+
+### 动态规划
+
+对于偶数个数字的数组，玩家1一定获胜。因为如果玩家1选择拿法A，玩家2选择拿法B，玩家1输了。则玩家1换一种拿法选择拿法B，因为玩家1是先手，所以玩家1一定可以获胜。
+
+对于奇数个数字的数组，利用动态规划（dynamic programming）计算。 首先证明最优子结构性质。对于数组`[1..n]`中的子数组`[i..j]`，假设玩家1在子数组`[i..j]`中的拿法是最优的，即拿的分数比玩家2多出最多。假设玩家1拿了`i`，则`[i+1..j]`中玩家1拿的方法也一定是最优的。利用反证法证明：如果玩家1在`[i+1..j]`中有更优的拿法，即玩家1在`[i+1...j]`可以拿到更多的分数，则玩家在`[i..j]`中拿到的分数就会比假设的最优拿法拿到的分数更多，显然矛盾。如果玩家1拿了j，同理可证矛盾。 所以当前问题的最优解包含的子问题的解一定也是子问题的最优解。
+
+对于只有一个数字的子数组,即`i=j，dp[i][i] = num[i]`，因为玩家1先手拿了这一个分数，玩家2就没得拿了，所以是最优拿法。 对于两个数字的子数组,即`j-i=1，dp[i][j]=abs(num[i]-num[j])`,玩家1先手拿两个数中大的一个，所以玩家1一定比玩家2多两个数字差的绝对值，为最优拿法。 对于`j-i>1`的子数组，如果玩家1先手拿了`i`，则玩家1手里有`num[i]`分，则玩家2一定会按照`[i+1..j]`这个子数组中的最优拿法去拿，于是玩家2此时手里相当于有`dp[i+1][j]`分，于是玩家1比玩家2多`num[i]-dp[i+1][j]`分。如果玩家1先手拿了`j`，则玩家1手里有`num[j]`分，则玩家2一定会按照`[i..j-1]`这个子数组中的最优拿法去拿，于是玩家2此时手里相当于有`dp[i][j-1]`分，于是玩家1比玩家2多`num[j]-dp[i][j-1]`分。数组的填充方向是从下往上，从左到右，最后填充的是`dp[1][n]`。
+
+```java
+class Solution {
+    int player1;
+    int player2;
+    boolean flag;
+    public boolean PredictTheWinner(int[] nums) {
+        if(nums.length == 1)    return true;
+        if(nums.length % 2 == 0)    return true;
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+      	//先填充对角线
+        for(int i = 0; i < n; ++i){
+            dp[i][i] = nums[i];
+        }
+     //从对角线开始迭代，从下往上，因为最小的子结构为i=j，最终的结果是[0,n]，所以dp的结果是dp[0][n-1]
+        for(int i = n - 1; i >= 0; --i){
+            for(int j = i + 1 ; j < n; ++j){
+              	//记录得分差，若当前玩家选择了i，那么下一个玩家肯定会选择[i+1,j]的最优拿法
+                dp[i][j] = Math.max(nums[i] - dp[i+1][j], nums[j] - dp[i][j-1]);
+            }
+        }
+        return dp[0][n-1] >= 0;
+
+    }
+
+    
+}
+```
+
+
+
+
+
+
+
+
+
 <span id="jump491"></span>
 
 ## 491.递增子序列
@@ -4236,6 +4331,117 @@ class Solution {
     }
 }
 ```
+
+
+
+<span id="jump841"></span>
+
+## 841.钥匙和房间
+
+有` N `个房间，开始时你位于 0 号房间。每个房间有不同的号码：`0，1，2，...，N-1`，并且房间里可能有一些钥匙能使你进入下一个房间。
+
+在形式上，对于每个房间 i 都有一个钥匙列表 rooms[i]，每个钥匙 `rooms[i][j] `由 `[0,1，...，N-1] `中的一个整数表示，其中` N = rooms.length`。 钥匙` rooms[i][j] = v `可以打开编号为` v `的房间。
+
+最初，除 0 号房间外的其余所有房间都被锁住。
+
+你可以自由地在房间之间来回走动。
+
+如果能进入每个房间返回 true，否则返回 false。
+
+示例 1：
+
+```java
+输入: [[1],[2],[3],[]]
+输出: true
+解释:  
+我们从 0 号房间开始，拿到钥匙 1。
+之后我们去 1 号房间，拿到钥匙 2。
+然后我们去 2 号房间，拿到钥匙 3。
+最后我们去了 3 号房间。
+由于我们能够进入每个房间，我们返回 true。
+```
+
+
+
+
+示例 2：
+
+```java
+输入：[[1,3],[3,0,1],[2],[0]]
+输出：false
+解释：我们不能进入 2 号房间。
+```
+
+
+
+
+提示：
+
+* 1 <= rooms.length <= 1000
+* 0 <= rooms[i].length <= 1000
+* 所有房间中的钥匙数量总计不超过 3000。
+
+
+
+很常规的深搜题，最近回溯做多了，导致每次递归回来都要把已访问的标记取消掉，然而这题仅仅只是一题遍历题而已，只要把所有点访问一遍就可以返回了。广搜也行。
+
+```java
+	class Solution {
+    Set<Integer> visited;
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        if(rooms.size() < 2)    return true;
+        visited = new HashSet<>();
+        visited.add(0);
+        dfs(rooms,0);
+        return visited.size() == rooms.size();
+    }
+
+    void dfs(List<List<Integer>> rooms, int index){
+        if(visited.size() == rooms.size())
+            return;
+
+        List<Integer> nbrs = rooms.get(index);
+        for(int i = 0; i < nbrs.size(); ++i){
+            int nbr = nbrs.get(i);
+            if(!visited.contains(nbr)){
+                visited.add(nbr);
+                dfs(rooms,nbr);
+            }
+        }
+    }
+```
+
+### 空间换时间
+
+```java
+class Solution {
+    boolean[] visited;
+    int cnt;
+    public boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        if(rooms.size() < 2)    return true;
+        visited = new boolean[rooms.size()];
+        cnt = 0;
+        dfs(rooms,0);
+        return cnt == rooms.size();
+    }
+
+    void dfs(List<List<Integer>> rooms, int index){
+        visited[index] = true;
+        cnt++;
+        List<Integer> nbrs = rooms.get(index);
+        for(int i = 0; i < nbrs.size(); ++i){
+            int nbr = nbrs.get(i);
+            if(!visited[nbr]){
+                dfs(rooms,nbr);
+            }
+        }  
+    }
+}
+```
+
+
+
+有时候不能理解leetcode的难度分类标准，有些简单题都需要费很多时间，像这种模版题却是中等题。
 
 
 

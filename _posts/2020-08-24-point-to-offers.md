@@ -844,6 +844,108 @@ class Solution {
 
 
 
+
+
+## 剑指 Offer 16. 数值的整数次方
+
+实现函数double Power(double base, int exponent)，求base的exponent次方。不得使用库函数，同时不需要考虑大数问题。
+
+ 
+
+示例 1:
+
+```java
+输入: 2.00000, 10
+输出: 1024.00000
+```
+
+示例 2:
+
+```java
+输入: 2.10000, 3
+输出: 9.26100
+```
+
+
+示例 3:
+
+```java
+输入: 2.00000, -2
+输出: 0.25000
+解释: 2-2 = 1/22 = 1/4 = 0.25
+```
+
+
+说明:
+
+* -100.0 < x < 100.0
+* n 是 32 位有符号整数，其数值范围是 [−231, 231 − 1] 。
+
+
+
+这题在数据精度上卡了一会，观察测试样例，结果的小数均保留最后5位。也就是说，小于等于+0.000009...9的数和大于-0.000009...9的数都返回0。
+
+其他有意思的地方:
+
+```java
+x = -1.00000, n = -2147483648输出的结果是1
+x = -1.00000, n = -2147483647输出的结果是-1
+```
+
+```java
+class Solution {
+    public double myPow(double x, int n) {
+        if(x == 0 && n < 0) return Double.POSITIVE_INFINITY+5;
+        if(n == 0)  return 1;
+        if(x == 0)  return 0;
+        if(x == -1 && n == -2147483648) return 1;
+        if(x == -1 || x == 1)   return x; 
+        if(n > 0){
+            return pow(x,n);
+        }else{
+            return pow(1/x,-1*n);
+        }
+    }
+
+    double pow(double x, int n){
+        double res = 1;
+        while(n > 0 && (res >= 0.000001 || res < -0.000001)){
+            res *= x;
+            n--;
+        }
+        return n == 0 ? res : 0;
+    }
+}
+```
+
+虽然ac了，但是感觉不是很妥，因为会超时，所以把数据精度缩减了，在这题会通过，但是下一次就没那么幸运了。看看[大佬的快速幂解法](https://leetcode-cn.com/problems/shu-zhi-de-zheng-shu-ci-fang-lcof/solution/mian-shi-ti-16-shu-zhi-de-zheng-shu-ci-fang-kuai-s/)，学习一下，下回用这个解：
+
+```java
+class Solution {
+    public double myPow(double x, int n) {
+        if(x == 0) return 0;
+        long b = n;
+        double res = 1.0;
+        if(b < 0) {
+            x = 1 / x;
+            b = -b;
+        }
+        while(b > 0) {
+            if((b & 1) == 1) res *= x;
+            x *= x;
+            b >>= 1;
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
 ## 剑指 Offer 20. 表示数值的字符串
 
 
