@@ -944,6 +944,92 @@ class Solution {
 
 
 
+## 剑指 Offer 17. 打印从1到最大的n位数
+
+输入数字 n，按顺序打印出从 1 到最大的 n 位十进制数。比如输入 3，则打印出 1、2、3 一直到最大的 3 位数 999。
+
+示例 1:
+
+```java
+输入: n = 1
+输出: [1,2,3,4,5,6,7,8,9]
+```
+
+说明：
+
+```java
+用返回一个整数列表来代替打印
+n 为正整数
+```
+
+按题目要求很简单：
+
+```java
+class Solution {
+    public int[] printNumbers(int n) {
+        int len = 0;
+      	//int len = (int)Math.pow(10,n)-1;
+        for(int i = 0; i < n; ++i){
+            len = len * 10 + 9;
+        }
+        int[] res = new int[len];
+        for(int i = 0; i < len; ++i){
+            res[i] = i+1;
+        }
+        return res;
+    }
+}
+```
+
+想当然就会像上面那样解，而且这解法还通过了。但是这种解法没意义，要考虑到n的数字可能很大，那么你就可能要循环填充上千万次。
+
+### 大数解法
+
+观察发现，目标数组其实是n个0～9的全排列，去除0以及前导0就是我们要求的答案。所以我们可以递归排列每一位的数字。
+
+```java
+char[] nums = {'0','1','2','3','4','5','6','7','8','9'};
+    char[] x;
+    int[] res;
+    int n,nine,start,count;
+    public int[] printNumbers(int n) {
+        this.n = n;
+        res = new int[(int)Math.pow(10,n)-1];
+        x = new char[n];
+        //结果数字的个数
+        count = 0;
+        //维护一个指针，指向结果字符串的有效的起始位置，有前导0的位置为无效
+        start = n-1;
+        //表示当前字符串中有几个9，若有i个9，有效位置start就为倒数第i个
+        nine = 0;
+        dfs(0);
+        return res;
+    }
+
+    void dfs( int i){
+        if(i > n-1){
+            String s = String.valueOf(x).substring(start);
+            if(s.equals("0"))   return;
+            res[count++] = Integer.parseInt(s);
+            //若n-nine == start，说明进入此次递归前nine已经加1，此次添加的是9
+            if(n - nine == start) start--;
+            return;
+        }
+
+        for(char num : nums){
+            if(num == '9')
+                nine++;
+            x[i] = num;
+            dfs(i+1);
+        }
+        nine--;
+    }
+```
+
+
+
+
+
 
 
 ## 剑指 Offer 20. 表示数值的字符串
@@ -3054,4 +3140,180 @@ class Solution {
 ```
 
 
+
+## 剑指 Offer 67. 把字符串转换成整数
+
+写一个函数 StrToInt，实现把字符串转换成整数这个功能。不能使用 atoi 或者其他类似的库函数。
+
+ 
+
+首先，该函数会根据需要丢弃无用的开头空格字符，直到寻找到第一个非空格的字符为止。
+
+当我们寻找到的第一个非空字符为正或者负号时，则将该符号与之后面尽可能多的连续数字组合起来，作为该整数的正负号；假如第一个非空字符是数字，则直接将其与之后连续的数字字符组合起来，形成整数。
+
+该字符串除了有效的整数部分之后也可能会存在多余的字符，这些字符可以被忽略，它们对于函数不应该造成影响。
+
+注意：假如该字符串中的第一个非空格字符不是一个有效整数字符、字符串为空或字符串仅包含空白字符时，则你的函数不需要进行转换。
+
+在任何情况下，若函数不能进行有效的转换时，请返回 0。
+
+说明：
+
+假设我们的环境只能存储 32 位大小的有符号整数，那么其数值范围为 [−231,  231 − 1]。如果数值超过这个范围，请返回  INT_MAX (231 − 1) 或 INT_MIN (−231) 。
+
+示例 1:
+
+```java
+输入: "42"
+输出: 42
+```
+
+
+示例 2:
+
+```java
+输入: "   -42"
+输出: -42
+解释: 第一个非空白字符为 '-', 它是一个负号。
+     我们尽可能将负号与后面所有连续出现的数字组合起来，最后得到 -42 。
+```
+
+
+
+
+示例 3:
+
+```java
+输入: "4193 with words"
+输出: 4193
+解释: 转换截止于数字 '3' ，因为它的下一个字符不为数字。
+```
+
+
+
+
+示例 4:
+
+```java
+输入: "words and 987"
+输出: 0
+解释: 第一个非空字符是 'w', 但它不是数字或正、负号。
+     因此无法执行有效的转换。
+```
+
+
+示例 5:
+
+```java
+输入: "-91283472332"
+输出: -2147483648
+解释: 数字 "-91283472332" 超过 32 位有符号整数范围。 
+     因此返回 INT_MIN (−231) 。
+```
+
+```java
+class Solution {
+    public int strToInt(String str) {
+        str = str.trim();
+        int len = str.length();
+        if(len == 0)    return 0;
+        char firstc = ' ';
+        int index = 0;
+        //取得第一个非空格字符
+        for(int i = 0; i < len; ++i){
+            if(str.charAt(i) != ' '){
+                firstc = str.charAt(i);
+                index = i;
+                break;
+            }
+        }
+        //若全为空 or 第一个非空字符不是正负号或者数字
+        if((firstc != '-' && firstc != '+' && (firstc < '0' || firstc > '9'))){
+            return 0;
+        }
+
+        StringBuffer digit = new StringBuffer();
+        //第一个字符为正负号
+        if(firstc == '-' || firstc == '+'){
+            if(index == len-1)  return 0;
+            //若下一个字符不是数字
+            if(str.charAt(index + 1) < '0' || str.charAt(index + 1) > '9')
+                return 0;
+            //尽可能的获取连续数字
+            for(int i = index+1; i < len; ++i){
+                char c = str.charAt(i);
+                if(c < '0' || c > '9'){
+                    break;
+                }
+                digit.append(c);
+            }
+            //判断是否溢出，然后根据正负号返回正负边界
+            if(compare(digit.toString(),"2147483647")<=0){
+                return Integer.parseInt(digit.toString()) * (firstc == '-' ? -1 : 1);
+            }else{
+                return firstc == '-' ? -2147483648 : 2147483647;
+            }
+        }else{
+            //第一个字符是数字
+            for(int i = index; i < len; ++i){
+                char c = str.charAt(i);
+                if(c < '0' || c > '9'){
+                    break;
+                }
+                digit.append(c);
+      
+            }
+            return compare(digit.toString(),"2147483647")<=0 ? Integer.parseInt(digit.toString()) : 2147483647;
+        }
+    }
+
+    int compare(String s1, String s2){
+        //去除前导0
+        for(int i = 0; i < s1.length(); ++i){
+            if(s1.charAt(i) =='0'){
+                s1 = s1.substring(i+1,s1.length());
+            }else {
+                break;
+            }
+        }
+        
+        //比较两个字符的算术大小
+        if(s1.equals(s2))   return 0;
+        if(s1.length() != s2.length())
+            return s1.length() > s2.length() ? 1 : -1;
+        for(int i = 0; i < s1.length(); ++i){
+            if(s1.charAt(i) > s2.charAt(i)){
+                return 1;
+            }else if(s1.charAt(i) < s2.charAt(i)){
+                return -1;
+            }
+        }
+        return 0;
+    }
+}
+```
+
+膜拜大佬的代码：
+
+```java
+public int strToInt(String str) {
+        char[] c = str.trim().toCharArray();
+        if(c.length == 0) return 0;
+  			//将边界设置为214748364，这样是为了下面比较大小的时候，不会超出int范围
+        int res = 0, bndry = Integer.MAX_VALUE / 10;
+        int i = 1, sign = 1;
+        if(c[0] == '-') sign = -1;
+        else if(c[0] != '+') i = 0;
+        for(int j = i; j < c.length; j++) {
+            if(c[j] < '0' || c[j] > '9') break;
+          	//判断是否溢出，res == bndry且c[j]>'7'时，表明本次拼接后为2147483648或2147483649越界
+            if(res > bndry || res == bndry && c[j] > '7') return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            res = res * 10 + (c[j] - '0');
+        }
+        return sign * res;
+    }
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/solution/mian-shi-ti-67-ba-zi-fu-chuan-zhuan-huan-cheng-z-4/
+```
 
