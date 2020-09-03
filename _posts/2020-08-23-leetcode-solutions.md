@@ -9,8 +9,6 @@ math: true
 image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 ---
 
-
-
 ## 目录
 
 [5.最长回文子串](#jump5)
@@ -20,6 +18,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 [17.电话号码的字母组合](#jump17)
 
 [43.字符串相乘](#jump43)
+
+[51.N 皇后](#jump51)
 
 [63.含障碍物网格中的不同路径](#jump63)
 
@@ -373,6 +373,145 @@ class Solution {
     }
 }
 ```
+
+
+
+<span id = "jump51"></span>
+
+## 51.N 皇后
+
+*n* 皇后问题研究的是如何将 *n* 个皇后放置在 *n*×*n* 的棋盘上，并且使皇后彼此之间不能相互攻击。
+
+给定一个整数 n，返回所有不同的 n 皇后问题的解决方案。
+
+每一种解法包含一个明确的 n 皇后问题的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+
+示例：
+
+```java
+输入：4
+输出：[
+ [".Q..",  // 解法 1
+  "...Q",
+  "Q...",
+  "..Q."],
+
+ ["..Q.",  // 解法 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+解释: 4 皇后问题存在两个不同的解法。
+
+```
+
+
+提示：
+
+* 皇后彼此不能相互攻击，也就是说：任何两个皇后都不能处于同一条横行、纵行或斜线上。
+
+
+
+n*n的棋盘，放置n个皇后，且每个皇后不能处于同一条横行、纵行或斜线上，说明每一行都有一个皇后。所以我们只要遍历每一行，在合适的位置放置一个皇后即可。合适的位置判断如下：
+
+```markdown
+不能在同一列。用一个集合存放已访问的列。
+不能在同一正对角线。同一个正对角线上，i-j的值是相等的，因此用一个集合放置已访问过的i-j的值。
+不能在同一负对角线。同一个负对角线上，i+j的值是相等的，因此用一个集合放置已访问过的i+j的值。
+```
+
+若每个皇后都顺利放置完毕，就记录此时棋盘的状态。
+
+```java
+class Solution {
+  List<List<String>> res;
+  int n;
+  int cnt;
+  //标识某一列已经有皇后了
+  Set<Integer> col;
+  //标识某一正对角线已经有皇后了，这条线上，i-j的值是唯一的
+  Set<Integer> pos_dia;
+  //标识某一负对角线已经有皇后了，这条线上，i+j的值是唯一的
+  Set<Integer> neg_dia;
+  public List<List<String>> solveNQueens(int n) {
+    res = new ArrayList<>();
+    if(n == 0){
+      res.add(new ArrayList<>());
+      return res;
+    }
+    col = new HashSet<>();
+    pos_dia = new HashSet<>();
+    neg_dia = new HashSet<>();
+    char[][] board = new char[n][n];
+    cnt = n;
+    this.n = n;
+    for(int i = 0; i < n; ++i){
+      for(int j = 0; j < n; ++j){
+        board[i][j] = '.';
+      }
+    }
+    //按行填充皇后，n个皇后一定分布在不同行，而且每行都会有一个皇后
+    backTrack(board, 0);
+    return res;
+  }
+
+  void backTrack(char[][] board,int row){
+    //找到了一种答案
+    if(cnt == 0){
+      //将棋盘状态记录到列表中
+      List<String> list = new ArrayList<>();
+      for(int i = 0; i < n; ++i){
+        StringBuffer sb = new StringBuffer();
+        for(int j = 0; j < n; ++j){
+          sb.append(board[i][j]);
+        }
+        list.add(sb.toString());
+      }
+      res.add(list);
+    }
+    //在列上填充
+    for(int i = 0; i < n; ++i){
+      if(!col.contains(i)){
+        //若此位置所在的两条对角线没有被访问过
+        if(!pos_dia.contains(i-row) && !neg_dia.contains(i+row)) {
+          board[row][i] = 'Q';
+          col.add(i);
+          pos_dia.add(i - row);
+          neg_dia.add(i + row);
+          cnt--;
+          backTrack(board, row + 1);
+          //回溯
+          cnt++;
+          board[row][i] = '.';
+          col.remove(i);
+          pos_dia.remove(i - row);
+          neg_dia.remove(i + row);
+        }
+      }
+    }
+  }
+
+}
+```
+
+* 时间复杂度为O(n!)，n为皇后的数量。
+* 空间复杂度为O(n)，n为皇后的数量。空间复杂度主要取决于递归调用层数、记录每行放置的皇后的列下标的数组以及三个集合，递归调用层数不会超过 N，数组的长度为 N，每个集合的元素个数都不会超过 N。
+
+
+
+回顾这道题，拿到这道题的时候，其实我们很容易看出需要使用枚举的方法来求解这个问题，当我们不知道用什么办法来枚举是最优的时候，可以从下面三个方向考虑：
+
+* 子集枚举：可以把问题转化成「从n^2^个格子中选一个子集，使得子集中恰好有 n 个格子，且任意选出两个都不在同行、同列或者同对角线」，这里枚举的规模是 2^n^
+* 组合枚举：可以把问题转化成「从 n^2^个格子中选择 n 个，且任意选出两个都不在同行、同列或者同对角线」，这里的枚举规模是 n~n~^2^;
+* 排列枚举：因为这里每行只能放置一个皇后，而所有行中皇后的列号正好构成一个 1 到 n 的排列，所以我们可以把问题转化为一个排列枚举，规模是 n!。
+
+带入一些 nn 进这三种方法验证，就可以知道那种方法的枚举规模是最小的，这里我们发现第三种方法的枚举规模最小。这道题给出的两个方法其实和排列枚举的本质是类似的。
+
+
+
+
+
+
 
 <span id="jump63"></span>
 

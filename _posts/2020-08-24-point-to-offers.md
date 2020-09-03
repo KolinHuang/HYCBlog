@@ -2341,6 +2341,120 @@ class Solution {
 
 
 
+## 剑指 Offer 55 - II. 平衡二叉树
+
+输入一棵二叉树的根节点，判断该树是不是平衡二叉树。如果某二叉树中任意节点的左右子树的深度相差不超过1，那么它就是一棵平衡二叉树。
+
+ 
+
+示例 1:
+
+给定二叉树 [3,9,20,null,null,15,7]
+
+        3
+       / \
+      9  20
+        /  \
+       15   7
+      
+    返回 true 。
+
+示例 2:
+
+给定二叉树 [1,2,2,3,3,null,null,4,4]
+
+           1
+          / \
+         2   2
+        / \
+       3   3
+      / \
+     4   4
+     
+     返回 false 。
+
+限制：
+
+* 1 <= 树的结点个数 <= 10000
+
+
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    boolean flag;
+    public boolean isBalanced(TreeNode root) {
+        flag = true;
+        if(root == null)    return true;
+        traversal(root);
+        return flag;
+    }
+    //递归判断
+    void traversal(TreeNode root){
+        int left_depth = 0;
+        int right_depth = 0;
+        if(root.left != null){
+            left_depth = getDepth(root.left);
+        }
+        if(root.right != null){
+            right_depth = getDepth(root.right);
+        }
+        //左右子树深度差大于1
+        if(Math.abs(left_depth - right_depth) > 1){
+            flag = false;
+            return;
+        }
+        //再递归判断左右子树
+        if(root.left != null)   traversal(root.left);
+        if(root.right != null)   traversal(root.right);
+    }
+
+    //获得一个节点的深度
+    int getDepth(TreeNode root){
+        if(root == null)
+            return 0;
+        int res = 1;
+        res += Math.max(getDepth(root.left),getDepth(root.right));
+        return res;
+    }
+}
+```
+
+离谱，明明说了节点数大于1，结果测试样例还有`[]`的情况，这不是明摆着为难我胖虎吗？
+
+
+
+大佬的简洁代码：
+
+```java
+class Solution {
+    public boolean isBalanced(TreeNode root) {
+        if(root == null)    return true;
+        //这里又利用了&&的截断性质，当前面的条件不满足时，不会执行下一个条件。
+        return Math.abs(getDepth(root.left) - getDepth(root.right)) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+    }
+
+    //获得一个节点的深度
+    int getDepth(TreeNode root){
+        if(root == null)
+            return 0;
+        return Math.max(getDepth(root.left),getDepth(root.right))+1;
+
+    }
+}
+
+作者：jyd
+链接：https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/solution/mian-shi-ti-55-ii-ping-heng-er-cha-shu-cong-di-zhi/
+```
+
 
 
 
@@ -2854,6 +2968,88 @@ class MaxQueue {
     }
 }
 ```
+
+
+
+
+
+## 剑指 Offer 61. 扑克牌中的顺子
+
+从扑克牌中随机抽5张牌，判断是不是一个顺子，即这5张牌是不是连续的。2～10为数字本身，A为1，J为11，Q为12，K为13，而大、小王为 0 ，可以看成任意数字。A 不能视为 14。
+
+ 
+
+示例 1:
+
+```java
+输入: [1,2,3,4,5]
+输出: True
+```
+
+示例 2:
+
+```java
+输入: [0,0,1,2,5]
+输出: True
+```
+
+
+限制：
+
+* 数组长度为 5 
+* 数组的数取值为 [0, 13] .
+
+
+
+```java
+class Solution {
+    public boolean isStraight(int[] nums) {
+        Arrays.sort(nums);
+        //统计大小王的个数
+        int cnt = 0;
+        for(int i = 0; i < nums.length; ++i){
+            if(nums[i] == 0)
+                cnt++;
+            else
+                break;
+        }
+        //从数组最后端开始遍历
+        for(int i = nums.length-1; i > 0; --i){
+            if(nums[i-1] == 0)
+                continue;
+            //出现重复数字
+            if(nums[i] == nums[i-1])
+                return false;
+            //消耗大小王
+            cnt -= (nums[i] - nums[i-1] - 1);
+            //大小王不够用
+            if(cnt < 0)
+                return false;
+        }
+        return true;
+    }
+}
+```
+
+简单写法：
+
+```java
+class Solution {
+    public boolean isStraight(int[] nums) {
+        int joker = 0;
+        Arrays.sort(nums); // 数组排序
+        for(int i = 0; i < 4; i++) {
+            if(nums[i] == 0) joker++; // 统计大小王数量
+            else if(nums[i] == nums[i + 1]) return false; // 若有重复，提前返回 false
+        }
+        return nums[4] - nums[joker] < 5; // 最大牌 - 最小牌 < 5 则可构成顺子
+    }
+}
+```
+
+
+
+
 
 
 
