@@ -1323,6 +1323,95 @@ class Solution {
 
 
 
+
+
+
+
+## 剑指 Offer 28. 对称的二叉树
+
+请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+    		1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+
+
+
+但是下面这个 [1,2,2,null,3,null,3] 则不是镜像对称的:
+
+    		1
+       / \
+      2   2
+       \   \
+        3   3
+
+示例 1：
+
+```java
+输入：root = [1,2,2,3,4,4,3]
+输出：true
+```
+
+
+示例 2：
+
+```java
+输入：root = [1,2,2,null,3,null,3]
+输出：false
+```
+
+
+限制：
+
+* 0 <= 节点个数 <= 1000
+
+
+
+假设在某一层的两个对称点`root1,root2`有：
+
+```java
+root1.left与root2.right对称
+root1.right与root2.left对称
+```
+
+则说明这两个对称点的子节点也对称。我们只要遍历每一对对称点，判断上述情况即可。
+
+```java
+class Solution {
+  public boolean isSymmetric(TreeNode root) {
+    if(root == null)    return true;
+    return dfs(root,root);
+  }
+
+  boolean dfs(TreeNode root1, TreeNode root2){
+    //遍历到了叶节点
+    if(root1 == null && root2 == null){
+      return true;
+    }
+    //两个结点只有一个为空，则不对称
+    if(root1 == null || root2 == null){
+      return false;
+    }
+    //两个结点的值不相等，则不对称
+    if(root1.val != root2.val){
+      return false;
+    }
+    //递归判断
+    return dfs(root1.left,root2.right) && dfs(root1.right,root2.left);
+  }
+}
+```
+
+
+
+
+
+
+
 ## 剑指 Offer 29. 顺时针打印矩阵
 
 
@@ -2768,6 +2857,80 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+## 剑指 Offer 58 - II. 左旋转字符串
+
+字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+
+ 
+
+示例 1：
+
+```java
+输入: s = "abcdefg", k = 2
+输出: "cdefgab"
+```
+
+
+
+
+示例 2：
+
+```java
+输入: s = "lrloseumgh", k = 6
+输出: "umghlrlose"
+```
+
+
+
+三种写法：
+
+```java
+public String reverseLeftWords(String s, int n) {
+  if(n < 1 || n >= s.length())   return s;
+  return mySubString(s,n,s.length()) + mySubString(s,0,n);
+}
+//自己撸一个substring函数，空间占用降低了一点，时间占用高了一点
+String mySubString(String s, int start, int end){
+  if(start >= end)    return "";
+  StringBuffer sub = new StringBuffer();
+  for(int i = start; i < end; ++i){
+    sub.append(s.charAt(i));
+  }
+  return sub.toString();
+}
+```
+
+
+
+```java
+//用库函数，时间快多了，但是空间占用变高了
+public String reverseLeftWords(String s, int n) {
+  if(n < 1 || n >= s.length())   return s;
+  return s.subString(n,s.length()) + s.subString(0,n);
+}
+```
+
+
+
+```java
+//列表拼接
+public String reverseLeftWords(String s, int n) {
+  if(n < 1 || n >= s.length())   return s;
+  StringBuffer sb = new StringBuffer();
+  sb.append(s.substring(n,s.length()));
+  sb.append(s.substring(0,n));
+  return sb.toString();
+}
+```
+
+这题打个tag，没有发现考察点，二刷的时候需要注意。
+
+
 
 
 

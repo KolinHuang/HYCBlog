@@ -57,6 +57,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 [215.数组中的第K大元素](#jump215)
 
+[257.二叉树的所有路径](#jump257)
+
 [309.最佳买卖股票时机含冷冻期](#jump309)
 
 [332.重新安排行程](#jump332)
@@ -101,7 +103,7 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 ## 5.最长回文子串
 
-[点这里跳转](/posts/algorithm-manacher)
+[点这里跳转](HYCBlog/posts/algorithm-manacher)
 
 <span id="jump16"></span>
 
@@ -721,7 +723,7 @@ class Solution {
 
 
 
-![leetcode_恢复Ip地址](/Users/huangyucai/Documents/code/git_depositorys/github_KolinHuang/HYCBlog/assets/img/leetcode/leetcode_恢复Ip地址.png)
+![leetcode_恢复Ip地址](/HYCBlog/assets/img/leetcode/leetcode_恢复Ip地址.png)
 
 ```java
 package leetcode;
@@ -2354,6 +2356,73 @@ class Solution {
     }
 }
 ```
+
+
+
+<span id = "jump257"></span>
+
+## 257.二叉树的所有路径
+
+给定一个二叉树，返回所有从根节点到叶子节点的路径。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例:
+
+```java
+输入:
+   1
+ /   \
+2     3
+ \
+  5
+
+输出: ["1->2->5", "1->3"]
+解释: 所有根节点到叶子节点的路径为: 1->2->5, 1->3
+```
+
+
+
+### 回溯法
+
+```java
+class Solution {
+    StringBuffer path;
+    List<String> res;
+    public List<String> binaryTreePaths(TreeNode root) {
+        if(root == null)    return new ArrayList<>();
+        path = new StringBuffer();
+        res = new ArrayList<>();
+        getPath(root);
+        return res;
+    }
+
+    void getPath(TreeNode root){
+        //到达叶节点
+        if(root.left == null && root.right == null){
+            path.append(root.val);
+            res.add(path.toString());
+            //回溯
+            int len = String.valueOf(root.val).length();
+            path.delete(path.length()-len,path.length());
+            return;
+            
+        }
+        path.append(root.val);
+        path.append("->");
+        if(root.left != null)   getPath(root.left);
+        if(root.right != null)  getPath(root.right);
+        //回溯，这题比较奇葩，root.val长度是变化的，所以在删除字符的时候需要计算root.val的长度
+        int len = String.valueOf(root.val).length() + 2;
+        path.delete(path.length()-len,path.length());
+
+    }
+}
+```
+
+
+
+
 
 
 
