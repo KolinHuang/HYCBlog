@@ -1624,6 +1624,44 @@ class Solution {
 
 
 
+
+
+## 剑指 Offer 35. 复杂链表的复制[tag]
+
+请实现 copyRandomList 函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个 next 指针指向下一个节点，还有一个 random 指针指向链表中的任意节点或者 null。
+
+[题链接](https://leetcode-cn.com/problems/fu-za-lian-biao-de-fu-zhi-lcof/)
+
+用一个map存储每一对旧节点和新节点，用旧节点作为key，旧节点对应的新节点作为value。首次遍历新建所有新节点，第二次遍历为每个新节点添加指针关系。
+
+```java
+class Solution {
+    public Node copyRandomList(Node head) {
+        if(head == null)    return null;
+        Map<Node,Node> map = new HashMap<>();
+        Node ptr = head;
+        //先把所有新结点创建出来，与原节点一同放入map中
+        while(ptr != null){
+            map.put(ptr,new Node(ptr.val));
+            ptr = ptr.next;
+        }
+
+        //遍历每个节点，建立指针关系，因为原节点是map的key，所以就用原节点来遍历，遍历时，处理value即可
+        ptr = head;//指回头节点
+        while(ptr != null){
+            map.get(ptr).next = map.get(ptr.next);
+            map.get(ptr).random = map.get(ptr.random);
+            ptr = ptr.next;
+        }
+        return map.get(head);
+    }
+}
+```
+
+这题我没做出来，是看的题解。打个tag，后面继续做做。
+
+
+
 ## 剑指 Offer 38. 字符串的排列
 
 输入一个字符串，打印出该字符串中字符的所有排列。
