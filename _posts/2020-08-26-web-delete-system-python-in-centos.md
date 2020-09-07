@@ -1,6 +1,6 @@
 ---
 title: centOS误删系统自带python
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-26 21:14:00 +0800
 categories: [Blogging, web]
 tags: [web]

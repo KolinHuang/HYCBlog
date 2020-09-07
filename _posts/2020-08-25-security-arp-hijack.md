@@ -1,6 +1,6 @@
 ---
 title: 内网渗透：记一次局域网arp劫持测试
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-25 20:40:00 +0800
 categories: [Blogging, kali内网渗透]
 tags: [security]

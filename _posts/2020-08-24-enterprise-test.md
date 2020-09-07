@@ -1,6 +1,6 @@
 ---
 title: 2020秋招企业笔试题
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-24 21:10:00 +0800
 categories: [Blogging, 企业笔试]
 tags: [算法题解]

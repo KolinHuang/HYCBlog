@@ -1,6 +1,6 @@
 ---
 title: Leetcode题解
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-23 20:44:00 +0800
 categories: [Blogging, leetcode]
 tags: [算法题解]
@@ -21,6 +21,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 [51.N 皇后](#jump51)
 
+[60.第k个排列#](#jump60)
+
 [63.含障碍物网格中的不同路径](#jump63)
 
 [67.二进制求和](#jump67)
@@ -30,6 +32,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 [96. 不同的二叉搜索树](#jump96)
 
 [100. 相同的树](#jump100)
+
+[107.二叉树的层次遍历 II](#jump107)
 
 [108. 将有序数组转换为二叉搜索树](#jump108)
 
@@ -66,6 +70,8 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 [336.回文对](#jump336)
 
 [337.打家劫舍3](#jump337)
+
+[347.前K个高频元素](#jump347)
 
 [378.有序矩阵中第K小元素](#jump378)
 
@@ -511,6 +517,127 @@ class Solution {
 
 
 
+<span id = "jump60"></span>
+
+## 60. 第k个排列[#]
+
+给出集合 [1,2,3,…,n]，其所有元素共有 n! 种排列。
+
+按大小顺序列出所有排列情况，并一一标记，当 n = 3 时, 所有排列如下：
+
+```java
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+```
+
+
+给定 n 和 k，返回第 k 个排列。
+
+说明：
+
+* 给定 n 的范围是 [1, 9]。
+* 给定 k 的范围是[1,  n!]。
+
+示例 1:
+
+```java
+输入: n = 3, k = 3
+输出: "213"
+```
+
+
+示例 2:
+
+```java
+输入: n = 4, k = 9
+输出: "2314"
+```
+
+容易得知`[1,n]`中的每个元素为开头的序列有`n-1!`个。
+
+
+
+```markdown
+假设n = 4, k = 9，先排列第一个元素。
+1开头的排列有3! = 6种，
+2开头的排列有3! = 6种
+6< 9 < 12，所以第一个元素为2。
+所以可以得到映射关系为 x = 向下取整[(k-1) / (n-1)!] + 1。则所求元素为[1,n]中第x小的未使用元素
+接下来需要更新k
+因为第k个排列落在以元素2为开头的序列集合中，所以需要找到第k个排列在这个序列集合中的位置。
+故 k = ((k-1) % (n-1)!) + 1;
+
+至此,问题已经转换为 n = 3, k = 3，可排列集合为{1,3,4}的情况下，找到第k个排列。
+以此类推，当n == 0时，代表排列完成。
+
+现在没搞懂的是，为什么要用k-1，然后向下取整+1呢？直接向上取整反而不能通过，改天好好研究一下。打个tag吧
+
+知道啦！
+不妨设分子为 k，那么得到的公式可能是这样的：
+    ai =  ⌊k / (n-1)!⌋ + 1
+
+尝试使用以上公式计算 a1:
+    （1）当 k < (n-1)! 时，a1 = ⌊k / (n-1)!⌋ + 1 = 1，正确
+    （2）当 k = (n-1)! 时，a1 = ⌊k / (n-1)!⌋ + 1 = 2，错误
+
+而使用 ai =  ⌊(k-1) / (n-1)!⌋ + 1 却能正确处理这种情况
+```
+
+
+
+```java
+class Solution {
+  public String getPermutation(int n, int k) {
+    List<Integer> list = new ArrayList<>();
+    int m = n;
+    while(n > 0){
+      //第k次排列的开头元素为第x小的未使用元素
+      int x = (int)Math.floor((k-1)*1.0 / levelMul(n-1)) + 1;
+
+      int index = 0;
+      //找到第x小的未使用元素index
+      for(int i = 1; i <= m; ++i){
+        if (!list.contains(i)){
+          x--;
+        }
+        if(x <= 0){
+          index = i;
+          break;
+        }
+      }
+
+      list.add(index);
+      //缩小规模
+      k = ((k-1) % levelMul(n-1)) + 1;
+      n--;
+    }
+    StringBuffer res = new StringBuffer();
+    for(Integer i : list){
+      res.append(i);
+    }
+    return res.toString();
+  }
+
+  int levelMul(int n){
+    if(n > 0){
+      return n * levelMul(n-1);
+    }
+    return 1;
+  }
+}
+```
+
+拓展：
+
+[康托展开和逆康托展开](https://blog.csdn.net/wbin233/article/details/72998375)
+
+
+
+
 
 
 
@@ -723,7 +850,7 @@ class Solution {
 
 
 
-![leetcode_恢复Ip地址](/HYCBlog/assets/img/leetcode/leetcode_恢复Ip地址.png)
+![leetcode_恢复Ip地址](/Users/huangyucai/Documents/code/git_depositorys/github_KolinHuang/HYCBlog/assets/img/leetcode/leetcode_恢复Ip地址.png)
 
 ```java
 package leetcode;
@@ -981,6 +1108,77 @@ class Solution {
     }
 }
 ```
+
+
+
+<span id = "jump107"></span>
+
+## 107. 二叉树的层次遍历 II
+
+给定一个二叉树，返回其节点值自底向上的层次遍历。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）
+
+例如：
+给定二叉树 [3,9,20,null,null,15,7],
+
+    		3
+       / \
+      9  20
+        /  \
+       15   7
+
+
+返回其自底向上的层次遍历为：
+
+```java
+[
+  [15,7],
+  [9,20],
+  [3]
+]
+```
+
+
+
+还是利用队列，只是在遍历完一层后，将这一层的遍历结果添加在结果列表的最前面。
+
+想使用LinkedList的offer和poll方法，就要实现相应的Queue接口。同理，想使用push和pop方法就要实现Stack接口。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null){
+            //res.add(new ArrayList<>());
+            return res;
+        }    
+        Queue<TreeNode> queue = new LinkedList<>();
+      	//根节点入队
+        queue.offer(root);
+      	//层序遍历
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            List<Integer> list = new ArrayList<>();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+              	//子节点入队
+                if(tmp.left != null)
+                    queue.offer(tmp.left);
+                if(tmp.right != null)
+                    queue.offer(tmp.right);
+                list.add(tmp.val);
+            }
+            res.add(0,list);
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
 
 <span id="jump108"></span>
 
@@ -3108,6 +3306,147 @@ public int[] robInternal(TreeNode root) {
     return result;
 }
 
+```
+
+
+
+
+
+<span id="jump347"></span>
+
+## 347.前 K 个高频元素
+
+给定一个非空的整数数组，返回其中出现频率前 k 高的元素。
+
+ 
+
+示例 1:
+
+```java
+输入: nums = [1,1,1,2,2,3], k = 2
+输出: [1,2]
+```
+
+示例 2:
+
+```java
+输入: nums = [1], k = 1
+输出: [1]
+```
+
+
+提示：
+
+* 你可以假设给定的 k 总是合理的，且 1 ≤ k ≤ 数组中不相同的元素的个数。
+* 你的算法的时间复杂度必须优于 O(n log n) , n 是数组的大小。
+* 题目数据保证答案唯一，换句话说，数组中前 k 个高频元素的集合是唯一的。
+* 你可以按任意顺序返回答案。
+
+
+
+先统计所有数出现的次数，放到一个map里，再创建一个有序集合，将map中的key按value的大小降序放入，取出有序集合的前k个元素，即为答案。
+
+需要注意的是，定制TreeSet比较器的时候，当两个元素相等时，不能返回0，否则不会将相等的元素放入，要返回1，就默认后加入的元素放在了前面（因为是降序排序的，升序排序就会放在后面）。
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer,Integer> map = new HashMap<>();
+
+        //先统计所有数出现的次数，放到一个map里
+        for(int i = 0; i < nums.length; ++i){
+            map.put(nums[i].getOrDefault(nums[i],0)+1)
+        }
+        //再创建一个有序集合，定制比较器。
+        Set<Integer> ts = new TreeSet(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+              	//相等时返回1，其实返回-1也是可以的
+                if(map.get(o1) == map.get(o2)){
+                    return 1;
+                }
+                return map.get(o2) - map.get(o1);
+            }
+        });
+	      //将map中的key按value的大小降序放入
+        ts.addAll(map.keySet());
+        Iterator<Integer> iterator = ts.iterator();
+        int[] res = new int[k];
+        int n = 0;
+        //取出有序集合的前k个元素，即为答案
+        while(iterator.hasNext() && n < k){
+            res[n++] = iterator.next();
+        }
+        return res;
+    }
+}
+```
+
+也可以用一个数组来替代有序集合：
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer,Integer> map = new HashMap<>();
+
+        //先统计所有数出现的次数，放到一个map里
+        for(int i = 0; i < nums.length; ++i){
+            map.put(nums[i],map.getOrDefault(nums[i],0)+1);
+        }
+        int len = map.size();
+      	int[][] num = new int[len][2];
+      	int n = 0;
+      	for(int key : map.keySet()){
+          	num[n][0] = key;
+          	num[n++][1] = map.get(key);
+        }
+      	Arrays.sort(num,(a,b) -> b[1]-a[1]);
+	      
+        int[] res = new int[k];
+        for(int i = 0; i < k;++i){
+          res[i] = num[i][0];
+        }
+        return res;
+    }
+}
+```
+
+用map+堆：
+
+在小顶堆中存放目前为止堆元素出现次数为前k大的。如果小顶堆元素个数小于k，就直接插入，否则插入时判断出现次数是否大于堆顶元素，大于就删除堆顶元素，然后执行插入。
+
+```java
+class Solution {
+    public int[] topKFrequent(int[] nums, int k) {
+        Map<Integer, Integer> occurrences = new HashMap<Integer, Integer>();
+        for (int num : nums) {
+            occurrences.put(num, occurrences.getOrDefault(num, 0) + 1);
+        }
+
+        // int[] 的第一个元素代表数组的值，第二个元素代表了该值出现的次数
+        PriorityQueue<int[]> queue = new PriorityQueue<int[]>(new Comparator<int[]>() {
+            public int compare(int[] m, int[] n) {
+                return m[1] - n[1];
+            }
+        });
+        for (Map.Entry<Integer, Integer> entry : occurrences.entrySet()) {
+            int num = entry.getKey(), count = entry.getValue();
+            if (queue.size() == k) {
+                if (queue.peek()[1] < count) {
+                    queue.poll();
+                    queue.offer(new int[]{num, count});
+                }
+            } else {
+                queue.offer(new int[]{num, count});
+            }
+        }
+        int[] ret = new int[k];
+        for (int i = 0; i < k; ++i) {
+            ret[i] = queue.poll()[0];
+        }
+        return ret;
+    }
+}
 ```
 
 

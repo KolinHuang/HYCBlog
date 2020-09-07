@@ -1,6 +1,6 @@
 ---
 title: URL包含中文，请求资源404
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-24 15:40:00 +0800
 categories: [Blogging, web]
 tags: [web]

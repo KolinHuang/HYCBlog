@@ -1,6 +1,6 @@
 ---
 title: 剑指offer题解
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-24 15:00:00 +0800
 categories: [Blogging, 剑指offer]
 tags: [算法题解]
@@ -1619,6 +1619,117 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+## 剑指 Offer 38. 字符串的排列
+
+输入一个字符串，打印出该字符串中字符的所有排列。
+
+你可以以任意顺序返回这个字符串数组，但里面不能有重复元素。
+
+示例:
+
+```java
+输入：s = "abc"
+输出：["abc","acb","bac","bca","cab","cba"]
+```
+
+限制：
+
+* 1 <= s 的长度 <= 8
+
+
+
+### 回溯遍历法
+
+字符串中的所有字符进行全排列，但是不允许有重复的字符串出现。那么就先用字符的下标进行全排列，然后再放入集合中去重。时间复杂度和空间复杂度感人。
+
+```java
+class Solution {
+    List<Integer> indices;
+    Set<String> res;
+    char[] c;
+    StringBuffer sb;
+    public String[] permutation(String s) {
+        c = s.toCharArray();
+        indices = new ArrayList<>();
+        res = new HashSet<>();
+        sb = new StringBuffer();
+        //递归
+        backTrack();
+
+        return res.toArray(new String[0]);
+
+    }
+
+    void backTrack(){
+        if(indices.size() == c.length){
+            if(!res.contains(sb.toString()))
+                res.add(sb.toString());
+            return;
+        }
+        for(int i = 0; i < c.length; ++i){
+            if(!indices.contains(i)){
+                indices.add(i);
+                sb.append(c[i]);
+                backTrack();
+              	//回溯
+                sb.deleteCharAt(indices.size()-1);
+                indices.remove(indices.size()-1);
+            }
+        }
+    }
+}
+```
+
+### 回溯交换法
+
+固定第i位，将第i位以后的元素都与第i位元素交换一次位置（但是每种元素只能在第i位出现1次），每次交换后都继续去固定第i+1位，直到i == 字符串长度，就记录一次结果。回溯时，将交换恢复。
+
+```java
+class Solution {
+    
+    List<String> res;
+    char[] c;
+    public String[] permutation(String s) {
+        c = s.toCharArray();
+        res = new ArrayList<>();
+        //递归
+        backTrack(0);
+        return res.toArray(new String[0]);
+    }
+
+  	//固定第x位
+    void backTrack(int x){
+        if(x == c.length){
+            res.add(String.valueOf(c));
+            return;
+        }
+        Set<Character> set = new HashSet<>();
+      	//将x后的所有元素都交换至x位一次
+        for(int i = x; i < c.length; ++i){
+          	//但是每种元素只能在一个位置出现1次
+            if(!set.contains(c[i])){
+                set.add(c[i]);
+                swap(i,x);
+                backTrack(x+1);
+              	//回溯
+                swap(i,x);
+            }
+        }
+    }
+    void swap(int i, int x){
+        char tmp = c[i];
+        c[i] = c[x];
+        c[x] = tmp;
+    }
+}
+```
+
+
 
 
 

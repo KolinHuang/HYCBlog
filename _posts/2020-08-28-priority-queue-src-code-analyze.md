@@ -1,6 +1,6 @@
 ---
 title: 从算法到源码：PriorityQueue源码学习
-author: Kolin Huang
+author: Kol Huang
 date: 2020-08-28 21:03:00 +0800
 categories: [Blogging, 容器]
 tags: [Java源码学习]
