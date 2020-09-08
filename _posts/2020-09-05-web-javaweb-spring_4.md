@@ -10,8 +10,6 @@ math: true
 
 
 
-# 使用spring的IOC降低程序耦合
-
 
 
 IoC把创建对象的权利交给框架。它包括依赖注入（Dependency Injection）和依赖查找（Dependency Lookup）。

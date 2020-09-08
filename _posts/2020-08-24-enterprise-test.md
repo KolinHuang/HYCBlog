@@ -7,6 +7,7 @@ tags: [算法题解]
 comments: true
 math: true
 image: /HYCBlog/assets/img/leetcode/ptoffer_cover.jpg
+pin: true
 ---
 
 

@@ -7,6 +7,7 @@ tags: [算法题解]
 comments: true
 math: true
 image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
+pin: true
 ---
 
 ## 目录
@@ -21,11 +22,13 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 [51.N 皇后](#jump51)
 
-[60.第k个排列#](#jump60)
+[60.第k个排列[tag]](#jump60)
 
 [63.含障碍物网格中的不同路径](#jump63)
 
 [67.二进制求和](#jump67)
+
+[77.组合[tag:字典序]](#jump77)
 
 [93. 恢复IP地址](#jump93)
 
@@ -519,7 +522,7 @@ class Solution {
 
 <span id = "jump60"></span>
 
-## 60. 第k个排列[#]
+## 60. 第k个排列[tag]
 
 给出集合 [1,2,3,…,n]，其所有元素共有 n! 种排列。
 
@@ -832,6 +835,99 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump77"></span>
+
+## 77.组合[tag:字典序]
+
+给定两个整数 n 和 k，返回 1 ... n 中所有可能的 k 个数的组合。
+
+示例:
+
+```java
+输入: n = 4, k = 2
+输出:
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+```
+
+
+
+### 回溯法
+
+先固定第i位，然后将i+1~n位的数都与其交换位置，这里不是数组，所以直接+1。
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    int[] x;
+    int n;
+    int k;
+    int cnt;
+    public List<List<Integer>> combine(int n, int k) {
+        res = new ArrayList<>();
+        if(k > n || n <= 0  || k < 0){
+            return res;
+        }
+        this.n = n;
+        this.k = k;
+        x = new int[k];
+        int cnt = 0;
+        if(k == 0){
+            List<Integer> list = new ArrayList<>();
+            res.add(list);
+            return res;
+        }
+        backTrack(1);
+        return res;
+    }
+
+    //先固定第i位，然后将i+1~n位的数都与其交换位置，这里不是数组，所以直接+1
+    void backTrack(int cur){
+        if(cnt == k){
+            List<Integer> tmp = new ArrayList<>();
+            for(int i = 0; i < cnt; ++i){
+                tmp.add(x[i]);
+            }
+            res.add(tmp);
+            return;
+        }
+        for(int i = cur; i<=n; ++i){
+            x[cnt++] = i;
+            backTrack(i+1);
+            x[--cnt] = 0;
+        }
+    }
+}
+```
+
+在记录结果的时候，以下代码为什么会更慢呢？
+
+```java
+List<Integer> tmp = new ArrayList<>();
+Collections.addAll(tmp,x);
+res.add(tmp);
+```
+
+按理来说，库函数的执行效率会比我自己实现的逐个添加会高一些的。但是这里却慢了许多。
+
+[字典序解法](https://leetcode-cn.com/problems/combinations/solution/zu-he-by-leetcode-solution/)
+
+字典序出现好多次了，还是没搞懂，下回得好好弄弄。
+
+
+
+
 
 <span id="jump93"></span>
 
