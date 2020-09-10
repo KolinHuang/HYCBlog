@@ -54,15 +54,15 @@ baseurl: '/HYCBlog'
 timezone: Asia/Shanghai
 
 google_analytics:
-  id: ''          # Fill with your Google Analytics ID
+  id: 'UA-176388509-1'          # Fill with your Google Analytics ID
   pv:
     # The Google Analytics pageviews switch.
     # DO NOT enable it unless you know how to deploy the Google Analytics superProxy.
-    enabled: false
+    enabled: true
     # the next options only valid when `google_analytics.pv` is enabled.
     proxy_url: ''
     proxy_endpoint: ''
-    cache: false  # pv data local cache, good for the users from GFW area.
+    cache: true  # pv data local cache, good for the users from GFW area.
 
 disqus:
   comments: false  # boolean type, the global switch for posts comments.
