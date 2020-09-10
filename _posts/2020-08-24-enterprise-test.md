@@ -628,7 +628,7 @@ class Solution {
     private static final Map<Character,Character> map = new HashMap<Character,Character>()\{\{      put('{','}'); put('[',']'); put('(',')'); put('?','?');\}\};
     public boolean isValid(String s) {
         if(s.length() > 0 && !map.containsKey(s.charAt(0))) return false;
-        LinkedList<Character> stack = new LinkedList<Character>() {{ add('?'); }};
+        LinkedList<Character> stack = new LinkedList<Character>() {{ add('?')\; }};
         for(Character c : s.toCharArray()){
             if(map.containsKey(c)) stack.addLast(c);
             else if(map.get(stack.removeLast()) != c) return false;
@@ -1560,5 +1560,193 @@ A和B各自选择一个[1,m]之间的整数，设A选择的是l，B选择的是r
 4 1 4 1 2
 
 输出 10
+```
+
+
+
+## 华为-2020-9-6
+
+### 数字找规律
+
+多个包含0～9的数字串列表，找出与制定数字串具有关联特征值的序列。
+
+特征值是指数字串中比给定临界值小的数字按顺序组成的数字串。如果给定数字串的特征值为当前数字串的特征值的子字符串，则认为当前字符串与给定字符串具有关联特征值。
+
+输入：
+
+```java
+单个数字串的位数不超过100，输入的数字序列长度N范围为（2<N<=20），倒数第一行数字串为给定的数字串，倒数第二行的数字是临界值A，范围为[1,9]
+```
+
+输出：
+
+```java
+输出匹配的数字串序列，输出顺序与输入的顺序保持一致。
+```
+
+
+
+示例
+
+输入：
+
+```java
+135682318
+23457
+14282123
+14231728
+3
+1724153
+```
+
+输出：
+
+```java
+135682318
+14231728
+```
+
+说明：
+
+```markdown
+在临界值3情况下，当前数字串[135682318,23457,14282123]的特征值分别为121，2，12212，1212.而给定数字串1724153的特征值为121.因此数字串135682318，14282123与给定的数字串具有关联特征值。
+```
+
+备注：
+
+* 若输入值超范围，则按输入顺序输出所有的数字串序列。
+
+
+
+## 华为-2020-9-9
+
+### 完美排列
+
+玩具店中将某些玩具排成一个从左到右固定的排列可以极大地增加玩具店的客流量，称之为完美排列。
+
+每个玩具由它的外观和价格两个值描述，外观和价格均为[0,5]范围内的整数，当外观值和价格值都对应上时，我们认为两个玩具是一样的。
+
+现记下玩具店内N个玩具排列的顺序，玩具店里的玩具总是从左到右排列成一个排列。现在需要找出这个排列中是否存在连续的区间是形成完美排列的。
+
+输入：
+
+```java
+第一行 K ，表示完美排列的长度。（1<=K<=100000）
+第二行为K个正整数Ai，表示完美排列从左到右的外观值。
+第二行为K个正整数Bi，表示完美排列从左到右的价格值。
+第四行为一个正整数N，标识玩具店现在排列的玩具数量。（1<= N <= 1000000）
+第五行为N个正整数Ci，表示玩具店从左到右排列的玩具的外观值。
+第五行为N个正整数Ci，表示玩具店从左到右排列的玩具的价格值。
+```
+
+输出：
+
+```java
+完美排列出现的第一个位置（从1开始计算），否则输出0.
+```
+
+输入：
+
+```java
+3
+1 2 3
+3 2 1
+6
+1 2 3 3 2 1
+3 2 1 1 2 3
+```
+
+输出：
+
+```java
+1
+前三个玩具形成完美排列。
+```
+
+
+
+
+
+### 最长水沟
+
+有一座岛屿，地势高低不平，下雨的时候，雨水按照从高到低的地势流动，形成一条条水沟。（地势相等的不能流动）
+
+给出一个整数矩阵代表岛屿，其数值表示高度，请找出下雨时可以形成的最长水沟，返回其长度。（每经过一个单元格长度加1）。
+
+对于每个单元格，可以往上，下，左，右四个方向移动。
+
+输入：
+
+```java
+每个测试用例第一行为两个整数n（n<=1000），m(m <= 1000)，标识整数矩阵的行数和列数。
+接下来是n行的数字，每行m个数用空格隔开。
+```
+
+输出：
+
+```java
+输出一个整数，表示最长的水沟。
+```
+
+示例：
+
+```java
+2 3
+8 4 1
+6 5 2
+```
+
+输出：
+
+```java
+5
+```
+
+深度优先搜索+动态规划。从每个点开始向四个方向搜索，结束条件：
+
+1. 由于地势而无法流动。
+2. 到达矩阵边界。
+
+在执行深度优先搜索的时候，发现有许多重复计算的过程，在每次遍历过程中，从每个点出发的最长流动路径是不变的，因此这是一个重叠子问题。所以用`dp[x][y]`表示从第`(x,y)`出发的最长流动路径，初始化为`0`，遍历过程中如果遇到`dp[x][y] >= dount`时，就没必要继续遍历了。
+
+```java
+public class Main{
+    static int max = 0;
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        int[][] island = new int[n][m];
+
+        for(int i = 0; i < n; ++i){
+            for(int j  =0; j < m; ++j){
+                island[i][j] = sc.nextInt();
+            }
+        }
+
+        int[][] dp = new int[n][m];
+        for(int i = 0; i < n; ++i){
+            for(int j = 0; j < m; ++j){
+                dfs(dp,island,i,j,island[i][j]+1,1);
+            }
+        }
+        System.out.println(max);
+    }
+
+    public static void dfs(int[][] dp, int[][] island, int x, int y, int pre_val, int count){
+        if(x < 0 || x >= island.length
+                || y < 0 || y >= island[0].length
+                || island[x][y] >= pre_val || dp[x][y] >= count)
+            return;
+        dp[x][y] = count;
+        max = Math.max(max,count);
+        int[][] direction = new int[][]{\{0,1},{0,-1},{1,0},{-1,0}\};
+        for(int k = 0; k < 4; ++k){
+            int next_x = x + direction[k][0];
+            int next_y = y + direction[k][1];
+            dfs(dp,island,next_x,next_y,island[x][y],count+1);
+        }
+    }
+}
 ```
 
