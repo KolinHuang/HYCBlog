@@ -2506,6 +2506,70 @@ class Solution {
 
 
 
+## 剑指 Offer 53 - I. 在排序数组中查找数字 I
+
+统计一个数字在排序数组中出现的次数。
+
+ 
+
+示例 1:
+
+```java
+输入: nums = [5,7,7,8,8,10], target = 8
+输出: 2
+```
+
+
+示例 2:
+
+```java
+输入: nums = [5,7,7,8,8,10], target = 6
+输出: 0
+```
+
+
+限制：
+
+* 0 <= 数组长度 <= 50000
+
+
+
+二分搜索，搜索某个重复序列target的左边界。或者找target-1的右边界也可以的。
+
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int start = binarySearch(nums, 0, nums.length-1, target);
+        if(start == -1) return 0;
+        int cnt = 1;
+        //从起始位置开始，统计重复出现的次数
+        for(int i = start; i < nums.length-1; ++i){
+            if(nums[i+1] != nums[i])    break;
+            cnt++;
+        }
+        return cnt;
+    }
+
+    //返回某个数字的起始位置,-1表示没找到这个数
+    int binarySearch(int[] nums, int low, int high,int target){
+        while(low <= high){
+            int mid = (high - low) / 2 + low;
+          	//当起始位置为数组最左边时
+            if(nums[mid] == target && mid == 0)
+                return mid;
+            if(nums[mid] == target && nums[mid-1] != nums[mid])
+                return mid;
+            if(nums[mid] < target){
+                low = mid+1;
+            }else{
+                high = mid-1;
+            }
+        }
+        return -1;
+    }
+}
+```
+
 
 
 ## 剑指 Offer 53 - II. 0～n-1中缺失的数字
