@@ -23,7 +23,7 @@ url: 'www.yucaihuang.com'
 author: 黄玉才                  # change to your full name
 
 avatar: /assets/img/daliy/avatar.jpg   # support internet resources
-
+# bkimage: /assets/img/bk.jpg
 github:
   username: KolinHuang             # change to your github username
 
