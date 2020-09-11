@@ -68,6 +68,8 @@ pin: true
 
 [215.数组中的第K大元素](#jump215)
 
+[216.组合总和3](#jump216)
+
 [257.二叉树的所有路径](#jump257)
 
 [309.最佳买卖股票时机含冷冻期](#jump309)
@@ -2839,6 +2841,91 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump216"></span>
+
+## 216.组合总和 III
+
+找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+
+说明：
+
+* 所有数字都是正整数。
+* 解集不能包含重复的组合。 
+
+示例 1:
+
+```java
+输入: k = 3, n = 7
+输出: [[1,2,4]]
+```
+
+
+示例 2:
+
+```java
+输入: k = 3, n = 9
+输出: [[1,2,6], [1,3,5], [2,3,4]]
+```
+
+
+
+这题比这个系列的前两题简单，几个条件：
+
+* 只含有1-9的整数
+* 组合不存在重复数字。
+
+这两个条件简化了许多操作，可以创建一个数组存放待取数字，`{1,2,3,4,5,6,7,8,9}`，每次固定一位，一共取k位数字。
+
+```java
+class Solution {
+    int[] nums;
+    List<List<Integer>> res;
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        res = new ArrayList<>();
+        if(k <= 0 || n <= 0){
+            res.add(new ArrayList<>());
+            return res;
+        }
+        //待取数字
+        nums = new int[]{1,2,3,4,5,6,7,8,9};
+        dfs(0,k,n,0,new ArrayList<Integer>(),0);
+        return res;
+    }
+    void dfs(int cnt,int k,int n,int cur, List<Integer> list, int sum){
+        if(cnt > k || sum > n){
+            return;
+        }
+        if(sum == n && cnt == k){
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        for(int i = cur; i < nums.length; ++i){
+            //剪枝
+            if(nums[i] > n) return;
+            cnt++;
+            sum += nums[i];
+            list.add(nums[i]);
+            dfs(cnt,k,n,i+1,list,sum);
+            cnt--;
+            sum-= nums[i];
+            list.remove(list.size()-1);
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 
 
