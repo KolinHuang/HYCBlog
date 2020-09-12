@@ -1750,3 +1750,217 @@ public class Main{
 }
 ```
 
+
+
+
+
+
+
+## 360-2020-9-11
+
+### 企业管理
+
+现有一段连续的部分打卡记录，打卡记录包括两项：1、工号；2、上班(1)或者下班(0)。小A是公司的老板，从来都是第一个上班，最晚下班的人。可能有员工请假，即既无上班记录，也无下班记录。请问小A的工号可能是多少？如果有多个，从小到大输出。
+
+输入：
+
+```java
+第一行两个整数n,m，n是公司总人数，m是当前打卡记录的项数。接下来m行，每行两个整数，ai,bi，ai标识工号，bi表示上下班标志（0或1）。
+```
+
+输出：
+
+```java
+输出所有可能的工号。保证有一个解。
+```
+
+样例：
+
+```java
+3 2
+1 1
+2 0
+输出：3 
+  
+5 2
+1 1
+1 0
+输出：1 2 3 4 5
+```
+
+范围：
+
+* n <= 100000，m<=2*n 
+
+
+
+既没打卡上班也没打卡下班的id可能是老板的。
+
+在第一条记录和最后一条记录之间的任何打卡记录都是属于员工，所以只需判断第一条记录和最后一条记录是否是老板的即可。有以下情况：
+
+```markdown
+第一条记录是下班：肯定是员工。（m>1）
+第一条记录是上班：剩余记录中，有人打卡了下班，但是没有打卡上班，因此这个人上班的记录会在第一条记录之前。在这种情况下，第一条记录也肯定是员工；否则有可能是老板。
+最后一条记录是上班：肯定是员工。(m>1)
+最后一条记录是下班：剩余记录中，有人打卡上了班，但是没有打卡下班，因此这个人下班的记录会在最后一条记录之后。在这种情况下，最后一条记录肯定是员工的；否则有可能是老板。
+```
+
+用一个set来存放所有员工的id，然后再按序输出所有不在这个set中的id，即为老板的可能id。
+
+```java
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+        boolean[][] recordBoo = new boolean[n+1][2];
+        int[][] record = new int[m][2];
+        Set<Integer> set = new HashSet<>();
+        for(int i = 0; i < m; ++i){
+            int id = sc.nextInt();
+            //上下班标志
+            int flag = sc.nextInt();
+            record[i][0] = id;
+            record[i][1] = flag;
+            recordBoo[id][flag] = true;
+            //不是第一个上班的
+            if(i != 0){
+                if(flag == 1) set.add(id);
+            }
+            //不是最后一个下班的
+            if(i != m-1){
+                if(flag == 0) set.add(id);
+            }
+        }
+        //单独判断第一个人和最后一个人
+        //第一个人是下班
+        if(record[0][1] == 0 && m > 1){
+            set.add(record[0][0]);
+        }else {
+            //第一个人是上班的
+            //存在任何一个人下过班，但是没有上过班
+            if(containsMsgb(recordBoo)) set.add(record[0][0]);
+
+        }
+        //最后一个人是上班
+        if(record[m-1][1] == 1 && m > 1){
+            set.add(record[m-1][0]);
+        }else {
+            //最后一个是下班
+            //存在任何一个人上过班，但是没下过班
+            if(containsMxgb(recordBoo)) set.add(record[m-1][0]);
+
+        }
+        for(int i = 1; i <= n; ++i){
+            if(!set.contains(i)){
+                System.out.println(i);
+            }
+        }
+
+    }
+
+    //存在一类人，下过班，但是没有上过班
+    static boolean containsMsgb(boolean[][] recordBoo){
+        for(int i = 1; i < recordBoo.length; ++i){
+            if(!recordBoo[i][1] && recordBoo[i][0]){
+                return true;
+            }
+        }
+        return false;
+    }
+    //存在一类人，上过班，但是没有下过班
+    static boolean containsMxgb(boolean[][] recordBoo){
+        for(int i = 1; i < recordBoo.length; ++i){
+            if(!recordBoo[i][0] && recordBoo[i][1]){
+                return true;
+            }
+        }
+        return false;
+    }
+}
+```
+
+
+
+
+
+### 验证密码的复杂性
+
+足够复杂的密码有如下要求：
+
+1. 包含数字；
+2. 包含大写字母；
+3. 包含小写字母；
+4. 包含特殊字符；
+5. 长度不小于8。
+
+请判断某个密码是否足够复杂。
+
+
+
+输入：
+
+```
+包含多组数据，对于每组数据，包含一个字符串s。
+```
+
+输出：
+
+```java
+密码符合要求，输出Ok。否则输出Irregular password。注意输出的大小写。
+```
+
+样例
+
+```java
+12_Aaqq12
+Password123
+PASSWORD_123
+PaSS^word
+12_Aaqq
+```
+
+输出：
+
+```java
+Ok
+Irregular password
+Irregular password
+Irregular password
+Irregular password
+```
+
+```java
+public class solution{
+	public static void main(String[] args){
+		Scanner sc = new Scanner(System.in);
+		int cnt = 0;
+		while(sc.hasNext()){
+			if(cnt == 0){
+				System.out.println();
+				count++;
+			}
+			System.out.println(varify(sc.nextLine()));
+		}
+	}
+
+	private static String varify(String s){
+		int[] count = new int[4];
+		if(s.length() < 8) return "Irregular password";
+		for( int i = 0; i < s.length(); ++i){
+			if(s.char(i) >= '0' && s.char(i) <= '9')	count[0]++;
+			else if(s.char(i) >= 'a' && s.char(i) <= 'z') count[1]++;
+			else if(s.char(i) >= 'A' && s.char(i) <= 'Z') count[2]++;
+			else count[3]++;
+		}
+		for(i = 0; i < 4; ++i){
+			if(count[i] == 0)
+				return "Irregular password";
+		}
+		return "Ok";
+	}
+}
+```
+

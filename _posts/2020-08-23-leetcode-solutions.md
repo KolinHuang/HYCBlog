@@ -96,6 +96,8 @@ pin: true
 
 [557.反转字符串中的单词 III](#jump557)
 
+[637.二叉树的层平均值](#jump637)
+
 [647.回文子串](#jump647)
 
 [657.机器人能否返回原点](#jump657)
@@ -4573,6 +4575,68 @@ class Solution {
 ```
 
 发现字符串直接相加的效率比StringBuffer的append慢多了，以后尽量不用字符串直接相加。
+
+
+
+
+
+<span id = "jump637"></span>
+
+## 637.二叉树的层平均值
+
+给定一个非空二叉树, 返回一个由每层节点平均值组成的数组。
+
+ 
+
+示例 1：
+
+```java
+输入：
+    3
+   / \
+  9  20
+    /  \
+   15   7
+输出：[3, 14.5, 11]
+解释：
+第 0 层的平均值是 3 ,  第1层是 14.5 , 第2层是 11 。因此返回 [3, 14.5, 11] 。
+```
+
+
+提示：
+
+* 节点值的范围在32位有符号整数范围内。
+
+
+
+层序遍历
+
+```java
+class Solution {
+    public List<Double> averageOfLevels(TreeNode root) {
+        List<Double> res = new ArrayList<>();
+        if(root == null)    return res;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            double sum = 0;
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                sum += tmp.val;
+                if(tmp.left != null)    queue.offer(tmp.left);
+                if(tmp.right != null)    queue.offer(tmp.right);
+            }
+            res.add(sum/size);
+        }
+        return res;
+    }
+}
+```
+
+
+
+
 
 
 
