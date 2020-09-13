@@ -34,6 +34,8 @@ pin: true
 
 [77.组合[tag:字典序]](#jump77)
 
+[79.单词搜索](#jump79)
+
 [93. 恢复IP地址](#jump93)
 
 [96. 不同的二叉搜索树](#jump96)
@@ -1117,6 +1119,105 @@ res.add(tmp);
 [字典序解法](https://leetcode-cn.com/problems/combinations/solution/zu-he-by-leetcode-solution/)
 
 字典序出现好多次了，还是没搞懂，下回得好好弄弄。
+
+
+
+
+
+<span id = "jump79"></span>
+
+## 79.单词搜索
+
+
+
+给定一个二维网格和一个单词，找出该单词是否存在于网格中。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+ 示例:
+
+```java
+board =
+[
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+]
+
+给定 word = "ABCCED", 返回 true
+给定 word = "SEE", 返回 true
+给定 word = "ABCB", 返回 false
+```
+
+
+提示：
+
+* board 和 word 中只包含大写和小写英文字母。
+* 1 <= board.length <= 200
+* 1 <= board[i].length <= 200
+* 1 <= word.length <= 10^3
+
+
+
+深搜
+
+```java
+class Solution {
+    //boolean flag;
+    boolean[][] visited;
+    public boolean exist(char[][] board, String word) {
+        visited = new boolean[board.length][board[0].length];
+        for(int i = 0; i < board.length; ++i){
+            for(int j = 0; j < board[0].length; ++j){
+                if(board[i][j] == word.charAt(0)){
+                    if(dfs(board,i,j,0,word)){
+                        return true;
+                    }
+                  //if(flag)	return true;
+                }
+                    
+            }
+        }
+        return false;
+    }
+    boolean dfs(char[][] board, int x, int y, int cur ,String word){
+        //
+        if(board[x][y] != word.charAt(cur)){
+            return false;
+        }
+        if(cur == word.length()-1){
+            return true;
+          	//flag = true;
+        }
+        visited[x][y] = true;
+        int[][] direction = {\{0,1},{0,-1},{1,0},{-1,0}\};
+
+        //向四个方向搜索，若找到答案就返回true
+        for(int i = 0; i < 4; ++i){
+            int new_x = x + direction[i][0];
+            int new_y = y + direction[i][1];
+            
+            //新位置的合法性判别
+            if(new_x < board.length && new_y <board[0].length && new_x >= 0 && new_y >= 0
+            && !visited[new_x][new_y]){
+                if(dfs(board,new_x,new_y,cur+1,word)){
+                    return true;
+                }
+              	//dfs(board,new_x,new_y,cur+1,word);
+              	//if(flag) break;
+            }
+                
+        }
+        //回溯
+        visited[x][y] = false;
+        return false;
+    }
+}
+```
+
+
+
+
 
 
 
