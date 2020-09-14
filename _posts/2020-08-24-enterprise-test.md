@@ -1964,3 +1964,118 @@ public class solution{
 }
 ```
 
+
+
+
+
+## 网易雷火-2020-9-13
+
+
+
+### 打补丁
+
+游戏有N个版本，分别是V1,V2,V3...Vn。
+
+任意两个版本`i`和`j`之间(`i < j`)，都有一个补丁`Pij`，这个布补丁可以把`i`版本升级到`j`版本，这个补丁的大小是`Sij`，安装这个补丁需要`Tij`秒。
+
+玩家也可以选择直接下载任意一个版本的完整内容，每个版本的完整内容大小`SVi`。
+
+已知玩家当前的下载速度是`t`，也就意味着下载一个S大小的补丁活着完整安装包，需要耗时`S/t`秒。
+
+举例：
+
+假设玩家当前游戏版本为`Vi`，他要将游戏升级到`Vj`，可能有以下的升级方式：
+
+* 下载`Pij`并安装，升级耗时为`Sij/t + Tij`；
+* 直接下载`Vj`，则升级耗时为`SVj/t`；
+* 先升级到一个中间版本`k(i < k < j)`，再升级到版本`j`，则升级耗时为`Sik/t + Tik + Skj/t + Tkj`;
+* 先下载一个低版本`k(k < i)`，再升级到版本`j`，则升级耗时为`SVk/t + Skj / t + Tkj`；
+* 或者选择从1到`j`中间一系列版本的其他可能的升级操作。
+
+输入：
+
+```markdown
+第一行两个整数：N个版本，当前是X版本。1 <= X < N
+第二行一个数字，下载速度t。
+第三行N个数字，表示每个版本完整大小。
+接下来共N-1行N-i列个数字（第i行有N-i个数字），标识从i（第i行）版本升级到i+k（第k列）版本的补丁大小。
+接下来共N-1行N-i列个数字（第i行有N-i个数字），标识从i（第i行）版本升级到i+k（第k列）版本的补丁安装时间。
+```
+
+输出：
+
+```markdown
+输出1个数字，表示最优策略耗时多少秒，精确到小数点后2位。
+```
+
+
+
+一共有5种升级方法：
+
+```markdown
+直接打补丁。
+找中间版本间接打补丁，那么就要找出一个下载时间+安装时间最小的包。
+下载较低版本，间接打补丁（下载一次，打一次补丁）。
+下载较低版本、补丁打到中间版本，再打到最高版本（下载一次，打两次补丁）。
+直接下载最新版本。
+```
+
+
+
+```java
+import java.util.*;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+        int X = sc.nextInt();
+        double t = sc.nextDouble();
+        double[] version_size = new double[N+1];
+        double[][] size = new double[N+1][N+1];
+        double[][] install = new double[N+1][N+1];
+
+        for(int i = 1; i <= N; ++i){
+            version_size[i] = sc.nextDouble();
+        }
+        for(int i = 1; i < N; ++i){
+            for(int j = 1; j <= N-i; ++j){
+                size[i][j+i] = sc.nextDouble();
+            }
+        }
+        for(int i = 1; i < N; ++i){
+            for(int j = 1; j <= N-i; ++j){
+                install[i][j+i] = sc.nextDouble();
+            }
+        }
+        //五种方法
+        //1、直接打补丁
+        double min = Double.MAX_VALUE;
+        min = Math.min(min,size[X][N] / t + install[X][N]);
+
+        //2、找中间版本间接打补丁，那么就要找出一个下载时间+安装时间最小的包
+        //遍历中间每个版本，找出时间总和最小的
+        for(int i = X + 1; i < N; ++i){
+            double time1 = size[X][i] / t + install[X][i];
+            time1 += size[i][N] / t + install[i][N];
+            min = Math.min(min,time1);
+        }
+
+        for(int i = 1; i < X; ++i){
+            //3、下载较低版本，间接打补丁
+            double time2 = version_size[i] / t + size[i][N] / t + install[i][N];
+            min = Math.min(min,time2);
+            //4、下载较低版本、补丁打到中间版本，再打到最高版本
+            double time3 = version_size[i] / t;
+            for(int j = i+1; j < N;++j){
+                time3 += size[j][N] / t + install[j][N];
+            }
+            min = Math.min(min,time3);
+        }
+
+        //5、直接下载最新版本
+        min = Math.min(min,version_size[N] / t);
+        System.out.printf("%.2f",min);
+    }
+}
+```
+

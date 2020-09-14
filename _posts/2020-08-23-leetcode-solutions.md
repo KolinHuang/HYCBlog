@@ -38,6 +38,8 @@ pin: true
 
 [93. 恢复IP地址](#jump93)
 
+[94.二叉树的中序遍历](#jump94)
+
 [96. 不同的二叉搜索树](#jump96)
 
 [100. 相同的树](#jump100)
@@ -1308,6 +1310,66 @@ class RestoreIpAddresses {
 * 但需要递归函数返回值时，最好不要直接用函数返回，定义一个全局变量来直接记录会好很多。
 * 思考递归时，不要把问题划分的太细，要一次递归能够处理一个子问题。递归树的每条路径对应一种解法。像这题，我一开始想着从最后一个地址段开始，遍历所有情况，然后用返回值把字符串拼接起来，这种思维非常混乱。
 * 写递归函数，先写满足要求的情况，即递归结束条件；再写特殊情况，最后写一般情况。
+
+
+
+
+
+<span id = "jump94"></span>
+
+## 94.二叉树的中序遍历
+
+给定一个二叉树，返回它的中序 遍历。
+
+示例:
+
+```java
+输入: [1,null,2,3]
+   1
+    \
+     2
+    /
+   3
+
+输出: [1,3,2]
+```
+
+
+进阶: 递归算法很简单，你可以通过迭代算法完成吗？
+
+
+
+```java
+public List<Integer> inorderTraversal(TreeNode root) {
+  	List<Integer> res = new ArrayList<>();
+  	if(root == null)	return null;
+  	//Stack<TreeNode> stack = new Stack<>();	用Deque比Stack快多了
+  	Deque<TreeNode> stack = new LinkedList<>();
+  	TreeNode cur = root;
+  	while( cur != null || !stack.isEmpty()){
+      	while(cur != null){
+          	stack.push(cur);
+          	cur = cur.left;
+        }
+      	cur = stack.pop();
+      	res.add(cur.val);
+      	cur = cur.right;
+    }
+  	return res;
+}
+```
+
+
+
+[Morris中序遍历](https://leetcode-cn.com/problems/binary-tree-inorder-traversal/solution/er-cha-shu-de-zhong-xu-bian-li-by-leetcode-solutio/)
+
+
+
+
+
+
+
+
 
 <span id="jump96"></span>
 
