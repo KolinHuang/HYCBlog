@@ -2964,6 +2964,158 @@ class Solution {
 
 
 
+## 剑指 Offer 57. 和为s的两个数字
+
+输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数字的和等于s，则输出任意一对即可。
+
+示例 1：
+
+```java
+输入：nums = [2,7,11,15], target = 9
+输出：[2,7] 或者 [7,2]
+```
+
+示例 2：
+
+```java
+输入：nums = [10,26,30,31,47,60], target = 40
+输出：[10,30] 或者 [30,10]
+```
+
+
+限制：
+
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^6
+
+双指针移动，一个从前往后移，一个从后往前移。需要剪枝
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+
+        if(nums.length == 0)    return new int[]{};
+
+        for(int i = 0; i < nums.length; ++i){
+          	//当第一个元素的两倍已经大于target了，那之后的两数之和肯定都大于target
+            if(nums[i] * 2 > target)
+                break;
+            for(int j  = nums.length-1; j >= i+1 ;--j){
+              	//当两数之和小于target了，后面也没必要继续了，之后的两数之和肯定都小于target
+                if(nums[j] + nums[i] < target)
+                    break;
+                if(nums[j] == (target-nums[i])){
+                    return new int[]{nums[i],nums[j]};
+                }
+            }
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+或者双指针对撞：
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+
+        int low = 0;
+        int high = nums.length-1;
+        while(low < high){
+            int sum = nums[low] + nums[high];
+            if(sum > target) --high;
+            else if(sum < target) ++low;
+            else return new int[]{nums[low],nums[high]};
+        }
+        return new int[]{};
+    }
+}
+```
+
+
+
+## 剑指 Offer 57 - II. 和为s的连续正数序列
+
+输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+
+序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+
+ 示例 1：
+
+```java
+输入：target = 9
+输出：[[2,3,4],[4,5]]
+```
+
+示例 2：
+
+```java
+输入：target = 15
+输出：[[1,2,3,4,5],[4,5,6],[7,8]]
+```
+
+
+限制：
+
+* 1 <= target <= 10^5
+
+用滑动窗口的方法。下面代码有一处值得注意：二维数组内的一维数组长度可以不相同。
+
+```java
+class Solution {
+    public int[][] findContinuousSequence(int target) {
+        int high = 1;
+        int low = 1;
+        if(target == 0) return new int[0][];
+        List<int[]> list = new ArrayList<>();
+        //滑动窗口
+        while(low <= high){
+            int sum = 0;
+            for(int i = low; i <= high; ++i){
+                sum += i;
+            }
+            //值还不够，就在右边扩大窗口
+            while(sum < target){
+                high++;
+                sum += high;
+            }
+            //值太大了，就在在左边缩小窗口
+            while(sum > target){
+                sum-=low;
+                low++;
+            }
+            //必须有2个数，那么low < high
+            if(sum == target && low < high){
+                int[] tmp = new int[high-low+1];
+                for(int i = low,j = 0; j < high-low+1; ++j){
+                    tmp[j] = i++;
+                }
+                list.add(tmp);
+              	//找到一个满足要求的起始位置i，那么i+1处开始的序列肯定不行，所以要跳过
+              	low++;
+            }
+            low++;
+        }
+        //这玩意儿还能这么定义，我才知道...这不就是用矩阵实现邻接表吗？？？太秀了
+        int[][] res = new int[list.size()][];
+        for (int i = 0; i < res.length; i++) {
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+}
+```
+
+[数学解法1](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/solution/shu-xue-wen-ti-shu-xue-jie-jue-by-erik_chen/)
+
+[数学解法2](https://leetcode-cn.com/problems/he-wei-sde-lian-xu-zheng-shu-xu-lie-lcof/solution/java-shuang-100-by-vapormax/)
+
+
+
+
+
 
 ## 剑指 Offer 58 - I. 翻转单词顺序
 
