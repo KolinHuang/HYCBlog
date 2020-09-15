@@ -18,6 +18,8 @@ pin: true
 
 [17.电话号码的字母组合](#jump17)
 
+[37.解数独](#jump37)
+
 [39.组合总和1](#jump39)
 
 [40.组合总和2](#jump40)
@@ -304,6 +306,112 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump37"></span>
+
+## 37.解数独
+
+编写一个程序，通过已填充的空格来解决数独问题。
+
+一个数独的解法需遵循如下规则：
+
+数字 1-9 在每一行只能出现一次。
+数字 1-9 在每一列只能出现一次。
+数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+空白格用 '.' 表示。
+
+**Note:**
+
+- 给定的数独序列只包含数字 `1-9` 和字符 `'.'` 。
+- 你可以假设给定的数独只有唯一解。
+- 给定数独永远是 `9x9` 形式的。
+
+
+
+回溯法，这题的难点在于（1）方块区域的访问判断；（2）下一步往哪儿递归；（3）什么条件下回溯。
+
+```java
+class Solution {
+    boolean[][] row_visited;
+    boolean[][] col_visited;
+    boolean[][][] block_visited;
+    public void solveSudoku(char[][] board) {
+        //判断某行是否访问过k元素,1<=k<=9
+        row_visited = new boolean[9][10];
+        //判断某列是否访问过k元素,1<=k<=9
+        col_visited = new boolean[9][10];
+        //判断某3*3方块区域是否访问过k元素,1<=k<=9
+        block_visited = new boolean[3][3][10];
+        //预填充，自带的数字先加入访问数组中
+        for(int i = 0; i < 9; ++i){
+            for(int j = 0; j < 9; ++j){
+                if(board[i][j] != '.'){
+                    int k = board[i][j] - '0';
+                    row_visited[i][k] = true;
+                    col_visited[j][k] = true;
+                    block_visited[i/3][j/3][k] = true;
+                }
+            }
+        }
+
+        dfs(board,0,0);
+
+    }
+
+    boolean dfs(char[][] board, int x, int y){
+        //若首次超出了边界，即x == 8,y == 9，就说明找到了答案
+        if(x == 8 && y == 9)
+            return true;
+        //若当前不是可填充区域，就向右移动，若到达了右边界，就x+1，从下一行的开头开始填充
+        if(board[x][y] != '.'){
+            int new_x = x;
+            int new_y = y+1;
+            if(y == 8 && x != 8){
+                new_x++;
+                new_y = 0;
+            }
+            return dfs(board,new_x,new_y);
+        }
+				//当前是可填充区域
+        for(int k = 1; k <= 9; ++k){
+            //若当前数字目前来看是合法的
+            if(!row_visited[x][k] && !col_visited[y][k] && !block_visited[x/3][y/3][k]){
+                board[x][y] = (char)(k+48);
+                row_visited[x][k] = true;
+                col_visited[y][k] = true;
+                block_visited[x/3][y/3][k] = true;
+                //向右移动，若到达了右边界，就x+1，从下一行的开头开始填充
+                int new_x = x;
+                int new_y = y+1;
+                if(y == 8 && x != 8){
+                    new_x++;
+                    new_y = 0;
+                }
+                //在后边的遍历过程中，发现当前数字不合法，回溯，修改数字
+                if(!dfs(board,new_x,new_y)){
+                    board[x][y] = '.';
+                    row_visited[x][k] = false;
+                    col_visited[y][k] = false;
+                    block_visited[x/3][y/3][k] = false;
+                }
+            }
+        }
+        //填充当前的x,y区域，发现所有数字都无法填充进去，那么就要求回溯
+        if(board[x][y] == '.')
+            return false;
+        
+        return true;
+    }
+}
+```
+
+
 
 
 
