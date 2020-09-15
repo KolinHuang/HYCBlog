@@ -1238,6 +1238,87 @@ class Solution {
 
 
 
+## 剑指 Offer 25. 合并两个排序的链表
+
+输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。
+
+示例1：
+
+```java
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+
+限制：
+
+* 0 <= 链表长度 <= 1000
+
+
+
+链表的插入操作，本来是想将长度较小的插入到长度较大的之中，但是如果长度较小的链表首元素小于长度较大的链表首元素，不好执行插入操作（可以用伪头节点解决）。索性就将首元素较大的插入到首元素较小的链表中，减少判断。
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null)  return l2;
+        if(l2 == null)  return l1;
+        //首元素较小的存入l2
+        ListNode cur = l1.val <= l2.val ? l1 : l2;
+        l1 = cur == l2 ? l1 : l2;
+        l2 = cur;
+
+        while(l1 != null){
+            cur = insert(cur,l1.val);
+            l1 = l1.next;
+        }
+        return l2;
+    }
+
+    ListNode insert(ListNode l2, int val){
+        ListNode tmp = new ListNode(val);
+        while(l2.next != null && l2.next.val < val) l2 = l2.next;
+        tmp.next = l2.next;
+        l2.next = tmp;
+
+        return l2;
+    }
+}
+```
+
+原地合并的写法：不容易想到的是建立一个伪头节点
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if(l1 == null)  return l2;
+        if(l2 == null)  return l1;
+        //建立一个伪头节点
+        ListNode head = new ListNode(0);
+        ListNode cur = head;
+        while(l1 != null && l2 != null){
+            if(l1.val < l2.val){
+                cur.next = l1;
+                l1 = l1.next;
+            }else{
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+        //有一者不为空，就链接到cur后
+        cur.next = l1 == null ? l2 : l1;
+        return head.next;
+    }
+}
+```
+
+
+
+
+
+
+
 ## 剑指 Offer 26. 树的子结构
 
 
