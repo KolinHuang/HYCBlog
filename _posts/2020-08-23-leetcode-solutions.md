@@ -76,6 +76,8 @@ pin: true
 
 [216.组合总和3](#jump216)
 
+[226.翻转二叉树](#jump226)
+
 [257.二叉树的所有路径](#jump257)
 
 [309.最佳买卖股票时机含冷冻期](#jump309)
@@ -3191,6 +3193,101 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump226"></span>
+
+
+
+## 226.翻转二叉树
+
+翻转一棵二叉树。
+
+示例：
+
+输入：
+
+```java
+		 4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+```
+
+
+输出：
+
+```java
+		 4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+```
+
+
+
+备注:
+这个问题是受到 Max Howell 的 原问题 启发的 ：
+
+> 谷歌：我们90％的工程师使用您编写的软件(Homebrew)，但是您却无法在面试时在白板上写出翻转二叉树这道题，这太糟糕了。
+
+立即推--->白板撸代码无用！
+
+递归交换：
+
+```java
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if(root == null)    return null;
+        invert(root);
+        return root;
+    }
+
+    void invert(TreeNode root){
+        if(root == null)
+            return;
+        TreeNode tmp = root.left;
+        root.left = root.right;
+        root.right = tmp;
+        invert(root.left);
+        invert(root.right);
+    }
+}
+```
+
+迭代交换：
+
+```java
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if(root == null)    return null;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+      	//层序遍历
+        while(!queue.isEmpty()){
+            int size = queue.size();
+
+            for(int i = 0; i < size; ++i){
+                TreeNode cur = queue.poll();
+                //交换子节点
+                TreeNode tmp = cur.left;
+                cur.left = cur.right;
+                cur.right = tmp;
+                if(cur.right != null)   queue.offer(cur.right);
+                if(cur.left != null)   queue.offer(cur.left);
+            }
+        }
+        return root;
+    }
+}
+```
+
+
 
 
 
