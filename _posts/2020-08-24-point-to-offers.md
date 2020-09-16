@@ -1684,6 +1684,90 @@ class Solution {
 
 
 
+
+
+
+
+
+
+## 剑指 Offer 30. 包含min函数的栈
+
+定义栈的数据结构，请在该类型中实现一个能够得到栈的最小元素的 min 函数在该栈中，调用 min、push 及 pop 的时间复杂度都是 O(1)。
+
+示例:
+
+```java
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.min();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 0.
+minStack.min();   --> 返回 -2.
+```
+
+
+提示：
+
+* 各函数的调用总次数不超过 20000 次
+
+
+
+用两个栈，一个栈正常存放数据，另一个辅助栈存放元素的非严格降序排序。假设：
+
+```markdown
+入栈序列为10,6,8,1,2
+则普通栈内容为：栈底10,6,8,1,2
+辅助栈内容为：10,6,1
+```
+
+对于2这个元素，它比1进入的晚，因此在它的生命周期内，栈的最小值永远是1，其他元素类似。所以辅助栈的栈顶永远是当前普通栈中的最小元素。
+
+```java
+class MinStack {
+
+    Stack<Integer> a;
+    Stack<Integer> b;
+
+
+    /** initialize your data structure here. */
+    public MinStack() {
+        a = new Stack<>();
+        b = new Stack<>();
+    }
+    
+    public void push(int x) {
+        a.push(x);
+      	//为空或者插入的值更小时，将它也放入B
+        if(b.isEmpty() ||  x <= b.peek())
+            b.push(x);
+    }
+    
+    public void pop() {
+      	//pop的是最小元素，B也pop
+        if(a.pop().equals(b.peek()))
+            b.pop();
+    }
+    
+    public int top() {
+        return a.peek();
+    }
+    
+    public int min() {
+        return b.peek();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 31. 栈的压入、弹出序列
 
 输入两个整数序列，第一个序列表示栈的压入顺序，请判断第二个序列是否为该栈的弹出顺序。假设压入栈的所有数字均不相等。例如，序列 {1,2,3,4,5} 是某栈的压栈序列，序列 {4,5,3,2,1} 是该压栈序列对应的一个弹出序列，但 {4,3,5,1,2} 就不可能是该压栈序列的弹出序列。
