@@ -3,7 +3,7 @@ title: Java源码分析之ArrayList
 author: Kol Huang
 date: 2020-09-16 18:27:00 +0800
 categories: [Blogging, 容器]
-tags: [java源码学习]
+tags: [Java源码学习]
 comments: true
 math: true
 ---
@@ -234,7 +234,7 @@ private class Itr implements Iterator<E> {
       lastRet = i - 1;
       checkForComodification();
   }
-	//重点关注这个方法，这个迭代器类中的所有方法都此方法
+	//重点关注这个方法，这个迭代器类中的所有方法都调用此方法
   final void checkForComodification() {
       if (modCount != expectedModCount)
         throw new ConcurrentModificationException();
@@ -310,13 +310,13 @@ public static void main(String[] args) {
     listArray[0] = new Object();
     //调用Arrays.asList()返回一个列表，当调用这个列表的toArray()方法时，返回的就是String[]类型
     List<String> al = Arrays.asList("asList");
-  	System.out.println(asList.getClass());//输出class java.util.Arrays$ArrayList
+  	System.out.println(al.getClass());//输出class java.util.Arrays$ArrayList
     Object[] asListArray = al.toArray();
     System.out.println(asListArray.getClass());//输出class [Ljava.lang.String;
 }
 ```
 
-这是因为在创建子类实例时，即使是父亲引用，其指向的实例依旧是子类实例，其调用的实例方法当然是子类的实例方法。所以我们看到`al`对象的类型是`java.util.Arrays$ArrayList`，属于`java.util.Arrays`的一个静态内部类，看看源码：
+这是因为在创建子类实例时，即使是父亲引用，其指向的实例依旧是子类实例，其调用的实例方法当然是子类的实例方法。所以我们看到`al`对象的类型是`java.util.Arrays$ArrayList`，属于`java.util.Arrays`的一个静态内部类，从源码里找这个内部类的`toArray()`方法是如何实现的：
 
 ```java
 private static class ArrayList<E> extends AbstractList<E>
@@ -361,7 +361,7 @@ public static <T> List<T> asList(T... arg) {//源码中，参数名是a，为了
 
 当调用`asList`方法的时候，会实例化上面那个`Arrays$ArrayList`内部类得到对象`obj`，如果传入的参数`arg`是`String`类型，那么`obj`中的数组`a`类型就会是`String[]`。因为这个内部类中的`toArray()`方法返回的是对象`a`的克隆，对象a的类型是`E[]`，进而导致在调用`obj`的`toArray()`方法时，返回的数组类型是`String[]`。
 
-
+**总而言之，**就是`Arrrays`类中的静态内部类`ArrayList`实现的`toArray()`方法返回的数组类型不一定是`Object[]`类型，取决于调用`Arrays.asList(T... arg)`时，传入参数的类型。
 
 
 
