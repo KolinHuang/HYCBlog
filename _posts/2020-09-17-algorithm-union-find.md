@@ -1,9 +1,9 @@
 ---
 title: 并查集
 author: Kol Huang
-date: 2020-09-16 21:14:00 +0800
-categories: [Blogging, leetcode]
-tags: [算法题解]
+date: 2020-09-17 14:14:00 +0800
+categories: [Blogging, Algorithms]
+tags: [Algorithms]
 comments: true
 math: true
 ---

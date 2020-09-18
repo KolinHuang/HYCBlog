@@ -26,6 +26,8 @@ pin: true
 
 [43.字符串相乘](#jump43)
 
+[47.全排列](#jump47)
+
 [51.N 皇后](#jump51)
 
 [60.第k个排列[tag]](#jump60)
@@ -693,6 +695,93 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump47"></span>
+
+## 47.全排列 II
+
+给定一个可包含重复数字的序列，返回所有不重复的全排列。
+
+示例:
+
+```java
+输入: [1,1,2]
+输出:
+[
+  [1,1,2],
+  [1,2,1],
+  [2,1,1]
+]
+```
+
+
+
+回溯法。往n个格子里填数字，每个数字只能填一次，且不能出现重复排列。
+
+每个数字只能填一次。这个容易实现，用一个`visited[i]`数组标记数字`i`是否被访问过。
+
+不能出现重复排列。例如在填第`i`个格子（从0开始计数）的时候，我们需要尝试填`n-i-1`个数字，这`n-i-1`个数字如果有重复的数字，那么我们就会重复地往第`i`个格子里填同一个数字，导致出现重复序列。所以，在填第`i`个格子的时候，用一个集合来存放已经填过的数字，保证下一次尝试不会填入重复的数字，即可去重。
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        res = new ArrayList<>();
+        List<Integer> tmp = new ArrayList<>();
+        boolean[] visited = new boolean[nums.length];
+
+        if(nums.length == 0){
+            res.add(new ArrayList<>());
+            return res;
+        }
+        backTrack(0,nums,tmp,visited);
+
+        return res;
+    }
+		//往第cur个格子里填数字，从0开始
+    void backTrack(int cur, int[] nums,List<Integer> tmp,boolean[] visited){
+			//当所有格子都填满的时候，记录结果
+      if(cur == nums.length){
+            res.add(new ArrayList<>(tmp));
+            return;
+        }
+      	//存放已经填过的数字
+        Set<Integer> set = new HashSet<>();
+      	//尝试每一种填法
+        for (int i = 0; i < nums.length; ++i){
+						//只有当前数字没有被访问，且没在集合中
+            if(visited[i] || set.contains(nums[i]))
+                continue;
+            tmp.add(nums[i]);
+            set.add(nums[i]);
+            visited[i] = true;
+            backTrack(cur+1,nums,tmp,visited);
+          	//回溯
+            visited[i] = false;
+            tmp.remove(cur);
+        }
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
