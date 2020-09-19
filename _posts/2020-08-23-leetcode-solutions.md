@@ -94,6 +94,8 @@ pin: true
 
 [378.有序矩阵中第K小元素](#jump378)
 
+[404.左叶子之和](#jump404)
+
 [459.重复的子字符串](#jump459)
 
 [486.预测赢家](#jump486)
@@ -4429,6 +4431,59 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump404"></span>
+
+## 404.左叶子之和
+
+计算给定二叉树的所有左叶子之和。
+
+示例：
+
+```java
+		3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+
+
+递归即可，当访问左子树时，做一次标记，这样可以在访问到左叶子的时候计算和。
+
+```java
+class Solution {
+    int sum;
+    public int sumOfLeftLeaves(TreeNode root) {
+        if(root == null)    return 0;
+        sum = 0;
+        traversal(root,false);
+        return sum;
+    }
+
+    void traversal(TreeNode root, boolean isLeft){
+        if(root.left == null && root.right == null && isLeft){
+            sum += root.val;
+            return;
+        }
+        if(root.left != null)   traversal(root.left, true);
+        if(root.right != null)  traversal(root.right,false);
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 
 
