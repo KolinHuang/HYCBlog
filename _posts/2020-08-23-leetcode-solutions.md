@@ -1329,6 +1329,77 @@ res.add(tmp);
 
 
 
+
+
+## 78.子集
+
+给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+
+说明：解集不能包含重复的子集。
+
+示例:
+
+输入: nums = [1,2,3]
+输出:
+
+```java
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+```
+
+回溯的典型题。只需要遍历所有长度的子集，然后回溯长度为`len`的子集的所有可能性即可。
+
+```java
+class Solution {
+
+    List<List<Integer>> res;
+    public List<List<Integer>> subsets(int[] nums) {
+        res = new ArrayList<>();
+        //控制子集的长度
+        for(int len = 0; len <= nums.length; ++len){
+            dfs(nums,len,0,new ArrayList<Integer>());
+        }
+        return res;
+    }
+
+
+    void dfs(int[] nums,int len, int cur,List<Integer> list){
+        if(cur == len){
+            res.add(new ArrayList<>(list));
+            return;
+        }
+
+        //回溯添加长度为len的子集
+        for(int i = cur; i < nums.length; ++i){
+            list.add(nums[i]);
+            dfs(nums,len,i+1,list);
+            list.remove(list.size()-1);
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <span id = "jump79"></span>
 
 ## 79.单词搜索
