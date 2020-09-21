@@ -2211,6 +2211,119 @@ class Solution {
 
 
 
+
+
+## 剑指 Offer 32 - I. 从上到下打印二叉树
+
+从上到下打印出二叉树的每个节点，同一层的节点按照从左到右的顺序打印。
+
+ 例如:
+给定二叉树: [3,9,20,null,null,15,7],
+
+```java
+		3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+
+返回：
+
+```java
+[3,9,20,15,7]
+```
+
+
+提示：
+
+* 节点总数 <= 1000
+
+
+
+层序遍历。
+
+list转数组
+
+```java
+class Solution {
+    public int[] levelOrder(TreeNode root) {
+        if(root == null)    return new int[0];
+        List<Integer> list = new ArrayList<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                list.add(tmp.val);
+                if(tmp.left != null)    queue.offer(tmp.left);
+                if(tmp.right != null)    queue.offer(tmp.right);
+            }
+        }
+      	//用这句话的速度还不如用一个for循环把list填到数组中，离谱
+        //return list.stream().mapToInt(Integer::valueOf).toArray();
+      	int[] res = new int[list.size()];
+        for(int i = 0; i < list.size(); ++i){
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+}
+```
+
+遍历一次树，获得节点数，再把节点填入数组（速度快多了）
+
+```java
+class Solution {
+    int cnt;
+    public int[] levelOrder(TreeNode root) {
+        if(root == null)    return new int[0];
+        cnt = 0;
+      	//先序遍历获得树节点总数
+        preOrder(root);
+      	//初始化数组
+        int[] res = new int[cnt];
+        cnt = 0;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+      	//层序遍历将节点值填入数组中
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                res[cnt++] = tmp.val;
+                if(tmp.left != null)    queue.offer(tmp.left);
+                if(tmp.right != null)    queue.offer(tmp.right);
+            }
+        }
+        return res;
+    }
+		//先序遍历
+    void preOrder(TreeNode root){
+        if(root != null){
+            cnt++;
+            preOrder(root.left);
+            preOrder(root.right);
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 35. 复杂链表的复制[tag]
 
 请实现 copyRandomList 函数，复制一个复杂链表。在复杂链表中，每个节点除了有一个 next 指针指向下一个节点，还有一个 random 指针指向链表中的任意节点或者 null。
