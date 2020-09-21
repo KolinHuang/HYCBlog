@@ -104,6 +104,8 @@ pin: true
 
 [529.扫雷游戏](#jump529)
 
+[538.将二叉搜索树转换为累加树](#jump538)
+
 [546.移除盒子](#jump546)
 
 [557.反转字符串中的单词 III](#jump557)
@@ -5039,6 +5041,91 @@ class Solution {
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+
+
+
+
+
+<span id = "jump538"></span>
+
+## 538.把二叉搜索树转换为累加树
+
+给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+
+ 例如：
+
+```java
+输入: 原始二叉搜索树:
+              5
+            /   \
+           2     13
+
+输出: 转换为累加树:
+             18
+            /   \
+          20     13
+```
+
+递归反中序遍历，可以得到二叉搜索树的降序排序节点。将较大值加到前一个较小值即可。
+
+```java
+class Solution {
+
+    List<TreeNode> nodes;
+    public TreeNode convertBST(TreeNode root) {
+        if(root == null)    return null;
+        nodes = new ArrayList<>();
+        inOrder(root);
+      	//将节点值累加到较小节点
+        for(int i = 0; i < nodes.size()-1; ++i){
+            nodes.get(i+1).val += nodes.get(i).val;
+        }
+        return root;
+    }
+		//逆中序遍历，将节点添加到list中
+    void inOrder(TreeNode root){
+        if(root == null)
+            return;
+        
+        inOrder(root.right);
+        nodes.add(root);
+        inOrder(root.left);
+    }
+}
+```
+
+或：
+
+```java
+class Solution {
+
+    int sum = 0;
+    public TreeNode convertBST(TreeNode root) {
+        if(root != null){
+            convertBST(root.right);
+            sum += root.val;
+            root.val = sum;
+            convertBST(root.left);
+        }   
+        return root;
+    }    
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -160,6 +160,81 @@ class Solution {
 
 
 
+## 剑指 Offer 06. 从尾到头打印链表
+
+输入一个链表的头节点，从尾到头反过来返回每个节点的值（用数组返回）。
+
+ 
+
+示例 1：
+
+```java
+输入：head = [1,3,2]
+输出：[2,3,1]
+```
+
+
+限制：
+
+* 0 <= 链表长度 <= 10000
+
+list转数组的方法：
+
+`int[] arr = list.stream().mapToInt(Integer::valueOf).toArray();`
+
+数组转list：
+
+`List<Integer> list = Arrays.stream( src ).boxed().collect(Collectors.toList());`
+
+```java
+class Solution {
+    public int[] reversePrint(ListNode head) {
+        if(head == null)    return new int[0];
+        List<Integer> list = new ArrayList<>();
+        while(head != null){
+            list.add(0,head.val);
+            head = head.next;
+        }
+      	//list转数组
+        int[] res = list.stream().mapToInt(Integer::valueOf).toArray();
+        return res;
+    }
+}
+```
+
+用栈:逆序输出怎么能想不到栈呢？？？
+
+```java
+class Solution {
+    public int[] reversePrint(ListNode head) {
+        if(head == null)    return new int[0];
+        Deque<Integer> stack = new LinkedList<>();
+        while(head != null){
+            stack.push(head.val);
+            head = head.next;
+        }
+        int[] res = new int[stack.size()];
+        int i  =0;
+        while(!stack.isEmpty()){
+            res[i++] = stack.pop();
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 07. 重建二叉树
 
 输入某二叉树的前序遍历和中序遍历的结果，请重建该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
