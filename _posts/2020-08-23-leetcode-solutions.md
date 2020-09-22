@@ -128,6 +128,8 @@ pin: true
 
 [841.钥匙和房间](#jump841)
 
+[968.监控二叉树](#jump968)
+
 
 
 
@@ -6262,6 +6264,112 @@ class Solution {
 
 
 有时候不能理解leetcode的难度分类标准，有些简单题都需要费很多时间，像这种模版题却是中等题。
+
+
+
+
+
+<span id = "jump968"></span>
+
+## 968.监控二叉树
+
+给定一个二叉树，我们在树的节点上安装摄像头。
+
+节点上的每个摄影头都可以监视**其父对象、自身及其直接子对象。**
+
+计算监控树的所有节点所需的最小摄像头数量。
+
+
+
+示例1：
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/29/bst_cameras_01.png)
+
+```java
+输入：[0,0,null,0,0]
+输出：1
+解释：如图所示，一台摄像头足以监控所有节点。
+```
+
+
+
+
+
+示例2:
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/29/bst_cameras_02.png)
+
+
+
+```java
+输入：[0,0,null,0,null,0,null,null,0]
+输出：2
+解释：需要至少两个摄像头来监视树的所有节点。 上图显示了摄像头放置的有效位置之一。
+```
+
+**提示：**
+
+1. 给定树的节点数的范围是 `[1, 1000]`。
+2. 每个节点的值都是 0。
+
+
+
+
+
+思路：
+
+假设节点有3种状态：1.节点已被覆盖，2.节点未被覆盖，3.节点上有相机。每个节点的状态由两个子节点的状态推出。
+
+```markdown
+1. 若两个节点至少有一个未被覆盖，当前节点必须装相机。
+2. 若两个节点都已经被覆盖，则当前节点就不一定需要装相机，就设置为为覆盖，交由父节点处理。
+3. 若其中一个子节点有相机，就设置当前节点为已覆盖
+```
+
+由于需要知道两个子节点的状态才能决定当前节点的状态，所以采用后序遍历。
+
+```java
+class Solution {
+    int res = 0;
+    public int minCameraCover(TreeNode root) {
+         if(backOrder(root) == 2){
+            res++;
+         }
+         return res;
+    }
+
+    //节点有三种状态：1.节点已被覆盖，2.节点未被覆盖，3.节点上有相机
+    int backOrder(TreeNode root){
+        
+        if(root == null){
+            return 1;
+        }
+        int left = backOrder(root.left);
+        int right = backOrder(root.right);
+        //两个节点至少有一个没有被覆盖
+        if(left == 2 || right == 2){
+            res++;
+            return 3;
+        }
+        //两个节点已经被覆盖，那这个节点就不一定需要装相机了
+        else if(left == 1 && right == 1){
+            return 2;
+        }
+        else if(left == 3 || right == 3){
+            return 1;
+        }
+        return 0;
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 
 
