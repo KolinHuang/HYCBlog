@@ -2318,6 +2318,139 @@ class Solution {
 
 
 
+## 剑指 Offer 32 - II. 从上到下打印二叉树 II
+
+从上到下按层打印二叉树，同一层的节点按从左到右的顺序打印，每一层打印到一行。
+
+ 
+
+例如:
+给定二叉树: [3,9,20,null,null,15,7],
+
+```java
+		3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+
+返回其层次遍历结果：
+
+```java
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+```
+
+
+提示：
+
+* 节点总数 <= 1000
+
+
+
+层序遍历即可。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null)    return res;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            List<Integer> list = new ArrayList<>();
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                list.add(tmp.val);
+                
+                if(tmp.left != null) queue.offer(tmp.left);
+                if(tmp.right != null) queue.offer(tmp.right);
+            }
+            res.add(list);
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+## 剑指 Offer 32 - III. 从上到下打印二叉树 III
+
+请实现一个函数按照之字形顺序打印二叉树，即第一行按照从左到右的顺序打印，第二层按照从右到左的顺序打印，第三行再按照从左到右的顺序打印，其他行以此类推。
+
+例如:
+给定二叉树: [3,9,20,null,null,15,7],
+
+```java
+		3
+   / \
+  9  20
+    /  \
+   15   7
+```
+
+
+返回其层次遍历结果：
+
+```java
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+```
+
+
+提示：
+
+* 节点总数 <= 1000
+
+
+
+层序遍历，在记录结果时，判断所在行是奇数还是偶数。是奇数就将每个元素添加到列表的最后，是偶数，就将每个元素添加到列表的最前。
+
+```java
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null)    return res;
+        
+        int dir = 1;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            List<Integer> list = new ArrayList<>();
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+              	//奇数表示从左到右，偶数表示从右到左
+                if(dir%2 == 1)  list.add(tmp.val);
+                else list.add(0,tmp.val);
+                if(tmp.left != null) queue.offer(tmp.left);
+                if(tmp.right != null) queue.offer(tmp.right);
+                
+            }
+            dir++;
+            res.add(list);
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
 
 
 
