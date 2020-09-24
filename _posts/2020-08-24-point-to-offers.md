@@ -85,6 +85,66 @@ class Solution {
 
 
 
+
+
+
+
+## 剑指 Offer 04. 二维数组中的查找
+
+在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
+
+ 
+
+示例:
+
+现有矩阵 matrix 如下：
+
+```java
+[
+  [1,   4,  7, 11, 15],
+  [2,   5,  8, 12, 19],
+  [3,   6,  9, 16, 22],
+  [10, 13, 14, 17, 24],
+  [18, 21, 23, 26, 30]
+]
+```
+
+
+给定 target = 5，返回 true。
+
+给定 target = 20，返回 false。
+
+
+
+将矩阵逆时针旋转45度，就得到了一个具备二叉搜索树性质的图，再二分查找即可。
+
+这思路太强了。
+
+```java
+class Solution {
+    public boolean findNumberIn2DArray(int[][] matrix, int target) {
+        if(matrix.length == 0 || matrix[0].length == 0)  return false;
+      	//从右上角开始搜索，或者从左下角开始搜索
+        int i = 0, j = matrix[0].length-1;
+        while(i < matrix.length && j >= 0){
+            if(matrix[i][j] > target)   --j;
+            else if(matrix[i][j] < target) ++i;
+            else return true;
+        }
+        return false;
+    }
+
+}
+```
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 05. 替换空格
 
 请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
@@ -1891,6 +1951,104 @@ class Solution {
 
 
 
+## 剑指 Offer 27. 二叉树的镜像
+
+请完成一个函数，输入一个二叉树，该函数输出它的镜像。
+
+例如输入：
+
+```java
+		 4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+```
+
+
+镜像输出：
+
+```java
+		 4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+```
+
+示例 1：
+
+```java
+输入：root = [4,2,7,1,3,6,9]
+输出：[4,7,2,9,6,3,1]
+```
+
+
+限制：
+
+* 0 <= 节点个数 <= 1000
+
+这样做会修改原树
+
+```java
+class Solution {
+    public TreeNode mirrorTree(TreeNode root) {
+        if(root == null)    return null;
+        mirror(root);
+        return root;
+    }
+
+    void mirror(TreeNode root){
+        if(root == null)
+            return;
+        if(root.left != null || root.right != null){
+            TreeNode tmp = root.left;
+            root.left = root.right;
+            root.right = tmp;
+        }
+        mirror(root.left);
+        mirror(root.right);
+    }
+}
+```
+
+新建树的做法：
+
+```java
+class Solution {
+    public TreeNode mirrorTree(TreeNode root) {
+        if(root == null)    return null;
+        TreeNode new_root = new TreeNode(root.val);
+        mirror(root,new_root);
+        return new_root;
+    }
+
+    void mirror(TreeNode root,TreeNode new_root){
+        if(root == null || new_root == null)
+            return;
+        if(root.left != null){
+            new_root.right = new TreeNode(root.left.val);
+            
+        }
+        if(root.right != null){
+            new_root.left = new TreeNode(root.right.val);
+        }
+        mirror(root.left,new_root.right);
+        mirror(root.right,new_root.left);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 28. 对称的二叉树
 
 请实现一个函数，用来判断一棵二叉树是不是对称的。如果一棵二叉树和它的镜像一样，那么它是对称的。
@@ -3530,6 +3688,72 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+## 剑指 Offer 55 - I. 二叉树的深度
+
+输入一棵二叉树的根节点，求该树的深度。从根节点到叶节点依次经过的节点（含根、叶节点）形成树的一条路径，最长路径的长度为树的深度。
+
+例如：
+
+给定二叉树 [3,9,20,null,null,15,7]，
+
+    		3
+       / \
+      9  20
+        /  \
+       15   7
+
+
+返回它的最大深度 3 。
+
+提示：
+
+* 节点总数 <= 10000
+
+递归写法：
+
+```java
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root == null)    return 0;
+        if(root.left == null && root.right == null)
+            return 1;
+        int left = 0, right = 0;
+        if(root.left != null){
+            left = maxDepth(root.left) + 1;
+        }
+        if(root.right != null){
+            right = maxDepth(root.right) + 1;
+        }
+        return Math.max(left,right);
+    }
+}
+```
+
+简化：
+
+```java
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(root == null)    return 0;   
+        return Math.max(maxDepth(root.left),maxDepth(root.right))+1;
+    }
+}
+```
+
+
+
+还可以用层序遍历来写。
 
 
 
