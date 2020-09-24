@@ -12,7 +12,7 @@ pin: true
 
 ## 目录
 
-
+[501.二叉搜索树中的众数](#jump501)
 
 [529.扫雷游戏](#jump529)
 
@@ -43,6 +43,141 @@ pin: true
 [841.钥匙和房间](#jump841)
 
 [968.监控二叉树](#jump968)
+
+
+
+
+
+<span id = "jump501"></span>
+
+## 501.二叉搜索树中的众数
+
+给定一个有相同值的二叉搜索树（BST），找出 BST 中的所有众数（出现频率最高的元素）。
+
+假定 BST 有如下定义：
+
+* 结点左子树中所含结点的值小于等于当前结点的值
+* 结点右子树中所含结点的值大于等于当前结点的值
+* 左子树和右子树都是二叉搜索树
+
+例如：
+
+给定 BST [1,null,2,2],
+
+```java
+   1
+    \
+     2
+    /
+   2
+```
+
+
+返回[2].
+
+提示：如果众数超过1个，不需考虑输出顺序
+
+进阶：你可以不使用额外的空间吗？（假设由递归产生的隐式调用栈的开销不被计算在内）
+
+
+
+二叉搜索树的中序遍历是非严格升序，所以先用中序遍历一遍，拿到升序数组，再用哈希表找到数组中的众数。
+
+```java
+class Solution {
+    int max_times = 0;
+    public int[] findMode(TreeNode root) {
+        Map<Integer,Integer> map = new HashMap<>();
+        List<Integer> list = new ArrayList<>();
+
+        inOrder(root,list);
+        for(int i = 0; i < list.size(); ++i){
+            if(!map.containsKey(list.get(i)))
+                map.put(list.get(i),0);
+            map.put(list.get(i),map.get(list.get(i)) + 1);
+        }
+        list.clear();
+        for(Integer key : map.keySet()){
+            if(map.get(key) > max_times){
+                max_times = map.get(key);
+                list.clear();
+                list.add(key);
+            }else if(map.get(key) == max_times){
+                list.add(key);
+            }
+        }
+        int[] res = new int[list.size()];
+        for(int i = 0; i < list.size(); ++i){
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+
+    void inOrder(TreeNode root, List<Integer> list){
+        if(root != null){
+            inOrder(root.left,list);
+
+            list.add(root.val);
+            
+            inOrder(root.right,list);
+        }
+    } 
+}
+```
+
+进阶：直接在中序遍历过程中统计众数，为了不使用额外空间，遍历树两次，第一次记录结果集的长度，第二次记录结果集。
+
+```java
+class Solution {
+    int max_times = 0;	//众数的出现次数
+    int times = 0;	//当前数字的出现次数
+    int res_length = 0;	//结果集的长度
+    int[] res;	//结果集，第一次遍历时设空
+    TreeNode pre = null;	//上一个节点
+    public int[] findMode(TreeNode root) {
+        if(root == null)    return new int[0];
+        inOrder(root);
+        res = new int[res_length];
+        pre = null;
+        times = 0;
+        res_length = 0;
+        inOrder(root);
+        
+        return res;
+    }
+
+    void inOrder(TreeNode root){
+        if(root != null){
+            inOrder(root.left);
+
+            if(pre != null && pre.val == root.val)
+                times++;
+            else
+                times = 1;
+            
+            if(times > max_times){
+                max_times = times;
+                res_length = 1;
+            //max_times在第一次遍历中会记录最大的次数，在第二次遍历中用于判断哪些数字是众数
+            }else if(times == max_times){
+              	//当前是第二次遍历的话，就记录结果集
+                if(res != null){
+                    res[res_length] = root.val;
+                }
+                res_length++;
+            }
+            pre = root;
+            inOrder(root.right);
+        }
+    } 
+}
+```
+
+
+
+
+
+
 
 
 
