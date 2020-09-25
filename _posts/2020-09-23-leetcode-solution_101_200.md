@@ -17,6 +17,8 @@ pin: true
 
 ## 目录
 
+[106.从中序与后序遍历序列构造二叉树](#jump106)
+
 [107.二叉树的层次遍历 II](#jump107)
 
 [108. 将有序数组转换为二叉搜索树](#jump108)
@@ -36,6 +38,91 @@ pin: true
 [133.克隆图](#jump133)
 
 [139.单词拆分](#jump139)
+
+
+
+
+
+
+
+<span id = "jump106"></span>
+
+## 106.从中序与后序遍历序列构造二叉树
+
+
+
+根据一棵树的中序遍历与后序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+
+例如，给出
+
+```java
+中序遍历 inorder = [9,3,15,20,7]
+后序遍历 postorder = [9,15,7,20,3]
+```
+
+
+返回如下的二叉树：
+
+    		3
+       / \
+      9  20
+        /  \
+       15   7
+
+
+
+与剑指offer.07题类似，那个是前序加中序，这个是中序加后序。
+
+几个注意点：
+
+* 要对中序序列的每个元素建立哈希索引，使得能够直接找到根节点位置。
+* 然后计算左右子树的规模。
+* 后序序列中，根节点的左子树应从序列的最左端开始统计，即`[po_low,po_low+leftNum-1]`，右子树应为根节点往左统计的`rightNum`个元素，即`[po_high-rightNum,po_high-1]`。
+
+重点就是在递归过程中，将对应的左右子树区间对应好。
+
+```java
+class Solution {
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+
+        Map<Integer,Integer> inMap = new HashMap<>();
+        //为中序遍历的每个元素建立哈希索引
+        for(int i = 0; i < inorder.length; ++i){
+            inMap.put(inorder[i],i);
+        }
+        TreeNode root = build(inorder, 0,inorder.length-1, postorder,0,postorder.length-1, inMap);
+        return root;
+    }
+
+
+    TreeNode build(int[] inorder, int in_low, int in_high, int[] postorder, int po_low, int po_high, Map<Integer, Integer> inMap){
+
+        if( po_low > po_high){
+            return null;
+        }
+        //此时，后序遍历区间的最后一个元素是根节点
+        TreeNode root = new TreeNode(postorder[po_high]);
+        if(po_low == po_high){
+            return root;
+        }
+        //需要在中序遍历区间内找到它的左右子树
+        
+        int index = inMap.get(postorder[po_high]);
+        //计算左右子树的规模
+        int leftNum = index - in_low;
+        int rightNum =  in_high - index;
+
+        //递归重建左右子树
+        root.left = build(inorder,in_low, index-1, postorder, po_low, po_low + leftNum-1, inMap);
+        root.right = build(inorder, index+1, in_high, postorder, po_high - rightNum, po_high - 1, inMap);
+        
+        return root;
+    }
+}
+```
 
 
 
