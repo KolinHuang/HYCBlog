@@ -31,6 +31,8 @@ pin: true
 
 [112. 路径总和](#jump112)
 
+[113.路径总和 II](#jump113)
+
 [120.三角形最小路径和](#jump120)
 
 [130.被围绕的区域](#jump130)
@@ -594,6 +596,91 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump113"></span>
+
+## 113.路径总和 II
+
+给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例:
+给定如下二叉树，以及目标和 sum = 22，
+
+```java
+          5
+         / \
+        4   8
+       /   / \
+      11  13  4
+     /  \    / \
+    7    2  5   1
+```
+
+返回:
+
+```java
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+```
+
+
+
+
+回溯法，先序遍历二叉树，当遇到了叶节点时，判断是否该路径和是否等于目标值。在一轮递归结束，需要返回到父节点时进行回溯，删除路径列表中本节点。
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    int sum;
+    public List<List<Integer>> pathSum(TreeNode root, int sum) {
+        res = new ArrayList<>();
+        this.sum = sum;
+        if(root == null){
+            return res;
+        }
+        dfs(root, 0, new ArrayList<Integer>());
+        return res;
+    }
+    //先序遍历
+    void dfs(TreeNode root, int cnt, List<Integer> list){
+        if(root == null)
+            return;
+        //找到了叶节点
+        if(root.left == null && root.right == null){
+            if(cnt + root.val == sum){
+                list.add(root.val);
+                res.add(new ArrayList<Integer>(list));
+                list.remove(list.size()-1);
+            }
+            return;
+        }
+        //当前不是叶节点，就把他加到路径中
+        cnt += root.val;
+        //不能像这样剪枝，节点值可能为负
+        /*if(cnt >= sum){
+            return;
+        }*/
+        list.add(root.val);
+        dfs(root.left,cnt,list);
+        dfs(root.right,cnt,list);
+        list.remove(list.size()-1);
+    }
+}
+```
+
+
+
+
+
+
 
 
 
