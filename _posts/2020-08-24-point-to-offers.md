@@ -2676,6 +2676,118 @@ class Solution {
 
 
 
+## 剑指 Offer 33. 二叉搜索树的后序遍历序列
+
+输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 true，否则返回 false。假设输入的数组的任意两个数字都互不相同。
+
+ 
+
+参考以下这颗二叉搜索树：
+
+```java
+     5
+    / \
+   2   6
+  / \
+ 1   3
+```
+
+
+示例 1：
+
+```hava
+输入: [1,6,3,2,5]
+输出: false
+```
+
+示例 2：
+
+```java
+输入: [1,3,2,6,5]
+输出: true
+```
+
+
+提示：
+
+* 数组长度 <= 1000
+
+
+
+二叉搜索树的中序遍历是递增序列，所以可以通过对后序序列排序，得到中序序列。
+
+再利用中序和后序序列模拟重建二叉树。当子树规模缩小到1时，判断此时中序序列和后序序列中对应元素是否相同，如果每个规模为1的子树，在两个序列中的对应元素都相同，则此后序序列合法。
+
+```java
+class Solution {
+    public boolean verifyPostorder(int[] postorder) {
+        if(postorder.length == 0)   return true;
+        //得到中序序列
+        int[] inorder = Arrays.copyOf(postorder,postorder.length);
+        Arrays.sort(inorder);
+        Map<Integer, Integer> inMap = new HashMap<>();
+        //对中序序列建立哈希索引
+        for(int i = 0; i < inorder.length; ++i){
+            inMap.put(inorder[i],i);
+        }
+        return verify(inorder, 0, inorder.length-1,postorder, 0, postorder.length-1, inMap);
+    }
+    //模拟重建二叉树，判断每个中序和后序区间的元素是否对应。
+    boolean verify(int[] inorder,int iS, int iE, int[] postorder, int pS, int pE, Map<Integer,Integer> inMap){
+        if(pS > pE)
+            return true;
+        if(pS == pE){
+            return inorder[iS] == postorder[pS];
+        }
+
+        int index = inMap.get(postorder[pE]);
+        int leftNum = index - iS;
+        int rightNum = iE - index;
+
+        return verify(inorder, iS, index - 1, postorder, pS, pS + leftNum - 1, inMap) &&
+                verify(inorder, index + 1, iE, postorder, pE - rightNum, pE - 1, inMap);
+
+    }
+}
+```
+
+
+
+第二种方法：
+
+在二叉树的后序序列中，根节点是最后一个元素，左子树分布在序列的左侧，右子树分布在左子树和根节点中间。所以只要找到左子树和右子树的对应区间即可递归判断：
+
+```markdown
+从最左侧开始，找到最大连续的并且小于根节点的序列，就是左子树。
+从左子树开始，找到最大连续的，并且大于根节点的序列，就是右子树。
+如果最终找到两个序列长度之和小于总序列长度-1，那么就不合法，否则就继续递归判断左右子树。
+```
+
+```java
+class Solution {
+    public boolean verifyPostorder(int[] postorder) {
+        if(postorder.length == 0) return true;
+        return recur(postorder, 0, postorder.length-1);
+    }
+
+    boolean recur(int[] postorder, int l, int h){
+        if(l >= h)  return true;
+
+        int p = l;
+        while(postorder[p] < postorder[h]) p++;
+        int q = p;
+        while(postorder[q] > postorder[h])  q++;
+        return q == h && recur(postorder, l, p-1) && recur(postorder, p, q-1);
+    }
+}
+```
+
+
+
+
+
+
+
 
 
 ## 剑指 Offer 35. 复杂链表的复制[tag]
@@ -3690,6 +3802,76 @@ class Solution {
 ```
 
 
+
+
+
+
+
+## 剑指 Offer 54. 二叉搜索树的第k大节点
+
+给定一棵二叉搜索树，请找出其中第k大的节点。
+
+ 
+
+示例 1:
+
+```java
+输入: root = [3,1,4,null,2], k = 1
+   3
+  / \
+ 1   4
+  \
+   2
+输出: 4
+```
+
+示例 2:
+
+```java
+输入: root = [5,3,6,2,4,null,null,1], k = 3
+       5
+      / \
+     3   6
+    / \
+   2   4
+  /
+ 1
+输出: 4
+```
+
+
+限制：
+
+* 1 ≤ k ≤ 二叉搜索树元素个数
+
+
+
+逆中序遍历，访问到第k个节点时，就是要取的第k大的数。
+
+```java
+class Solution {
+    int res;
+    int k;
+    public int kthLargest(TreeNode root, int k) {
+        if(root == null)    return 0;
+        res = 0;
+        this.k = k;
+        inOrder(root);
+        return res;
+    }
+
+    void inOrder(TreeNode root){
+        if(root!=null && k != 0){
+            
+            inOrder(root.right);
+            if(k == 1)
+                res = root.val;
+            k--;
+            inOrder(root.left);
+        }
+    }
+}
+```
 
 
 
@@ -5222,6 +5404,65 @@ public int strToInt(String str) {
 
 作者：jyd
 链接：https://leetcode-cn.com/problems/ba-zi-fu-chuan-zhuan-huan-cheng-zheng-shu-lcof/solution/mian-shi-ti-67-ba-zi-fu-chuan-zhuan-huan-cheng-z-4/
+```
+
+
+
+
+
+
+
+## 剑指 Offer 68 - I. 二叉搜索树的最近公共祖先
+
+给定一个二叉搜索树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+例如，给定如下二叉搜索树:  root = [6,2,8,0,4,7,9,null,null,3,5]
+
+
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/binarysearchtree_improved.png)
+
+示例 1:
+
+```java
+输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+输出: 6 
+解释: 节点 2 和节点 8 的最近公共祖先是 6。
+```
+
+示例 2:
+
+```java
+输入: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+输出: 2
+解释: 节点 2 和节点 4 的最近公共祖先是 2, 因为根据定义最近公共祖先节点可以为节点本身。
+```
+
+
+说明:
+
+* 所有节点的值都是唯一的。
+
+* p、q 为不同节点且均存在于给定的二叉搜索树中。
+
+
+
+如果p和q的值均小于root，就继续搜索左子树，如果p和q的值均大于root，就继续搜索右子树，否则返回root。
+
+```java
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(root == null)    return null;
+        if(p.val < root.val && q.val < root.val)
+            return lowestCommonAncestor(root.left,p,q);
+        else if(p.val > root.val && q.val > root.val)
+           return lowestCommonAncestor(root.right,p,q);
+        else
+            return root;
+    }
+}
 ```
 
 
