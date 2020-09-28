@@ -33,6 +33,8 @@ pin: true
 
 [113.路径总和 II](#jump113)
 
+[117.填充每个节点的下一个右侧节点指针 II](#jump117)
+
 [120.三角形最小路径和](#jump120)
 
 [130.被围绕的区域](#jump130)
@@ -672,6 +674,117 @@ class Solution {
         dfs(root.left,cnt,list);
         dfs(root.right,cnt,list);
         list.remove(list.size()-1);
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump117"></span>
+
+## 117.填充每个节点的下一个右侧节点指针 II
+
+给定一个二叉树
+
+```c++
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+```
+
+
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+进阶：
+
+* 你只能使用常量级额外空间。
+
+* 使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+
+
+层序遍历，在遍历到每层最后一个节点之前，让每个节点的next都指向队首元素。最后一个节点的next指向null。
+
+```java
+class Solution {
+    public Node connect(Node root) {
+        if(root == null){
+            return root;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                
+                Node tmp = queue.poll();
+                //是否遍历到每一层的最后一个节点
+                tmp.next = i <= size-2 ? queue.peek() : null;
+                
+                if(tmp.left != null)   queue.offer(tmp.left);
+                if(tmp.right != null)   queue.offer(tmp.right);
+            }
+        }
+        return root;
+    }
+}
+```
+
+进阶：
+
+假设某一层已经建立好了next指针关系，那么我们就可以通过遍历这一层来建立下一层的next指针。具体的：
+
+```markdown
+使用一个指针nextStart指向下一次遍历需要访问的节点，在这次遍历访问第一个节点时进行赋值。
+再使用一个指针pre指向遍历这一层的某个节点时，它的前一个节点。
+遍历这一层时，通过next指针，遍历该层所有节点，为这些节点的子节点建立next指针关系。
+每遍历完一层，用nextStart指针跳向下一层的开头继续遍历。
+```
+
+```java
+class Solution {
+    Node pre = null;
+    Node nextStart = null;
+    public Node connect(Node root) {
+        Node start = root;
+        while(start != null){
+            pre = null;
+            nextStart = null;
+          	//遍历每一层
+            for(Node p = start; p != null; p = p.next){
+                if(p.left != null){
+                    doConnect(p.left);
+                }
+                if(p.right != null){
+                    doConnect(p.right);
+                }
+            }
+          	//移向下一层
+            start = nextStart;
+        }
+        return root;
+    }
+
+    void doConnect(Node p){
+        //如果不是每层的第一个节点，就直接把p给pre.next
+        if(pre != null){
+            pre.next = p;
+        }
+        //如果是每层的开头，就记录这个节点，为下次遍历作准备
+        if(nextStart == null){
+            nextStart = p;
+        }
+        //让pre移向下一个节点
+        pre = p;
     }
 }
 ```
