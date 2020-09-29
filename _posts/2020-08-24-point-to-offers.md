@@ -3738,6 +3738,61 @@ class Solution {
 
 
 
+
+
+
+
+## 剑指 Offer 52. 两个链表的第一个公共节点
+
+输入两个链表，找出它们的第一个公共节点。
+
+如下面的两个链表：
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/14/160_statement.png)
+
+在节点 c1 开始相交。
+
+示例 1：
+
+![](https://assets.leetcode.com/uploads/2018/12/13/160_example_3.png)
+
+无相交。
+
+
+
+浪漫相遇法：
+
+A和B从各自的起点出发，期望相遇：
+
+1. 当运气好的时候，A和B能够在走各自的路时，会遇到彼此。
+2. 当运气不好的时候，A和B走完各自的路，都没有遇到彼此。但是他们不屈服于命运，所以他们选择重新走一遍他/她走过的路，看看他/她路上的风景，如果有缘，他们终将会相遇。假如他们实在没有缘分，在走完对方的路后，各自的指针会指向空处。
+3. 这算法告诉我们一个道理，当命运不公时，不要轻易放弃一段感情，只有两个人都坚持追逐对方的脚步，才有可能相遇。
+
+```java
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        if(headA == null || headB == null)  return null;
+        ListNode curA = headA;
+        ListNode curB = headB;
+        
+        while(curA != curB){
+            curA = curA == null ? headB : curA.next;
+            curB = curB == null ? headA : curB.next;
+        }
+        return curA;
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 ## 剑指 Offer 53 - I. 在排序数组中查找数字 I
 
 统计一个数字在排序数组中出现的次数。
