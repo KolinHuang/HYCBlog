@@ -43,7 +43,7 @@ pin: true
 
 [139.单词拆分](#jump139)
 
-
+[145.二叉树的后序遍历](#jump145)
 
 
 
@@ -1264,3 +1264,69 @@ class Solution {
 }
 ```
 
+
+
+
+
+<span id = "jump145"></span>
+
+## 145.二叉树的后序遍历
+
+给定一个二叉树，返回它的 后序 遍历。
+
+示例:
+
+```java
+输入: [1,null,2,3]  
+   1
+    \
+     2
+    /
+   3 
+
+输出: [3,2,1]
+```
+
+进阶: 递归算法很简单，你可以通过迭代算法完成吗？
+
+
+
+1. 先将左子树依次入栈，直到叶节点。
+
+2. 判断右子树是否为空，或者右子树是否访问过
+
+   2.1 如果是，就可以访问根节点了。
+
+   2.2 如果不是，就需要把根节点再次入栈，将指针转向右子树，跳到1.1继续判断。
+
+可以用一个指针`pre`指向上一个已经访问过的节点。
+
+```java
+class Solution {
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode pre = null;
+        while(root != null || !stack.isEmpty()){
+            while(root != null){
+                stack.push(root);
+                root = root.left;
+            }
+            root = stack.pop();
+
+            //当右子树为空时，就访问此节点；若右子树已经被访问过了，就访问此节点
+            if(root.right == null || pre == root.right){
+                res.add(root.val);
+                pre = root;
+                root = null;
+            }else{
+                //右子树不为空，就继续根节点入栈，转向右子树
+                stack.push(root);
+                root = root.right;
+            }
+        }
+        return res;
+    }
+
+}
+```
