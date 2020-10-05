@@ -22,6 +22,8 @@ pin: true
 
 [17.电话号码的字母组合](#jump17)
 
+[18.四数之和](jump18)
+
 [37.解数独](#jump37)
 
 [39.组合总和1](#jump39)
@@ -436,6 +438,147 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump18"></span>
+
+## 18.四数之和
+
+给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+
+注意：
+
+答案中不可以包含重复的四元组。
+
+示例：
+
+```java
+给定数组 nums = [1, 0, -1, 0, -2, 2]，和 target = 0。
+
+满足要求的四元组集合为：
+[
+  [-1,  0, 0, 1],
+  [-2, -1, 1, 2],
+  [-2,  0, 0, 2]
+]
+```
+
+
+
+回溯法：
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        
+        res = new ArrayList<>();
+        if(nums.length == 0)    return res;
+        Arrays.sort(nums);
+        dfs(target, nums, 0, 0, 0, new ArrayList<Integer>());
+        return res;
+    }
+
+
+    void dfs(int target, int[] nums, int cur, int size, int sum, List<Integer> list){
+
+        if(list.size() == 4){
+            if(sum == target){
+                res.add(new ArrayList<>(list));
+            }
+            return;
+        }
+
+        Set<Integer> set = new HashSet<>();
+        for(int i = cur; i < nums.length; ++i){
+            //去重
+            if(set.contains(nums[i]))   continue;
+            //剪枝：当剩余的元素个数不满足所需个数时，返回
+            if(nums.length - i < (4-size)) return;
+            //剪枝：当剩余所需元素都用后续最小元素来填充时，还是超过了target，就返回
+            if(i < nums.length-1 && sum + nums[i] + (3-size) * nums[i+1] > target) return;
+            //剪枝：当剩余所需元素都用后续最大元素来填充时，还是比target小时，就跳过此次添加，去添加更大的元素，期望逼近target
+            if(i < nums.length-1 && sum + nums[i] + (3-size) * nums[nums.length-1] < target) continue;
+            //回溯
+            set.add(nums[i]);
+            list.add(nums[i]);
+            dfs(target, nums, i+1, size + 1, sum + nums[i], list);
+            list.remove(list.size()-1);
+        }
+    }
+}
+```
+
+
+
+排序+双指针：
+
+```java
+class Solution {
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        List<List<Integer>> quadruplets = new ArrayList<List<Integer>>();
+        if (nums == null || nums.length < 4) {
+            return quadruplets;
+        }
+        Arrays.sort(nums);
+        int length = nums.length;
+        for (int i = 0; i < length - 3; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            if (nums[i] + nums[i + 1] + nums[i + 2] + nums[i + 3] > target) {
+                break;
+            }
+            if (nums[i] + nums[length - 3] + nums[length - 2] + nums[length - 1] < target) {
+                continue;
+            }
+            for (int j = i + 1; j < length - 2; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                if (nums[i] + nums[j] + nums[j + 1] + nums[j + 2] > target) {
+                    break;
+                }
+                if (nums[i] + nums[j] + nums[length - 2] + nums[length - 1] < target) {
+                    continue;
+                }
+                int left = j + 1, right = length - 1;
+                while (left < right) {
+                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                    if (sum == target) {
+                        quadruplets.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
+                        while (left < right && nums[left] == nums[left + 1]) {
+                            left++;
+                        }
+                        left++;
+                        while (left < right && nums[right] == nums[right - 1]) {
+                            right--;
+                        }
+                        right--;
+                    } else if (sum < target) {
+                        left++;
+                    } else {
+                        right--;
+                    }
+                }
+            }
+        }
+        return quadruplets;
+    }
+}
+
+作者：LeetCode-Solution
+链接：https://leetcode-cn.com/problems/4sum/solution/si-shu-zhi-he-by-leetcode-solution/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
 
 
 
