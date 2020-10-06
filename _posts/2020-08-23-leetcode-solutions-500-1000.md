@@ -44,6 +44,8 @@ pin: true
 
 [733.图像渲染](#jump733)
 
+[834.树中距离之和tag](jump834)
+
 [841.钥匙和房间](#jump841)
 
 [968.监控二叉树](#jump968)
@@ -1746,6 +1748,114 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump834"></span>
+
+## 834.树中距离之和[tag]
+
+给定一个无向、连通的树。树中有 N 个标记为 0...N-1 的节点以及 N-1 条边 。
+
+第 i 条边连接节点 `edges[i][0]` 和` edges[i][1]` 。
+
+返回一个表示节点 i 与其他所有节点距离之和的列表 ans。
+
+示例 1:
+
+输入: N = 6, edges = [[0,1],[0,2],[2,3],[2,4],[2,5]]
+输出: [8,12,6,10,10,10]
+解释: 
+如下为给定的树的示意图：
+
+```java
+  0
+ / \
+1   2
+   /|\
+  3 4 5
+```
+
+我们可以计算出 dist(0,1) + dist(0,2) + dist(0,3) + dist(0,4) + dist(0,5) 
+也就是 1 + 1 + 2 + 2 + 2 = 8。 因此，answer[0] = 8，以此类推。
+
+* 说明: 1 <= N <= 10000
+
+
+
+树形DP，[参考](https://leetcode-cn.com/problems/sum-of-distances-in-tree/)
+
+```java
+class Solution {
+
+    List<List<Integer>> graph = new ArrayList<>();
+    //nodeSum[i]表示以i为根节点的子树的子节点个数
+    int[] nodeSum;
+    //distSum[i]表示以i为根节点的子树的距离之和
+    int[] distSum;
+    public int[] sumOfDistancesInTree(int N, int[][] edges) {
+
+        //建立邻接表
+        for(int i = 0; i < N; ++i){
+            graph.add(new ArrayList<Integer>());
+        }
+        for(int i = 0; i < edges.length; ++i){
+            int src = edges[i][0];
+            int dist = edges[i][1];
+            graph.get(src).add(dist);
+            graph.get(dist).add(src);
+        }
+
+        nodeSum = new int[N];
+        distSum = new int[N];
+        //填充1
+        Arrays.fill(nodeSum,1);
+        //后序遍历计算子树距离之和
+        postOrder(0,-1);
+        //先序遍历计算总距离之和
+        preOrder(0,-1);
+
+        return distSum;
+        
+    }
+
+    void postOrder(int root, int parent){
+        //获取root的所有子节点
+        List<Integer> children = graph.get(root);
+        //遍历子节点，计算距离之和
+        for(Integer child : children){
+            //访问到邻接表中父节点，跳过
+            if(child == parent) continue;
+
+            //后序遍历
+            postOrder(child,root);
+
+            //访问到有效的子节点
+            //先计算nodeSum,统计子节点的个数
+            nodeSum[root] += nodeSum[child];
+            //根据nodeSum计算distSum
+            distSum[root] += nodeSum[child] + distSum[child];
+        }
+    }
+
+    void preOrder(int root, int parent){
+        List<Integer> children = graph.get(root);
+
+        for(Integer child : children){
+            if(child == parent) continue;
+
+            distSum[child] = distSum[root] - nodeSum[child] + (graph.size() - nodeSum[child]);
+            preOrder(child,root);
+        }
+    }
+}
+```
+
+
+
+
 
 
 
