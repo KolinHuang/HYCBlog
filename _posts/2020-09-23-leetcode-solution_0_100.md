@@ -42,6 +42,8 @@ pin: true
 
 [67.二进制求和](#jump67)
 
+[75.颜色分类](#jump75)
+
 [77.组合[tag:字典序]](#jump77)
 
 [79.单词搜索](#jump79)
@@ -1500,6 +1502,105 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump75"></span>
+
+## 75.颜色分类
+
+给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+注意:
+不能使用代码库中的排序函数来解决这道题。
+
+示例:
+
+```java
+输入: [2,0,2,1,1,0]
+输出: [0,0,1,1,2,2]
+```
+
+
+
+进阶：
+
+* 一个直观的解决方案是使用计数排序的两趟扫描算法。
+  首先，迭代计算出0、1 和 2 元素的个数，然后按照0、1、2的排序，重写当前数组。
+* 你能想出一个仅使用常数空间的一趟扫描算法吗？
+
+
+
+
+
+计数排序
+
+```java
+class Solution {
+    public void sortColors(int[] nums) {
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        for(int i = 0; i < nums.length; ++i){
+            if(nums[i] == 0)    a++;
+            if(nums[i] == 1)    b++;
+            if(nums[i] == 2)    c++;
+        }
+
+        for(int i = 0; i < nums.length; ++i){
+            if(a != 0){
+                nums[i] = 0;
+                a--;
+            }else if(b != 0){
+                nums[i] = 1;
+                b--;
+            }else{
+                nums[i] = 2;
+                c--;
+            }
+        }
+    }    
+}
+```
+
+
+
+
+
+
+
+一趟partition，把0都放到左边，1都放到右边，数字2放完之后，这个位置还需要被遍历一次，所以`i--`。
+
+```java
+class Solution {
+    public void sortColors(int[] nums) {
+        int low = 0;
+        int high = nums.length-1;
+        
+
+        for(int i = 0; i < nums.length; ++i){
+            if(i >= low && i <= high){
+                if(nums[i] == 0){
+                nums[i] = nums[low];
+                nums[low++] = 0;
+                }else if(nums[i] == 2){
+                  	//交换过来的数字不确定，所以需要再判断一次这个位置
+                    nums[i--] = nums[high];
+                    nums[high--] = 2;
+                }
+            }   
+        }
+    }
+}
+```
+
+
+
+
 
 
 
