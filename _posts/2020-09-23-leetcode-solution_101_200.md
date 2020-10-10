@@ -45,6 +45,8 @@ pin: true
 
 [141.环形链表](#jump141)
 
+[142.环形链表II](#jump142)
+
 [145.二叉树的后序遍历](#jump145)
 
 
@@ -1357,6 +1359,95 @@ public class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump142"></span>
+
+## 142.环形链表II
+
+给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 `null`。
+
+如果链表中有某个节点，可以通过连续跟踪 next 指针再次到达，则链表中存在环。 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。注意：pos 不作为参数进行传递，仅仅是为了标识链表的实际情况。
+
+**说明：**不允许修改给定的链表。
+
+ 
+
+进阶：
+
+你能用 O(1)（即，常量）内存解决此问题吗？
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist.png)
+
+```java
+输入：head = [3,2,0,-4], pos = 1
+输出：true
+解释：链表中有一个环，其尾部连接到第二个节点。
+```
+
+
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test2.png)
+
+```java
+输入：head = [1,2], pos = 0
+输出：true
+解释：链表中有一个环，其尾部连接到第一个节点。
+```
+
+
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2018/12/07/circularlinkedlist_test3.png)
+
+```java
+输入：head = [1], pos = -1
+输出：false
+解释：链表中没有环。
+```
+
+快慢指针：
+
+初始时，slow和fast都位于链表的头部，随后slow每次向后移动一个位置，fast向后移动两个位置。二者会在环中的某点相遇。如下图所示：
+
+![](https://assets.leetcode-cn.com/solution-static/142/142_fig1.png)
+
+b是相遇时slow指针在环内走过的距离，所以此时fast指针走过的距离为：`a+n(b+c)+b = a+(n+1)b+nc`。任意时刻，fast指针走过的距离都为slow指针的两倍，所以有：`b = a+(n+1)b+nc`，即：`a = c+(n-1)(b+c)`，所以从相遇点到入环点的距离加上 n-1 圈的环长，恰好等于从链表头部到入环点的距离。因此，当发现 slow 与 fast 相遇时，我们再额外使用一个指针 ptr。起始，它指向链表头部；随后，它和 slow 每次向后移动一个位置。最终，它们会在入环点相遇。
+
+```java
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+
+        if(head == null || head.next == null)   return null;
+        ListNode slow = head, fast = head, ptr = head;
+
+        while(fast != null){
+            slow = slow.next;
+            fast = fast.next;
+            if(fast == null)    return null;
+            fast = fast.next;
+            if(slow == fast){
+                while(slow != ptr){
+                    slow = slow.next;
+                    ptr = ptr.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+}
+```
+
+
+
+
+
+
 
 
 
