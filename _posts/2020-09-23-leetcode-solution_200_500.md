@@ -42,6 +42,8 @@ pin: true
 
 [404.左叶子之和](#jump404)
 
+[416.分割等和子集](#jump416)
+
 [459.重复的子字符串](#jump459)
 
 [486.预测赢家](#jump486)
@@ -1950,6 +1952,95 @@ class Solution {
         }
         if(root.left != null)   traversal(root.left, true);
         if(root.right != null)  traversal(root.right,false);
+    }
+}
+```
+
+
+
+
+
+<span id = "jump416"></span>
+
+## 416.分割等和子集
+
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+注意:
+
+每个数组中的元素不会超过 100
+数组的大小不会超过 200
+示例 1:
+
+```java
+输入: [1, 5, 11, 5]
+
+输出: true
+
+解释: 数组可以分割成 [1, 5, 5] 和 [11].
+```
+
+示例 2:
+
+```java
+输入: [1, 2, 3, 5]
+
+输出: false
+
+解释: 数组不能分割成两个元素和相等的子集.
+```
+
+
+
+
+
+动态规划：
+
+```java
+class Solution {
+    public boolean canPartition(int[] nums) {
+
+        if(nums.length == 1)    return false;
+        int sum  = 0;
+        int maxNum = nums[0];
+
+        for(int i = 0; i < nums.length; ++i){
+            sum += nums[i];
+            maxNum = Math.max(maxNum,nums[i]);
+        }
+
+        //和不能被2整除，肯定false
+        if(sum % 2 != 0)    return false;
+        int target = sum  /2;
+        //最大元素比总和的一半都大，肯定不能平分
+        if(maxNum > target) return false;
+
+        boolean[][] dp = new boolean[nums.length][target + 1];
+
+        //dp[i][j] 表示是否能够从下标为0~i的数组元素中选取若干个元素时，和为j。
+
+        
+        for(int i = 0; i < nums.length; ++i){
+            dp[i][0] = true;
+        }
+        dp[0][nums[0]] = true;
+
+        for(int i = 1; i < nums.length; ++i){
+            for(int j = 1; j <= target; ++j){
+                
+                if(j < nums[i]){
+                    //当j < nums[i]时，肯定不能选nums[i]，所以dp[i][j]只能由dp[i-1][j]决定
+                    dp[i][j] = dp[i-1][j];
+                }else{
+                    //当j >= nums[i]时，nums[i]可选可不选
+                    //如果选了，就取决于dp[i-1][j-nums[i]]是否为true
+                    //如果不选，就取决于d[i-1][j]
+                    dp[i][j] = dp[i-1][j] || dp[i-1][j - nums[i]];
+                }
+            }
+        }
+
+        return dp[nums.length - 1][target];
     }
 }
 ```
