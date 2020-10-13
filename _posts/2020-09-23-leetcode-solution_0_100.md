@@ -24,6 +24,8 @@ pin: true
 
 [18.四数之和](jump18)
 
+[24.两两交换链表中的节点](#jump24)
+
 [37.解数独](#jump37)
 
 [39.组合总和1](#jump39)
@@ -578,6 +580,54 @@ class Solution {
 链接：https://leetcode-cn.com/problems/4sum/solution/si-shu-zhi-he-by-leetcode-solution/
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+
+
+
+
+
+
+<span id = "jump24"></span>
+
+## 24.两两交换链表中的节点
+
+给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+ 
+
+示例:
+
+```java
+给定 1->2->3->4, 你应该返回 2->1->4->3.
+```
+
+
+
+```java
+class Solution {
+    public ListNode swapPairs(ListNode head) {
+        ListNode fake_head = new ListNode(-1);
+        fake_head.next = head;
+        //建立一个伪头节点
+        ListNode p = fake_head;
+        ListNode q = head;
+        //存在成对的未交换节点才继续
+        while(q != null && q.next != null){
+            //交换节点
+            p.next = q.next;
+            q.next = p.next.next;
+            p.next.next = q;
+            //交换完毕，移向下一组
+            p = q;
+            q = q.next;
+        }
+        //返回头节点
+        return fake_head.next;
+    }
+}
 ```
 
 
