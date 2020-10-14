@@ -165,3 +165,69 @@ Connecting to MASTER 127.0.0.1:6379
 15:S 12 Oct 2020 13:54:10.739 * Master is currently unable to PSYNC but should be in the future: -NOMASTERLINK Can't SYNC while not connected with my master
 ```
 
+修改slave配置文件的以下两项：
+
+```shell
+replicaof 118.31.103.27 6379
+bind 127.0.0.1 118.31.103.27
+```
+
+重启主节点和从节点，测试：
+
+Master:
+
+```shell
+# Replication
+role:master
+connected_slaves:1
+```
+
+Slave:
+
+```shell
+# Replication
+role:slave
+master_host:118.31.103.27
+master_port:6379
+master_link_status:up
+```
+
+在master上保存了一个key，在slave上顺利地查询到了。
+
+至此，一主两从已经配置完成。接下来配置哨兵。
+
+
+
+## 3.添加哨兵
+
+获取哨兵配置文件：
+
+```shell
+wget http://download.redis.io/redis-stable/sentinel.conf
+```
+
+
+
+配置哨兵文件：
+
+```shell
+# 让sentinel服务后台运行
+daemonize yes 
+
+# 修改日志文件的路径
+logfile "/var/log/redis/sentinel.log"
+
+# 修改监控的主redis服务器
+# 最后一个2表示，两台机器判定主被动下线后，就进行failover(故障转移)
+sentinel monitor mymaster 35.236.172.131 6379 2
+```
+
+
+
+出现了一个问题，使用以下命令建立哨兵容器时，占用了6379端口，导致主节点断开，并被设置为从节点。
+
+```shell
+docker run -d -p 26379:26379 --name sentinel01 -v /root/sentinel01.conf:/usr/local/etc/redis/sentinel.conf redis /bin/bash
+```
+
+待修复

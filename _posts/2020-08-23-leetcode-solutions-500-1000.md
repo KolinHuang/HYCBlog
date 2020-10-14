@@ -52,6 +52,8 @@ pin: true
 
 [968.监控二叉树](#jump968)
 
+[1002.查找常用字符](#jump1002)
+
 [LCP 19.秋叶收藏集](#jumplcp19)
 
 
@@ -2131,6 +2133,101 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump1002"></span>
+
+## 1002.查找常用字符
+
+给定仅有小写字母组成的字符串数组 A，返回列表中的每个字符串中都显示的全部字符（包括重复字符）组成的列表。例如，如果一个字符在每个字符串中出现 3 次，但不是 4 次，则需要在最终答案中包含该字符 3 次。
+
+你可以按任意顺序返回答案。
+
+示例 1：
+
+```java
+输入：["bella","label","roller"]
+输出：["e","l","l"]
+```
+
+
+示例 2：
+
+```java
+输入：["cool","lock","cook"]
+输出：["c","o"]
+```
+
+
+提示：
+
+* 1 <= A.length <= 100
+* 1 <= A[i].length <= 100
+* `A[i][j] `是小写字母
+
+哈希表，建立数组`counts[26]`，先预存第一个字符串每个字母的哈希，统计出现次数。
+
+再遍历剩余字符串，统计每个字符串中每个字符出现的次数，放入哈希数组`tmp[26]`中，再按如下规则更新`counts`:
+
+```java
+counts[i] = Math.min(count[i], tmp[i]);
+```
+
+即统计各字符出现的最小次数。
+
+最后将`counts[i]`映射到字符串即可。
+
+```java
+class Solution {
+    public List<String> commonChars(String[] A) {
+        List<String> res = new ArrayList<>();
+        if(A.length == 0)   return res;
+
+        int[] counts = new int[26];
+        //预存第一个字符串每个字母的哈希，统计出现次数。
+        for(int i = 0; i < A[0].length(); ++i){
+            char c = A[0].charAt(i);
+            int index = c - 'a';
+            counts[index]++;
+        }
+        //遍历剩余字符串，统计每个字符串中每个字符出现的次数，放入哈希数组tmp[26]中
+        for(int i = 1; i < A.length; ++i){
+            int[] tmp = new int[26];
+            for(int j = 0; j < A[i].length(); ++j){
+                char c = A[i].charAt(j);
+                int index = c - 'a';
+                tmp[index]++;
+            }
+          	//取最小次数
+            for(int j = 0; j < 26; ++j){
+                counts[j] = Math.min(counts[j],tmp[j]);
+            }
+        }
+
+        for(int i = 0; i < 26; ++i){
+            if(counts[i] == 0)  continue;
+            char c = (char)(i+97);
+            for(int j = 0; j < counts[i]; ++j){
+                res.add(String.valueOf(c));
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
