@@ -33,6 +33,8 @@ pin: true
 
 [113.路径总和 II](#jump113)
 
+[116.填充每个节点的下一个右侧节点指针](#jump116)
+
 [117.填充每个节点的下一个右侧节点指针 II](#jump117)
 
 [120.三角形最小路径和](#jump120)
@@ -681,6 +683,83 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump116"></span>
+
+## 116.填充每个节点的下一个右侧节点指针
+
+给定一个完美二叉树，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+
+```c
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+```
+
+
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+
+初始状态下，所有 next 指针都被设置为 NULL。
+
+![](https://assets.leetcode-cn.com/aliyun-lc-upload/uploads/2019/02/15/116_sample.png)
+
+**提示：**
+
+- 你只能使用常量级额外空间。
+- 使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+
+
+
+不能用层序遍历，假设我们即将为第i+1行建立next关系，那么由于我们已经对第i行成功建立了next关系，所以我们可以用第i行的next指针遍历第i行，而第i+1行所有的节点都是第i行的子节点，所以也能直接被遍历到。具体地：
+
+```markdown
+使用一个nextStart指针指向下一行的起点。例如图中的1、2、4节点。
+在建立第i+1行关系时，迭代第i行的节点cur，如2，
+					令2.left.next = 2.right;
+					令2.right.next = null or 2.next.left;	//当2.next为空时，2.right.next就为空。
+然后移动指针cur，指向3。
+在每行的开始，更新nextStart指针，使其指向第一个节点的left。每行结束时，更新迭代指针cur为nextStart，开始遍历下一行。
+```
+
+```java
+class Solution {
+    public Node connect(Node root) {
+        if(root == null)    return root;
+        root.next = null;
+        //下一行的开头指针
+        Node nextStart = root;
+        while(nextStart != null){
+            //开始遍历这一行
+            Node cur = nextStart;
+            //更新nextStart指针，为下一次迭代作准备
+            nextStart = cur.left;
+            while(cur != null && cur.left != null){
+                cur.left.next = cur.right;
+                if(cur.next == null){
+                    cur.right.next = null;
+                }else{
+                    cur.right.next = cur.next.left;
+                }
+                cur = cur.next;
+            }
+        }
+        return root;
+    }
+}
+```
+
+
+
+
 
 
 
