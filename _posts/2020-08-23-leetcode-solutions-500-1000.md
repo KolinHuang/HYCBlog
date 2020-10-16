@@ -52,6 +52,8 @@ pin: true
 
 [968.监控二叉树](#jump968)
 
+[977.有序数组的平方](#jump977)
+
 [1002.查找常用字符](#jump1002)
 
 [LCP 19.秋叶收藏集](#jumplcp19)
@@ -2133,6 +2135,89 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump977"></span>
+
+## 977.有序数组的平方
+
+给定一个按非递减顺序排序的整数数组 A，返回每个数字的平方组成的新数组，要求也按非递减顺序排序。
+
+示例 1：
+
+```java
+输入：[-4,-1,0,3,10]
+输出：[0,1,9,16,100]
+```
+
+示例 2：
+
+```java
+输入：[-7,-3,2,3,11]
+输出：[4,9,9,49,121]
+```
+
+
+提示：
+
+* 1 <= A.length <= 10000
+* -10000 <= A[i] <= 10000
+* A 已按非递减顺序排序。
+
+
+
+双指针左右移动，比较绝对值的较小值，取平方依次填入新数组。
+
+```java
+class Solution {
+    public int[] sortedSquares(int[] A) {
+        //找到绝对值最小值的位置，双指针左右移
+        
+        //如果全部是非正数，那么绝对值最小值就是最后一个元素
+        int index = A.length - 1;
+        //当两个相邻元素的绝对值之差为负数时，说明找到了绝对值最小值
+        for(int i = 0; i < A.length - 1; ++i){
+            if(Math.abs(A[i]) < Math.abs(A[i+1])){
+                index = i;
+                break;
+            }
+        }
+        int[] res = new int[A.length];
+        int cur = 0;
+        //双指针，初始时都在index处
+        int l = index, r = index+1;
+        while(l >= 0 && r < A.length){
+            if(Math.abs(A[l]) < Math.abs(A[r])){
+                res[cur++] = A[l] * A[l];
+                l--;
+            }else{
+                res[cur++] = A[r] * A[r];
+                ++r;
+            }
+        }
+        while(l >= 0){
+            res[cur++] = A[l] * A[l];
+            l--;
+        }
+        while(r < A.length){
+            res[cur++] = A[r] * A[r];
+            ++r;
+        }
+        return res;
+    }
+}
+```
+
+
+
+
 
 
 
