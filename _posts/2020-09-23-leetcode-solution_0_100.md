@@ -38,6 +38,8 @@ pin: true
 
 [51.N 皇后](#jump51)
 
+[52.N皇后 II[tag]](#jump52)
+
 [60.第k个排列[tag]](#jump60)
 
 [62.不同路径](#jump62)
@@ -1238,6 +1240,129 @@ class Solution {
 * 排列枚举：因为这里每行只能放置一个皇后，而所有行中皇后的列号正好构成一个 1 到 n 的排列，所以我们可以把问题转化为一个排列枚举，规模是 n!。
 
 带入一些 nn 进这三种方法验证，就可以知道那种方法的枚举规模是最小的，这里我们发现第三种方法的枚举规模最小。这道题给出的两个方法其实和排列枚举的本质是类似的。
+
+
+
+
+
+
+
+<span id = "jump52"></span>
+
+## 52.N皇后 II[tag]
+
+*n* 皇后问题研究的是如何将 *n* 个皇后放置在 *n*×*n* 的棋盘上，并且使皇后彼此之间不能相互攻击。
+
+给定一个整数 n，返回所有不同的 n 皇后问题的解决方案。
+
+每一种解法包含一个明确的 n 皇后问题的棋子放置方案，该方案中 'Q' 和 '.' 分别代表了皇后和空位。
+
+示例：
+
+```java
+输入：4
+输出：[
+ [".Q..",  // 解法 1
+  "...Q",
+  "Q...",
+  "..Q."],
+
+ ["..Q.",  // 解法 2
+  "Q...",
+  "...Q",
+  ".Q.."]
+]
+解释: 4 皇后问题存在两个不同的解法。
+
+```
+
+
+提示：
+
+* 皇后彼此不能相互攻击，也就是说：任何两个皇后都不能处于同一条横行、纵行或斜线上。
+
+
+
+n*n的棋盘，放置n个皇后，且每个皇后不能处于同一条横行、纵行或斜线上，说明每一行都有一个皇后。所以我们只要遍历每一行，在合适的位置放置一个皇后即可。合适的位置判断如下：
+
+```markdown
+不能在同一列。用一个集合存放已访问的列。
+不能在同一正对角线。同一个正对角线上，i-j的值是相等的，因此用一个集合放置已访问过的i-j的值。
+不能在同一负对角线。同一个负对角线上，i+j的值是相等的，因此用一个集合放置已访问过的i+j的值。
+```
+
+若每个皇后都顺利放置完毕，就计数+1。
+
+```java
+class Solution {
+    int n;
+    int cnt = 0;
+    //不能在同一列
+    Set<Integer> col = new HashSet<>();
+    //不能在同一正对角线
+    Set<Integer> pos_dia = new HashSet<>();
+    //不能在同一负对角线
+    Set<Integer> neg_dia = new HashSet<>();
+    public int totalNQueens(int n) {
+        this.n = n;
+        backTrack(0);
+        return cnt;
+    }
+
+    void backTrack(int row){
+        //填充完毕，找到了一种答案
+        if(row == n){
+            cnt++;
+        }
+
+        //遍历这一行的每一列
+        for(int j = 0; j < n; ++j){
+            if(!col.contains(j) && !pos_dia.contains(row - j) && !neg_dia.contains(row + j)){
+                col.add(j);
+                pos_dia.add(row - j);
+                neg_dia.add(row + j);
+
+                backTrack(row + 1);
+                //回溯
+                col.remove(j);
+                pos_dia.remove(row - j);
+                neg_dia.remove(row + j);
+            }
+        }
+    }
+}
+```
+
+位运算解法：
+
+```java
+class Solution {
+    public int totalNQueens(int n) {
+        return solve(n, 0, 0, 0, 0);
+    }
+
+    public int solve(int n, int row, int columns, int diagonals1, int diagonals2) {
+        if (row == n) {
+            return 1;
+        } else {
+            int count = 0;
+            int availablePositions = ((1 << n) - 1) & (~(columns | diagonals1 | diagonals2));
+            while (availablePositions != 0) {
+                int position = availablePositions & (-availablePositions);
+                availablePositions = availablePositions & (availablePositions - 1);
+                count += solve(n, row + 1, columns | position, (diagonals1 | position) << 1, (diagonals2 | position) >> 1);
+            }
+            return count;
+        }
+    }
+}
+```
+
+
+
+
+
+
 
 
 
