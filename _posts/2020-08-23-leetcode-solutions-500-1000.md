@@ -26,6 +26,8 @@ pin: true
 
 [617.合并二叉树](#jump617)
 
+[621.任务调度器](#jump621)
+
 [637.二叉树的层平均值](#jump637)
 
 [647.回文子串](#jump647)
@@ -750,6 +752,116 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump621"></span>
+
+## 621.任务调度器
+
+给定一个用字符数组表示的 CPU 需要执行的任务列表。其中包含使用大写的 A - Z 字母表示的26 种不同种类的任务。任务可以以任意顺序执行，并且每个任务都可以在 1 个单位时间内执行完。CPU 在任何一个单位时间内都可以执行一个任务，或者在待命状态。
+
+然而，两个相同种类的任务之间必须有长度为 n 的冷却时间，因此至少有连续 n 个单位时间内 CPU 在执行不同的任务，或者在待命状态。
+
+你需要计算完成所有任务所需要的最短时间。
+
+示例 ：
+
+```java
+输入：tasks = ["A","A","A","B","B","B"], n = 2
+输出：8
+解释：A -> B -> (待命) -> A -> B -> (待命) -> A -> B.
+     在本示例中，两个相同类型任务之间必须间隔长度为 n = 2 的冷却时间，而执行一个任务只需要一个单位时间，所以中间出现了（待命）状态。 
+```
+
+
+提示：
+
+* 任务的总个数为 [1, 10000]。
+* n 的取值范围为 [0, 100]。
+
+
+
+每次从任务列表中选取剩余次数最多的n+1个任务执行，如果剩余任务没有超过n+1个，则选取剩余所有任务执行，多余的时间待命。
+
+只要每次选取剩余次数最多的n+1个任务，那么下一轮选取的时候，每个任务都是处于可选择状态。
+
+```java
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+        int rest = tasks.length;
+        int res = 0;
+        int[] counts = new int[26];
+				//记录所有任务的次数
+        for(int i = 0; i < tasks.length; ++i){
+            int index = tasks[i] - 65;
+            counts[index]++;
+        }
+
+        Arrays.sort(counts);
+
+        while(counts[25] > 0){
+          	//选取剩余次数最多的n+1个任务
+            for(int i = 0; i <= n; ++i){
+              	//剩余次数最多的任务，次数都为0了，那么就执行完毕了
+                if(counts[25] == 0)
+                    break;
+                if( 25 - i >= 0 && counts[25 - i] > 0)
+                    counts[25-i]--;
+                res++;
+            }
+          	//选取完后，需要重新排序
+            Arrays.sort(counts);
+        }
+        return res;
+    }
+}
+```
+
+最小堆解法：
+
+```java
+class Solution {
+    public int leastInterval(char[] tasks, int n) {
+
+        int res = 0;
+        int[] counts = new int[26];
+
+        for(int i = 0; i < tasks.length; ++i){
+            int index = tasks[i] - 65;
+            counts[index]++;
+        }
+
+        PriorityQueue<Integer> queue = new PriorityQueue<>(26, Collections.reverseOrder());
+
+        for(int i : counts){
+            if(i > 0)
+                queue.add(i);
+        }
+
+
+        while(!queue.isEmpty()){
+            //为了避免重复选取任务，每次取出一个任务时，先放入list中，最后再统一插入到最小堆
+            List<Integer> list = new ArrayList<>();
+            for(int i = 0; i <= n; ++i){
+                if(!queue.isEmpty()){
+                    if(queue.peek() > 1)
+                        list.add(queue.poll() - 1);
+                    else
+                        queue.poll();
+                }
+                res++;
+                if(queue.isEmpty() && list.size() == 0)
+                    break;
+            }
+            for(int e : list){
+                queue.add(e);
+            }
+        }
+        return res;
+    }
+}
+```
 
 
 
