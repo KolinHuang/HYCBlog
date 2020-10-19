@@ -24,6 +24,8 @@ pin: true
 
 [18.四数之和](jump18)
 
+[19.删除链表的倒数第N个节点](#jump19)
+
 [24.两两交换链表中的节点](#jump24)
 
 [37.解数独](#jump37)
@@ -587,6 +589,76 @@ class Solution {
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump19"></span>
+
+## 19.删除链表的倒数第N个节点
+
+给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+
+示例：
+
+```java
+给定一个链表: 1->2->3->4->5, 和 n = 2.
+
+当删除了倒数第二个节点后，链表变为 1->2->3->5.
+```
+
+
+说明：
+
+* 给定的 n 保证是有效的。
+
+进阶：
+
+* 你能尝试使用一趟扫描实现吗？
+
+双指针移动，先让一个指针移动n位，再让两个指针同时移动，这样当后一个指针到头时，前一个指针就指向倒数第n个节点。
+
+```java
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if(head == null)    return null;
+        if(n == 0)  return head;
+      	//用一个伪头节点降低代码复杂度
+        ListNode fake_head = new ListNode(-1);
+        fake_head.next = head;
+      	//指向需要被删除节点的前一个节点
+        ListNode pre = fake_head;
+      	//指向需要被删除的节点
+        ListNode left = head;
+        ListNode right = head;
+        while(right != null){
+            if(n != 0){
+              	//先让right指针移动n位
+                right = right.next;
+                n--;
+            }else{
+                pre = pre.next;
+                left = left.next;
+                right = right.next;
+            }
+        }
+      	//删除节点
+        pre.next = left.next;
+      	//help GC 
+        left.next = null;
+        return fake_head.next;
+    }
+}
+```
+
+
+
+
 
 
 

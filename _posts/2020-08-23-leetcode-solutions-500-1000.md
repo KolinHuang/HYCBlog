@@ -52,6 +52,8 @@ pin: true
 
 [841.钥匙和房间](#jump841)
 
+[844.比较含退格的字符串](#jump844)
+
 [968.监控二叉树](#jump968)
 
 [977.有序数组的平方](#jump977)
@@ -2149,6 +2151,134 @@ class Solution {
 
 
 有时候不能理解leetcode的难度分类标准，有些简单题都需要费很多时间，像这种模版题却是中等题。
+
+
+
+
+
+<span id = "844"></span>
+
+## 844.比较含退格的字符串
+
+给定 S 和 T 两个字符串，当它们分别被输入到空白的文本编辑器后，判断二者是否相等，并返回结果。 # 代表退格字符。
+
+注意：如果对空文本输入退格字符，文本继续为空。
+
+ 
+
+示例 1：
+
+```java
+输入：S = "ab#c", T = "ad#c"
+输出：true
+解释：S 和 T 都会变成 “ac”。
+```
+
+示例 2：
+
+```java
+输入：S = "ab##", T = "c#d#"
+输出：true
+解释：S 和 T 都会变成 “”。
+```
+
+示例 3：
+
+```java
+输入：S = "a##c", T = "#a#c"
+输出：true
+解释：S 和 T 都会变成 “c”。
+```
+
+示例 4：
+
+```java
+输入：S = "a#c", T = "b"
+输出：false
+解释：S 会变成 “c”，但 T 仍然是 “b”。
+```
+
+
+提示：
+
+* 1 <= S.length <= 200
+* 1 <= T.length <= 200
+* S 和 T 只含有小写字母以及字符 '#'。
+
+
+进阶：
+
+* 你可以用 O(N) 的时间复杂度和 O(1) 的空间复杂度解决该问题吗？
+
+
+
+从后往前移动，依次消除退格
+
+```java
+/*
+执行用时：1 ms, 在所有 Java 提交中击败了96.52%的用户
+内存消耗：36.3 MB, 在所有 Java 提交中击败了99.82%的用户
+*/
+class Solution {
+    public boolean backspaceCompare(String S, String T) {
+        int iS = S.length() - 1;
+        int iT = T.length() - 1;
+        int cS = 0;
+        int cT = 0;
+        //从后往前移动
+        while(iS >= 0 || iT >= 0){
+            //如果当前字符为退格，就计数
+            if(iS >= 0 && S.charAt(iS) == '#'){
+                cS++;
+                iS--;
+                continue;
+            }
+            if(iT >= 0 && T.charAt(iT) == '#'){
+                cT++;
+                iT--;
+                continue;
+            }
+            //把退格消耗掉，一个一个消耗，因为可能会继续有退格出现导致cS\cT变大
+            if(cS > 0){
+                cS--;
+                iS--;
+                continue;
+            }
+            if(cT > 0){
+                cT--;
+                iT--;
+                continue;
+            }
+            //iS和iT都合法，就判断当前字符是否相等，不相等返回flase
+            if(iS >= 0 && S.charAt(iS) != '#' 
+            && iT >= 0 && T.charAt(iT) != '#' 
+            && S.charAt(iS) != T.charAt(iT)){
+                return false;
+            }
+            //iS和iT有一者非法，返回false
+            if((iS >= 0 && iT < 0) || (iS < 0 && iT >= 0)){
+                return false;
+            }
+            //二者都合法，并且当前字符相等，就递减
+            --iS;
+            --iT;
+        }
+        //循环结束，没有出现不相等的情况，就返回true
+        return true;
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
