@@ -49,6 +49,8 @@ pin: true
 
 [142.环形链表II](#jump142)
 
+[143.重排链表](#jump143)
+
 [145.二叉树的后序遍历](#jump145)
 
 
@@ -1518,6 +1520,87 @@ public class Solution {
             }
         }
         return null;
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump143"></span>
+
+## 143.重排链表
+
+给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+示例 1:
+
+```java
+给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+```
+
+示例 2:
+
+```java
+给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+```
+
+
+
+先统计结点个数，将后一半节点入栈，再遍历前一半节点，将栈中节点依次错位插入到其中。
+
+```java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode reorderList(ListNode head) {
+        ListNode new_head = new ListNode(-1);
+        ListNode cur = head;
+        //一次遍历统计节点个数
+        int nums = 0;
+        while(cur != null){
+            nums++;
+            cur = cur.next;
+        }
+        //将后一半的节点入栈
+        Stack<ListNode> stack = new Stack<>();
+        int index = (nums % 2 == 0) ? (nums / 2) : (nums / 2 + 1);
+        cur = head;
+        //定位到链表的中间节点
+        while(index != 0){
+            index--;
+            cur = cur.next;
+        }
+        ListNode ptr = cur;
+        while(cur != null){
+            stack.push(cur);
+            cur = cur.next;
+        }
+        //将栈中节点依次插入到链表中
+        cur = head;
+        while(!stack.isEmpty()){
+            ListNode tmp = stack.pop();
+            tmp.next = cur.next;
+            cur.next = tmp;
+            cur = tmp.next;
+        }
+        if(ptr != null && ptr.next != null)
+           ptr.next.next = null;
+        return head;
     }
 }
 ```
