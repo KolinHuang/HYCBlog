@@ -54,6 +54,8 @@ pin: true
 
 [844.比较含退格的字符串](#jump844)
 
+[925.长按键入](jump925)
+
 [968.监控二叉树](#jump968)
 
 [977.有序数组的平方](#jump977)
@@ -2271,6 +2273,104 @@ class Solution {
 ```
 
 
+
+
+
+
+
+<span id = "jump925"></span>
+
+## 925.长按键入
+
+你的朋友正在使用键盘输入他的名字 name。偶尔，在键入字符 c 时，按键可能会被长按，而字符可能被输入 1 次或多次。
+
+你将会检查键盘输入的字符 typed。如果它对应的可能是你的朋友的名字（其中一些字符可能被长按），那么就返回 True。
+
+ 示例 1：
+
+```java
+输入：name = "alex", typed = "aaleex"
+输出：true
+解释：'alex' 中的 'a' 和 'e' 被长按。
+```
+
+示例 2：
+
+```java
+输入：name = "saeed", typed = "ssaaedd"
+输出：false
+解释：'e' 一定需要被键入两次，但在 typed 的输出中不是这样。
+```
+
+示例 3：
+
+```java
+输入：name = "leelee", typed = "lleeelee"
+输出：true
+```
+
+示例 4：
+
+```java
+输入：name = "laiden", typed = "laiden"
+输出：true
+解释：长按名字中的字符并不是必要的。
+```
+
+
+提示：
+
+* name.length <= 1000
+* typed.length <= 1000
+* name 和 typed 的字符都是小写字母。
+
+
+
+逆序遍历判断即可，出现不相等的字符，就判断是否是长按造成的，注意边界判断。
+
+```java
+class Solution {
+    public boolean isLongPressedName(String name, String typed) {
+
+        int ptr1 = name.length() - 1;
+        int ptr2 = typed.length() - 1;
+        if(ptr1 < 0 && ptr2 >= 0)   return false;
+        if(ptr1 < 0 && ptr2 < 0)  return true;
+        //从后往前遍历
+        while(ptr1 >= 0 && ptr2 >= 0){
+            if(name.charAt(ptr1) == typed.charAt(ptr2)){
+                --ptr1;
+                --ptr2;
+                continue;
+            }else{
+                //最后一个字符就不相等了，肯定不可能是长按造成的
+                if(ptr1 == name.length() - 1)
+                    return false;
+                //不相等的不是最后一个字符，那么需要判断这个字符是否被长按了
+                //与后面那个字符相等，说明有可能是长按了
+                if(typed.charAt(ptr2) == typed.charAt(ptr2 + 1)){
+                    ptr2--;
+                    continue;
+                }else{
+                    //如果不是长按多出的字符，那么就不匹配
+                    return false;
+                }
+            }
+        }
+        //匹配结束，如果ptr1<0，则判断ptr2剩余字符是否都是与name.charAt(0)相同的字符，如果是，就返回true，否则就false
+        if(ptr1 < 0){
+            while(ptr2 >= 0){
+                if(name.charAt(0) != typed.charAt(ptr2)){
+                    return false;
+                }
+                ptr2--;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+```
 
 
 
