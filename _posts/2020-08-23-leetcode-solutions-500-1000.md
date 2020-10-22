@@ -48,6 +48,8 @@ pin: true
 
 [733.图像渲染](#jump733)
 
+[763.划分字母区间](#jump763)
+
 [834.树中距离之和tag](#jump834)
 
 [841.钥匙和房间](#jump841)
@@ -1931,6 +1933,76 @@ class Solution {
             }
         }
         return image;
+    }
+}
+```
+
+
+
+
+
+<span id = "jump763"></span>
+
+## 763.划分字母区间
+
+字符串 S 由小写字母组成。我们要把这个字符串划分为尽可能多的片段，同一个字母只会出现在其中的一个片段。返回一个表示每个字符串片段的长度的列表。
+
+ 示例 1：
+
+```java
+输入：S = "ababcbacadefegdehijhklij"
+输出：[9,7,8]
+解释：
+划分结果为 "ababcbaca", "defegde", "hijhklij"。
+每个字母最多出现在一个片段中。
+像 "ababcbacadefegde", "hijhklij" 的划分是错误的，因为划分的片段数较少。
+```
+
+
+提示：
+
+* S的长度在[1, 500]之间。
+* S只包含小写字母 'a' 到 'z' 。
+
+```java
+class Solution {
+    int start = 0;
+    int[] hashTable = new int[26];
+    List<Integer> res = new ArrayList<>();
+    public List<Integer> partitionLabels(String S) {
+        while(start < S.length()){
+            dfs(S);
+        }
+        return res;
+    }
+
+    void dfs(String S){
+      	//以start为起点
+        char c = S.charAt(start);
+        int lastIndex = start;
+      	//找出字符串中start的最后出现位置
+        for(int i = S.length() - 1; i > start; --i){
+            if(S.charAt(i) == c){
+                lastIndex = i;
+                break;
+            }
+        }
+        //遍历[start, lastIndex]区间内的字符，找出区间内每个字符在S中出现的最后位置，取最大值
+        for(int i = start+1; i < lastIndex; ++i){
+          	//避免重复搜索同一个字符
+            if(hashTable[S.charAt(i) - 'a'] == 1)   continue;
+            hashTable[S.charAt(i) - 'a'] = 1;
+            for(int j = S.length() - 1; j > i; --j){
+                if(S.charAt(j) == S.charAt(i)){
+                  	//更新lastIndex，精髓在这，lastIndex可能会变大，这样循环能够包含到扩大后的字符
+                    lastIndex = Math.max(lastIndex,j);
+                }
+            }
+        }
+      	//记录结果
+        res.add(lastIndex - start + 1);
+      	//更新start指针
+        start = lastIndex + 1;
     }
 }
 ```
