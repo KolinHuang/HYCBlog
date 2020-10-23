@@ -24,6 +24,8 @@ pin: true
 
 [226.翻转二叉树](#jump226)
 
+[234.回文链表](#jump234)
+
 [235.二叉树的最近公共祖先](#jump235)
 
 [257.二叉树的所有路径](#jump257)
@@ -731,6 +733,132 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump234"></span>
+
+## 234.回文链表
+
+请判断一个链表是否为回文链表。
+
+示例 1:
+
+```java
+输入: 1->2
+输出: false
+```
+
+示例 2:
+
+```java
+输入: 1->2->2->1
+输出: true
+```
+
+进阶：
+
+* 你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+
+用栈实现逆序比对。
+
+```java
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+
+        //统计节点个数
+        int num = 0;
+        ListNode ptr = head;
+        while(ptr != null){
+            num++;
+            ptr = ptr.next;
+        }
+        ptr = head;
+        int cnt = num / 2;
+        //将前一半节点入栈
+        Stack<ListNode> stack = new Stack<>();
+        while(cnt > 0){
+            stack.push(ptr);
+            ptr = ptr.next;
+            cnt--;
+        }
+        //如果是奇数，就需要继续向后移动一个节点，越过中间节点
+        if(num % 2 != 0)    ptr = ptr.next;
+        //出栈比对
+        while(!stack.isEmpty()){
+            ListNode tmp = stack.pop();
+            if(tmp.val != ptr.val)
+                return false;
+            ptr = ptr.next;
+        }
+        return true;
+    }
+}
+```
+
+
+
+进阶：将后一半链表翻转，再双指针遍历比较，结束后将链表恢复原样
+
+```java
+class Solution {
+    public boolean isPalindrome(ListNode head) {
+        if(head == null)    return true;
+        //统计节点个数
+        int num = 0;
+        ListNode ptr = head;
+        while(ptr != null){
+            num++;
+            ptr = ptr.next;
+        }
+        ptr = head;
+        int cnt = num / 2;
+        while(cnt > 0){
+            ptr = ptr.next;
+            cnt--;
+        }
+        //将后一半链表翻转
+        ListNode revStart = reverseListNode(ptr);
+        ListNode p1 = head;
+        ListNode p2 = revStart;
+        cnt = num / 2;
+        while(cnt > 0){
+            if(p1.val != p2.val){
+                ptr.next = reverseListNode(revStart);
+                return false;
+            }
+            cnt--;
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+        ptr.next = reverseListNode(revStart);
+        return true;
+    }
+
+    ListNode reverseListNode(ListNode head){
+        ListNode cur = head;
+        ListNode pre = null;
+
+        while(cur != null){
+            ListNode tmp = cur.next;
+            cur.next = pre;
+            pre = cur;
+            cur = tmp;            
+        }
+        return pre;
+    }
+}
+```
+
+
+
+
 
 
 
