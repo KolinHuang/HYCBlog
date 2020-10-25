@@ -53,6 +53,8 @@ pin: true
 
 [142.环形链表II](#jump142)
 
+[148.排序链表](#jump148)
+
 [215.数组中的第k大元素](#jump215)
 
 [226.翻转二叉树](#jump226)
@@ -1381,6 +1383,217 @@ public class Solution {
 ```
 
 
+
+## 148.排序链表
+
+给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
+
+进阶：
+
+你可以在 O(n log n) 时间复杂度和常数级空间复杂度下，对链表进行排序吗？
+
+```java
+输入：head = [4,2,1,3]
+输出：[1,2,3,4]
+```
+
+```java
+输入：head = [-1,5,3,4,0]
+输出：[-1,0,3,4,5]
+```
+
+**提示：**
+
+- 链表中节点的数目在范围 `[0, 5 * 104]` 内
+- `-105 <= Node.val <= 105`
+
+
+
+暴力遍历插入：
+
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        //制造一个伪头节点，用于执行插入操作
+        ListNode fake_head = new ListNode(-1);
+        fake_head.next = head;
+        //遍历节点，出现逆序对，就把后一个节点插入到合适的位置
+        ListNode ptr = head;
+        while(ptr != null && ptr.next != null){
+            if(ptr.val > ptr.next.val){
+                //将此节点从原链表中取出
+                ListNode tmp = ptr.next;
+                ptr.next = tmp.next;
+                ListNode cur = fake_head;
+                //找合适的位置
+                while(cur.next != null && cur.next.val < tmp.val){
+                    cur = cur.next;
+                }
+                //把该节点插入到合适的位置
+                tmp.next = cur.next;
+                cur.next = tmp;
+            }else {
+                ptr = ptr.next;
+            }
+
+        }
+        return fake_head.next;
+    }
+}
+```
+
+小顶堆：
+
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        //小顶堆
+        PriorityQueue<ListNode> queue = new PriorityQueue<>((a,b)->{
+            if(a.val > b.val){
+                return 1;
+            }else{
+                return -1;
+            }
+        });
+        ListNode ptr = head;
+        while(ptr != null){
+            queue.offer(ptr);
+            ptr = ptr.next;
+        }
+        ListNode newHead = new ListNode(-1);
+        ptr = newHead;
+        while(!queue.isEmpty()){
+            ListNode tmp = queue.poll();
+            tmp.next = null;
+            ptr.next = tmp;
+            ptr = tmp;
+        }
+        ptr = null;
+        return newHead.next;
+    }
+}
+```
+
+递归归并排序：
+
+```java
+class Solution {
+    //归并排序链表
+    //1.先用快慢指针把链表分割为两部分
+    //2.再递归分割直至只剩一个节点，即head.next = null
+    //3.接着对两个有序链表进行归并
+    //4.用一个指针来串
+    public ListNode sortList(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+        ListNode slow = head;
+        ListNode fast = head;
+        while(slow.next != null && fast.next != null && fast.next.next != null){
+            slow = slow.next;
+            fast = fast.next;
+            fast = fast.next;
+        }
+        //保留后半段的引用
+        ListNode tmp = slow.next;
+        //分割链表
+        slow.next = null;
+        //递归分割
+        ListNode left = sortList(head);
+        ListNode right = sortList(tmp);
+
+        ListNode res = new ListNode(-1);
+        ListNode cur = res;
+        //执行归并
+        while(left != null && right != null){
+            if(left.val < right.val){
+                cur.next = left;
+                left = left.next;
+            }else{
+                cur.next = right;
+                right = right.next;
+            }
+            cur = cur.next;
+        }
+        cur.next = left != null ? left : right;
+        return res.next;
+
+    }
+}
+```
+
+迭代归并排序（不是我写的，待复习！）：
+
+```java
+class Solution {
+    public ListNode sortList(ListNode head) {
+        int length = getLength(head);
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+       
+        for(int step = 1; step < length; step*=2){ //依次将链表分成1块，2块，4块...
+            //每次变换步长，pre指针和cur指针都初始化在链表头
+            ListNode pre = dummy; 
+            ListNode cur = dummy.next;
+            while(cur!=null){
+                ListNode h1 = cur; //第一部分头 （第二次循环之后，cur为剩余部分头，不断往后把链表按照步长step分成一块一块...）
+                ListNode h2 = split(h1,step);  //第二部分头
+                cur = split(h2,step); //剩余部分的头
+                ListNode temp = merge(h1,h2); //将一二部分排序合并
+                pre.next = temp; //将前面的部分与排序好的部分连接
+                while(pre.next!=null){
+                    pre = pre.next; //把pre指针移动到排序好的部分的末尾
+                }
+            }
+        }
+        return dummy.next;
+    }
+    public int getLength(ListNode head){
+    //获取链表长度
+        int count = 0;
+        while(head!=null){
+            count++;
+            head=head.next;
+        }
+        return count;
+    }
+    public ListNode split(ListNode head,int step){
+        //断链操作 返回第二部分链表头
+        if(head==null)  return null;
+        ListNode cur = head;
+        for(int i=1; i<step && cur.next!=null; i++){
+            cur = cur.next;
+        }
+        ListNode right = cur.next;
+        cur.next = null; //切断连接
+        return right;
+    }
+    public ListNode merge(ListNode h1, ListNode h2){
+    //合并两个有序链表
+        ListNode head = new ListNode(-1);
+        ListNode p = head;
+        while(h1!=null && h2!=null){
+            if(h1.val < h2.val){
+                p.next = h1;
+                h1 = h1.next;
+            }
+            else{
+                p.next = h2;
+                h2 = h2.next;
+            }
+            p = p.next;           
+        }
+        if(h1!=null)    p.next = h1;
+        if(h2!=null)    p.next = h2;
+
+        return head.next;     
+    }
+}
+
+作者：cherry-n1
+链接：https://leetcode-cn.com/problems/sort-list/solution/pai-xu-lian-biao-di-gui-die-dai-xiang-jie-by-cherr/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
 
 
 
