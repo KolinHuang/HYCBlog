@@ -56,6 +56,8 @@ pin: true
 
 [844.比较含退格的字符串](#jump844)
 
+[845.数组中的最长山脉](#jump845)
+
 [925.长按键入](jump925)
 
 [968.监控二叉树](#jump968)
@@ -1894,6 +1896,89 @@ class Solution {
     }
 }
 ```
+
+
+
+<span id = "jump845"></span>
+
+## 845.数组中的最长山脉
+
+我们把数组 A 中符合下列属性的任意连续子数组 B 称为 “山脉”：
+
+B.length >= 3
+存在 0 < i < B.length - 1 使得 B[0] < B[1] < ... B[i-1] < B[i] > B[i+1] > ... > B[B.length - 1]
+（注意：B 可以是 A 的任意子数组，包括整个数组 A。）
+
+给出一个整数数组 A，返回最长 “山脉” 的长度。
+
+如果不含有 “山脉” 则返回 0。
+
+示例 1：
+
+```java
+输入：[2,1,4,7,3,2,5]
+输出：5
+解释：最长的 “山脉” 是 [1,4,7,3,2]，长度为 5。
+```
+
+示例 2：
+
+```java
+输入：[2,2,2]
+输出：0
+解释：不含 “山脉”。
+```
+
+
+提示：
+
+* 0 <= A.length <= 10000
+* 0 <= A[i] <= 10000
+
+找到山顶，再中心扩展。
+
+```java
+/*
+执行用时：2 ms, 在所有 Java 提交中击败了99.84%的用户
+内存消耗：39.5 MB, 在所有 Java 提交中击败了87.43%的用户
+*/
+class Solution {
+    public int longestMountain(int[] A) {
+        int index = 1;
+        int max = 0;
+        while(index < A.length-1){
+            int cur = index+1;
+            //找到一个符合要求的山顶
+            if(A[index] > A[index - 1] && A[index] > A[index + 1]){
+                //中心扩展
+                int cnt = 3;
+              	//向左扩展山脉
+                cur = index-1;
+                while(cur > 0){
+                    if(A[cur] <= A[cur - 1])
+                        break;
+                    cnt++;
+                    cur--;
+                }
+              	//向右扩展山脉
+                cur = index + 1;
+                while(cur < A.length - 1){
+                    if(A[cur] <= A[cur + 1])
+                        break;
+                    cnt++;
+                    cur++;
+                }
+                max = Math.max(cnt,max);
+            }
+          	//更新index到这座山的右边山脚，减少迭代过程
+            index = cur;
+        }
+        return max;
+    }
+}
+```
+
+
 
 
 
