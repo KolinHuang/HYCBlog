@@ -33,6 +33,8 @@ pin: true
 
 [113.路径总和 II](#jump113)
 
+[144.二叉树的前序遍历](#jump144)
+
 [116.填充每个节点的下一个右侧节点指针](#jump116)
 
 [117.填充每个节点的下一个右侧节点指针 II](#jump117)
@@ -687,6 +689,56 @@ class Solution {
 ```
 
 
+
+
+
+
+
+<span id = "jump114"></span>
+
+## 144.二叉树的前序遍历
+
+给定一个二叉树，返回它的 前序 遍历。
+
+ 示例:
+
+```java
+输入: [1,null,2,3]  
+   1
+    \
+     2
+    /
+   3 
+
+输出: [1,2,3]
+```
+
+
+进阶: 递归算法很简单，你可以通过迭代算法完成吗？
+
+```java
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if(root == null)    return res;
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode node = root;
+        while(!stack.isEmpty() || node != null){
+            //访问当前节点以及左子树节点，并入栈
+            while(node != null){
+                res.add(node.val);
+                stack.push(node);
+                node = node.left;
+            }
+            //到叶节点了，出栈，转向右子树
+            node = stack.pop();
+            node = node.right;
+        }
+        return res;
+
+    }
+}
+```
 
 
 
