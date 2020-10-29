@@ -79,6 +79,8 @@ pin: true
 
 [560.和为K的子数组](#jump560)
 
+[581.最短无序连续子数组](#jump581)
+
 [617.合并二叉树](#jump617)
 
 [621.任务调度器](#jump621)
@@ -2930,6 +2932,60 @@ class Solution {
             map.put(pre, map.getOrDefault(pre, 0)+1);
         }
         return cnt;
+    }
+}
+```
+
+
+
+
+
+<span id = "jump581"></span>
+
+## 581.最短无序连续子数组
+
+给定一个整数数组，你需要寻找一个连续的子数组，如果对这个子数组进行升序排序，那么整个数组都会变为升序排序。
+
+你找到的子数组应是最短的，请输出它的长度。
+
+示例 1:
+
+```java
+输入: [2, 6, 4, 8, 10, 9, 15]
+输出: 5
+解释: 你只需要对 [6, 4, 8, 10, 9] 进行升序排序，那么整个表都会变为升序排序。
+```
+
+
+说明 :
+
+* 输入的数组长度范围在 [1, 10,000]。
+* 输入的数组可能包含重复元素 ，所以升序的意思是<=。
+
+```java
+class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        //有可能这个子数组长度为0
+        //初始化指针，[start, end]表示需要排序的子数组
+        int start = nums.length - 1, end = nums.length - 1;
+        //max记录[0,i]的最大值
+        int max = nums[0];
+        for(int i = 1; i < nums.length; ++i){
+            //每找到一个逆序对，即nums[i] < max，就从[0, start]中搜索第一个比nums[i]大的数，更新start
+            if(nums[i] < max){
+                for(int j = 0; j < start; ++j){
+                    if(nums[j] > nums[i]){
+                        //往前更新start
+                        start = j;
+                        break;
+                    }
+                }
+                //更新end
+                end = i;
+            }
+            max = Math.max(max, nums[i]);
+        }
+        return end == start ? 0 : end - start + 1;
     }
 }
 ```
