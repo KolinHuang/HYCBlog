@@ -67,6 +67,8 @@ pin: true
 
 [239.滑动窗口最大值](#jump239)
 
+[240.搜索二维矩阵 II](#jump240)
+
 [309.最佳买卖股票时机含冷冻期](#jump309)
 
 [337. 打家劫舍 3](#jump337)
@@ -2268,6 +2270,116 @@ class Solution {
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+
+
+
+
+
+<span id = "jump240"></span>
+
+## 240.搜索二维矩阵 II
+
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target。该矩阵具有以下特性：
+
+每行的元素从左到右升序排列。
+每列的元素从上到下升序排列。
+示例:
+
+现有矩阵 matrix 如下：
+
+```java
+[
+  [1,   4,  7, 11, 15],
+  [2,   5,  8, 12, 19],
+  [3,   6,  9, 16, 22],
+  [10, 13, 14, 17, 24],
+  [18, 21, 23, 26, 30]
+]
+```
+
+
+
+* 给定 target = 5，返回 true。
+* 给定 target = 20，返回 false。
+
+深度优先搜索，从左上角开始搜索：
+
+```java
+class Solution {
+
+    boolean[][] visited;
+    int[][] matrix;
+    int target;
+    public boolean searchMatrix(int[][] matrix, int target) {
+        if(matrix.length == 0)  return false;
+        visited = new boolean[matrix.length][matrix[0].length];
+        this.matrix = matrix;
+        this.target = target;
+        return dfs(0,0);
+    }
+
+    boolean dfs(int x, int y){
+        //超出边界
+        if( x < 0 || x >= matrix.length || y < 0 || y >= matrix[0].length)
+            return false;
+        //找到了target
+        if(matrix[x][y] == target)
+            return true;
+        //记录已访问元素
+        visited[x][y] = true;
+        //当前元素小于target
+        if(matrix[x][y] < target){
+            //如果在右边界了，就往下走
+            if(y == matrix[0].length - 1){
+                return dfs(x+1, y);
+            }else{
+                //如果还没在右边界，并且(x,y+1)没有被访问过
+                if(visited[x][y+1] == false){
+                    //向右边走
+                    return dfs(x, y +1);
+                }else{
+                    //右边已经访问过了，就往下走
+                    return dfs(x + 1, y);
+                }
+            }
+        }
+        else{
+            //如果当前元素大于target，就往左走
+            return dfs(x, y - 1);
+        }
+
+    }
+}
+```
+
+
+
+从左下角开始搜索：
+
+```java
+class Solution {
+
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int x = matrix.length - 1, y = 0;
+        while(x >= 0 && y < matrix[0].length){
+            if(matrix[x][y] > target){
+                x--;
+            }else if(matrix[x][y] < target){
+                y++;
+            }else{
+                return true;
+            }         
+        }
+        return false;   
+    }
+}
+```
+
+
+
+
+
+
 
 
 
