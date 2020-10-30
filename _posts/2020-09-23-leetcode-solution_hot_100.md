@@ -31,6 +31,8 @@ pin: true
 
 [20.有效的括号](#jump20)
 
+[33.搜索旋转排序数组](#jump33)
+
 [39.组合总和](#jump39)
 
 [62.不同路径](jump62)
@@ -510,6 +512,93 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump33"></span>
+
+## 33.搜索旋转排序数组
+
+给你一个升序排列的整数数组 nums ，和一个整数 target 。
+
+假设按照升序排序的数组在预先未知的某个点上进行了旋转。（例如，数组 [0,1,2,4,5,6,7] 可能变为 [4,5,6,7,0,1,2] ）。
+
+请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+
+示例 1：
+
+```java
+输入：nums = [4,5,6,7,0,1,2], target = 0
+输出：4
+```
+
+示例 2：
+
+```java
+输入：nums = [4,5,6,7,0,1,2], target = 3
+输出：-1
+```
+
+示例 3：
+
+```java
+输入：nums = [1], target = 0
+输出：-1
+```
+
+
+提示：
+
+* 1 <= nums.length <= 5000
+* -10^4 <= nums[i] <= 10^4
+* nums 中的每个值都 独一无二
+* nums 肯定会在某个点上旋转
+* -10^4 <= target <= 10^4
+
+二分法，判断target和nums[mid]在分段函数的位置来更新l和r指针。
+
+```java
+class Solution {
+    public int search(int[] nums, int target) {
+        int l = 0, r = nums.length - 1;
+        while(l <= r){
+            int mid = (r - l) / 2 + l;
+            if(nums[mid] == target) return mid;
+            if(nums[mid] < target){
+              	//二者都在左分段
+                if(nums[mid] >= nums[0]){
+                    l = mid+1;
+                }else{
+                  	//二者都在右分段
+                    if(target < nums[0]){
+                        l = mid + 1;    
+                    //mid在右分段，target在左分段
+                    }else{
+                        r = mid-1;
+                    }
+                }
+            }else{
+                if(nums[mid] < nums[nums.length - 1]){
+                    r = mid-1;
+                }else{
+                    if(target >= nums[0]){
+                        r = mid - 1;
+                    }else{
+                        l = mid + 1;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+}
+```
+
+
+
+
 
 
 

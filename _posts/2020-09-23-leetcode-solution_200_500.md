@@ -18,31 +18,21 @@ pin: true
 
 [214.最短回文串](#jump214)
 
-[215.数组中的第K大元素](#jump215)
-
 [216.组合总和3](#jump216)
 
 [221.最大正方形](#jump221)
-
-[226.翻转二叉树](#jump226)
-
-[234.回文链表](#jump234)
 
 [235.二叉树的最近公共祖先](#jump235)
 
 [257.二叉树的所有路径](#jump257)
 
-[309.最佳买卖股票时机含冷冻期](#jump309)
-
 [332.重新安排行程](#jump332)
 
 [336.回文对](#jump336)
 
-[337.打家劫舍3](#jump337)
-
-[347.前K个高频元素](#jump347)
-
 [378.有序矩阵中第K小元素](#jump378)
+
+[344.反转字符串](#jumo344)
 
 [404.左叶子之和](#jump404)
 
@@ -50,11 +40,9 @@ pin: true
 
 [459.重复的子字符串](#jump459)
 
+[463.岛屿的周长](#jump463)
+
 [486.预测赢家](#jump486)
-
-[491.递增子序列](#jump491)
-
-[494.目标和](jump494)
 
 
 
@@ -1532,6 +1520,180 @@ class Solution {
 作者：LeetCode-Solution
 链接：https://leetcode-cn.com/problems/repeated-substring-pattern/solution/zhong-fu-de-zi-zi-fu-chuan-by-leetcode-solution/
 ```
+
+
+
+
+
+<span id = "jump463"></span>
+
+## 463.岛屿的周长
+
+给定一个包含 0 和 1 的二维网格地图，其中 1 表示陆地 0 表示水域。
+
+网格中的格子水平和垂直方向相连（对角线方向不相连）。整个网格被水完全包围，但其中恰好有一个岛屿（或者说，一个或多个表示陆地的格子相连组成的岛屿）。
+
+岛屿中没有“湖”（“湖” 指水域在岛屿内部且不和岛屿周围的水相连）。格子是边长为 1 的正方形。网格为长方形，且宽度和高度均不超过 100 。计算这个岛屿的周长。
+
+ 
+
+示例 :
+
+```java
+输入:
+[[0,1,0,0],
+ [1,1,1,0],
+ [0,1,0,0],
+ [1,1,0,0]]
+
+输出: 16
+```
+
+
+
+```java
+class Solution {
+    public int islandPerimeter(int[][] grid) {
+        if(grid.length == 0)    return 0;
+        if(grid.length == 1 && grid[0].length == 1) return grid[0][0] == 1 ? 4 : 0;
+        int res = 0;
+        for(int i = 0; i < grid.length; ++i){
+            for(int j = 0; j < grid[0].length; ++j){
+                if(grid[i][j] == 0) continue;
+                //只有一行
+                if(grid.length == 1){
+                    //左边界
+                    if(j == 0){
+                        res += grid[i][j + 1] == 0 ? 1 : 0;
+                        res += 3;
+                    }else if(j == grid[0].length - 1){
+                        res += grid[i][j - 1] == 0 ? 1 : 0;
+                        res += 3;
+                    }else{
+                        res += grid[i][j - 1] == 0 ? 1 : 0;
+                        res += grid[i][j + 1] == 0 ? 1 : 0;
+                        res += 2;
+                    }
+                    continue;
+                //只有一列
+                }else if(grid[0].length == 1){
+                    if(i == 0){
+                        res += grid[i+1][j] == 0 ? 1 : 0;
+                        res += 3;
+                    }else if(i == grid.length - 1){
+                        res += grid[i - 1][j] == 0 ? 1 : 0;
+                        res += 3;
+                    }else{
+                        res += grid[i-1][j] == 0 ? 1 : 0;
+                        res += grid[i+1][j] == 0 ? 1 : 0;
+                        res += 2;
+                    }
+                    continue;
+                }
+
+
+                //边界和四个对角特别判断
+
+                //1.在上边界
+                if(i == 0){
+                    //在左上角
+                    if(j == 0){
+                        res += grid[i][j+1] == 0 ? 1 : 0;
+                        res += 2;
+                    //在右上角
+                    }else if(j == grid[0].length - 1){
+                        res += grid[i][j-1] == 0 ? 1 : 0;
+                        res += 2;
+                    //上边界的边上，不包含角
+                    }else{
+                        res += grid[i][j-1] == 0 ? 1 : 0;
+                        res += grid[i][j+1] == 0 ? 1 : 0;
+                        res += 1;
+                    }
+                    res += grid[i+1][j] == 0 ? 1 : 0;
+                //2.在下边界
+                }else if( i == grid.length - 1){
+                    //在左下角
+                    if(j == 0){
+                        res += grid[i][j+1] == 0 ? 1 : 0;
+                        res += 2;
+                    //在右下角
+                    }else if(j == grid[0].length - 1){
+                        res += grid[i][j-1] == 0 ? 1 : 0;
+                        res += 2;
+                    //下边界的边上，不包含角
+                    }else{
+                        res += grid[i][j+1] == 0 ? 1 : 0;
+                        res += grid[i][j-1] == 0 ? 1 : 0;
+                        res += 1;
+                    }
+                    res += grid[i-1][j] == 0 ? 1 : 0;
+                //3.在左边界，不包含角
+                }else if(j == 0 && i != 0 && i != grid.length - 1){
+                    res += grid[i-1][j] == 0 ? 1 : 0;
+                    res += grid[i+1][j] == 0 ? 1 : 0;
+                    res += grid[i][j+1] == 0 ? 1 : 0;
+                    res += 1;
+                //4.在右边界，不包含角
+                }else if(j == grid[0].length-1 && i != 0 && i != grid.length - 1){
+                    res += grid[i-1][j] == 0 ? 1 : 0;
+                    res += grid[i+1][j] == 0 ? 1 : 0;
+                    res += grid[i][j-1] == 0 ? 1 : 0;
+                    res += 1;
+                //5.其他情况
+                }else{
+                    if(i - 1 >= 0)  res += grid[i-1][j] == 0 ? 1 : 0;
+                    if(i + 1 < grid.length) res += grid[i+1][j] == 0 ? 1 : 0;
+                    if(j - 1 >= 0)  res += grid[i][j-1] == 0 ? 1 : 0;
+                    if(j + 1 < grid[0].length) res += grid[i][j+1] == 0 ? 1 : 0;
+                }
+
+            }
+            
+        }
+        return res;
+    }
+}
+```
+
+
+
+```java
+class Solution {
+    static int[] dx = {0, 1, 0, -1};
+    static int[] dy = {1, 0, -1, 0};
+
+    public int islandPerimeter(int[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < m; ++j) {
+                if (grid[i][j] == 1) {
+                    int cnt = 0; 
+                    for (int k = 0; k < 4; ++k) {
+                        int tx = i + dx[k];
+                        int ty = j + dy[k];
+                        if (tx < 0 || tx >= n || ty < 0 || ty >= m || grid[tx][ty] == 0) {
+                            cnt += 1;
+                        }
+                    }
+                    ans += cnt;
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+```
+
+
+
+
+
+
+
+
 
 
 
