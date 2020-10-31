@@ -32,6 +32,8 @@ pin: true
 
 [378.有序矩阵中第K小元素](#jump378)
 
+[381.O(1) 时间插入、删除和获取随机元素 - 允许重复](#jump381)
+
 [344.反转字符串](#jumo344)
 
 [404.左叶子之和](#jump404)
@@ -1339,6 +1341,121 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump381"></span>
+
+## 381.O(1) 时间插入、删除和获取随机元素 - 允许重复
+
+设计一个支持在平均 时间复杂度 O(1) 下， 执行以下操作的数据结构。
+
+注意: 允许出现重复元素。
+
+* insert(val)：向集合中插入元素 val。
+* remove(val)：当 val 存在时，从集合中移除一个 val。
+* getRandom：从现有集合中随机获取一个元素。每个元素被返回的概率应该与其在集合中的数量呈线性相关。
+
+示例:
+
+```java
+// 初始化一个空的集合。
+RandomizedCollection collection = new RandomizedCollection();
+
+// 向集合中插入 1 。返回 true 表示集合不包含 1 。
+collection.insert(1);
+
+// 向集合中插入另一个 1 。返回 false 表示集合包含 1 。集合现在包含 [1,1] 。
+collection.insert(1);
+
+// 向集合中插入 2 ，返回 true 。集合现在包含 [1,1,2] 。
+collection.insert(2);
+
+// getRandom 应当有 2/3 的概率返回 1 ，1/3 的概率返回 2 。
+collection.getRandom();
+
+// 从集合中删除 1 ，返回 true 。集合现在包含 [1,2] 。
+collection.remove(1);
+
+// getRandom 应有相同概率返回 1 和 2 。
+collection.getRandom();
+```
+
+
+
+用一个列表存放元素，再用一个map存放元素与下标的对应。
+
+插入时，直接将元素插入到列表的最后，然后在map中更新元素索引。
+
+删除时，从map中取出对应元素的索引，再在列表中将此元素与列表最后一个元素交换，最后删除列表最后一个元素即可。
+
+需要注意的是：此元素可能与列表最后一个元素相等，那么就需要同步更新set和hashMap。
+
+```java
+class RandomizedCollection {
+
+    List<Integer> nums;
+    Map<Integer, Set<Integer>> hashIndex;
+    /** Initialize your data structure here. */
+    public RandomizedCollection() {
+        nums = new ArrayList<>();
+        hashIndex = new HashMap<>();
+    }
+    
+    /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+    public boolean insert(int val) {
+        nums.add(val);
+        Set<Integer> set = hashIndex.getOrDefault(val, new HashSet<>());
+        set.add(nums.size() - 1);
+        hashIndex.put(val, set);
+        //size==1说明当前插入的元素是唯一的，没有重复
+        return set.size() == 1;
+
+    }
+    
+    /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+    public boolean remove(int val) {
+        Set<Integer> set = hashIndex.get(val);
+        if(set == null) return false;
+        //根据迭代器获取val在set中的索引
+        Iterator<Integer> itr = set.iterator();
+        int idx = 0;
+        if(itr.hasNext()){
+            idx = itr.next();
+        }
+
+        Set<Integer> lastSet = hashIndex.get(nums.get(nums.size() - 1));
+      	//当需要删除的元素和列表最后一个元素不相等时，才需要分别更新两个集合
+      	//因为从set中删除一个元素，需要更新索引
+      	//从lastSet中删除并插入一个元素，需要更新索引
+        if(set != lastSet){
+            lastSet.remove(nums.size() - 1);
+            lastSet.add(idx);
+            set.remove(idx);
+        }else{
+          	//如果是同一个元素，那么直接删除set最后一个的值即可
+            set.remove(nums.size() - 1);
+        }
+      	//当set为空时，就清出map
+        if(set.size() == 0) hashIndex.remove(val);
+        //最后处理列表：将找到的索引与最后一个元素交换，然后删除
+        nums.set(idx, nums.get(nums.size() - 1));
+        nums.remove(nums.size() - 1);
+        return true;
+    }
+    
+    /** Get a random element from the collection. */
+    public int getRandom() {
+        Random random = new Random();
+        int idx = random.nextInt(nums.size());
+        return nums.get(idx);
+    }
+}
+```
+
+
 
 
 
