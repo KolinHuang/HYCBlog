@@ -14,6 +14,8 @@ pin: true
 
 [201.数字范围按位与](#jump201)
 
+[206.反转链表](#jump206)
+
 [209.寻找长度最小的子数组](#jump209)
 
 [214.最短回文串](#jump214)
@@ -124,6 +126,75 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump206"></span>
+
+## 206.反转链表
+
+反转一个单链表。
+
+示例:
+
+```java
+输入: 1->2->3->4->5->NULL
+输出: 5->4->3->2->1->NULL
+```
+
+进阶:
+
+* 你可以迭代或递归地反转链表。你能否用两种方法解决这道题？
+
+迭代：
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        ListNode pre = null;
+        ListNode p = head;
+        while(p != null){
+            ListNode q = p.next;
+            p.next = pre;
+            pre = p;
+            p = q;
+        }
+        return pre;
+    }
+}
+```
+
+递归:
+
+```java
+class Solution {
+    public ListNode reverseList(ListNode head) {
+        
+        return reverse(null, head);
+    }
+
+    ListNode reverse(ListNode pre, ListNode p){
+        if(p == null){
+            return pre;
+        }
+        ListNode q = p.next;
+        p.next = pre;
+        pre = p;
+        p = q;
+        return reverse(pre, p);
+    }
+}
+```
+
+
+
+
+
+
 
 
 
