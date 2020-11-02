@@ -30,6 +30,8 @@ pin: true
 
 [336.回文对](#jump336)
 
+[349.两个数组的交集](#jump349)
+
 [378.有序矩阵中第K小元素](#jump378)
 
 [381.O(1) 时间插入、删除和获取随机元素 - 允许重复](#jump381)
@@ -1185,6 +1187,115 @@ class Solution {
             ++low;
             --high;
         }
+
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump349"></span>
+
+## 349.两个数组的交集
+
+给定两个数组，编写一个函数来计算它们的交集。
+
+ 
+
+示例 1：
+
+```java
+输入：nums1 = [1,2,2,1], nums2 = [2,2]
+输出：[2]
+```
+
+示例 2：
+
+```java
+输入：nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+输出：[9,4]
+```
+
+
+说明：
+
+* 输出结果中的每个元素一定是唯一的。
+* 我们可以不考虑输出结果的顺序。
+
+
+
+哈希表：
+
+```java
+class Solution {
+    
+    public int[] intersection(int[] nums1, int[] nums2) {
+        //哈希表
+        List<Integer> list = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
+        for(int i = 0; i < nums1.length; ++i){
+            set.add(nums1[i]);
+        }
+        for(int j = 0; j < nums2.length; ++j){
+            if(set.contains(nums2[j]) && !list.contains(nums2[j])){
+                list.add(nums2[j]);
+            }
+        }
+        int[] res = new int[list.size()];
+        for(int i = 0; i < list.size(); ++i){
+            res[i] = list.get(i);
+        }
+        return res;
+    }
+}
+```
+
+都放入set中，再遍历较小的set：
+
+```java
+class Solution {
+    
+    public int[] intersection(int[] nums1, int[] nums2) {
+        //哈希表
+        List<Integer> list = new ArrayList<>();
+        Set<Integer> set1 = new HashSet<>();
+        for(int i = 0; i < nums1.length; ++i){
+            set1.add(nums1[i]);
+        }
+        Set<Integer> set2 = new HashSet<>();
+        for(int i = 0; i < nums2.length; ++i){
+            set2.add(nums2[i]);
+        }
+        
+        return compareSet(set1, set2);
+    }
+
+    int[] compareSet(Set<Integer> set1, Set<Integer> set2){
+      	//这个很有趣，可以避免重复代码
+        if(set1.size() > set2.size()){
+            return compareSet(set2,set1);
+        }
+
+        Set<Integer> resSet = new HashSet<>();
+        for(Integer num : set1){
+            if(set2.contains(num)){
+                resSet.add(num);
+            }
+        }
+
+        int[] res = new int[resSet.size()];
+
+        int index = 0;
+
+        for(Integer num : resSet){
+            res[index++] = num;
+        }
+
+        return res;
 
     }
 }
