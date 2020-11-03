@@ -77,6 +77,8 @@ pin: true
 
 [347.前 K 个高频元素](#jump347)
 
+[406.根据身高重建队列](#jump406)
+
 [416.分割等和子集](jump416)
 
 [494.目标和](jump494)
@@ -2879,6 +2881,101 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump406"></span>
+
+## 406.根据身高重建队列
+
+假设有打乱顺序的一群人站成一个队列。 每个人由一个整数对(h, k)表示，其中h是这个人的身高，k是排在这个人前面且身高大于或等于h的人数。 编写一个算法来重建这个队列。
+
+注意：
+总人数少于1100人。
+
+示例
+
+```java
+输入:
+[[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+
+输出:
+[[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]
+```
+
+观察数组，如果将数组按`people[i][0]`逆序排序，然后逐个插入到新数组中，发现`people[i][1]`就是此元素需要在数组插入的位置，向后移动数组，再进行插入即可。
+
+```java
+class Solution {
+    public int[][] reconstructQueue(int[][] people) {
+        //将数组按people[i][0]逆序排序
+        Arrays.sort(people, (a,b)->{
+            if(a[0] > b[0])
+                return -1;
+            else if(a[0] == b[0]){
+                if(a[1] > b[1])
+                    return 1;
+                else
+                    return -1;
+            }else
+                return 1;
+        });
+
+        int[][] res = new int[people.length][2];
+        for(int i = 0; i < people.length; ++i){
+            insert(res,people[i][0], people[i][1], i);
+        }
+        return res;
+    }
+
+    void insert(int[][] res, int h, int k, int tail){
+        //k是此元素在数组中需要被插入的位置
+        //先把k以后的元素都往后挪，腾出第k个位置
+        for(int i = tail; i > k; --i){
+            res[i][0] = res[i - 1][0];
+            res[i][1] = res[i - 1][1];
+        }
+        res[k][0] = h;
+        res[k][1] = k;
+    }
+}
+```
+
+用list代替数组来提高效率，实际上用的方法是一样的，只不过上面这种方法实现了下面list的底层思想，效率没它高罢了：
+
+```java
+class Solution {
+    public int[][] reconstructQueue(int[][] people) {
+        //将数组按people[i][0]逆序排序
+        Arrays.sort(people, (a,b)->{
+            if(a[0] > b[0])
+                return -1;
+            else if(a[0] == b[0]){
+                if(a[1] > b[1])
+                    return 1;
+                else
+                    return -1;
+            }else
+                return 1;
+        });
+
+        List<int[]> list = new LinkedList<>();
+        for(int i = 0; i < people.length; ++i){
+            list.add(people[i][1],people[i]);
+        }
+        return list.toArray(new int[people.length][2]);
+    }
+
+}
+```
+
+
+
+
 
 
 
