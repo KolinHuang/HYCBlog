@@ -42,6 +42,8 @@ pin: true
 
 [52.N皇后 II[tag]](#jump52)
 
+[57.插入区间](#jump57)
+
 [60.第k个排列[tag]](#jump60)
 
 [62.不同路径](#jump62)
@@ -1019,6 +1021,115 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump57"></span>
+
+## 57.插入区间
+
+给出一个无重叠的 ，按照区间起始端点排序的区间列表。
+
+在列表中插入一个新的区间，你需要确保列表中的区间仍然有序且不重叠（如果有必要的话，可以合并区间）。
+
+ 
+
+示例 1：
+
+```java
+输入：intervals = [[1,3],[6,9]], newInterval = [2,5]
+输出：[[1,5],[6,9]]
+```
+
+
+示例 2：
+
+```java
+输入：intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+输出：[[1,2],[3,10],[12,16]]
+解释：这是因为新的区间 [4,8] 与 [3,5],[6,7],[8,10] 重叠。
+```
+
+
+
+无非是边界判断和区间合并，繁琐了点而已，没啥难度。
+
+```java
+class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        List<int[]> res = new LinkedList<>();
+        int i = 0;
+        //让newInterval的起点和每个intervals的终点比较，搜索插入的起点。
+        for(; i < intervals.length; ++i){
+            //所有终点小于newInterval起点的区间都加入结果集
+            if(newInterval[0] > intervals[i][1]){
+                res.add(intervals[i]);
+            //出现了终点大于等于newInterval起点的区间
+            }else{
+                //如果newInterval的终点小于intervals的起点，就没有往后搜索的意义了
+                //newInterval直接插入在最前面
+
+                //否则就继续搜索
+                if(newInterval[1] > intervals[i][0]){
+                    //如果newInterval的起点要大于搜索到的位置的起点，就更新newInterval的起点
+                    if(newInterval[0] > intervals[i][0]){
+                        newInterval[0] = intervals[i][0];
+                    }
+                    //如果newInterval的终点要小于搜索到的位置的终点，就更新newInterval的终点
+                    //将这个位置区间包裹在内
+                    if(newInterval[1] < intervals[i][1]){
+                        newInterval[1] = intervals[i][1];
+                    }
+                }
+                break;
+            }
+        }
+        //让newInterval的终点和每个intevals的起点比较，搜索插入的终点。
+        for(; i <intervals.length; ++i){
+            //如果newInterval的终点某个区间的起点重合
+            if(newInterval[1] == intervals[i][0]){
+                //直接将这个区间包裹进来
+                newInterval[1] = intervals[i][1];
+                i++;
+                break;
+            }
+            //如果newInterval的终点大于某个区间的起点，并且终点小于这个区间的终点
+            if(newInterval[1] > intervals[i][0] && newInterval[1] < intervals[i][1]){
+                //包裹这个区间
+                newInterval[1] = intervals[i][1];
+                i++;
+                break;
+            }
+            //如果newInterval的终点小于某个区间的起点，那么就和前一个区间比较
+            if(newInterval[1] < intervals[i][0]){
+                //前一个区间的起点肯定是大于newInterval的终点的，如果newInterval的终点小于这个区间，就更新
+                //把这个区间包裹进来
+                if(i - 1 >= 0 && intervals[i-1][1] > newInterval[1]){
+                    newInterval[1] = intervals[i-1][1];
+                }
+                break;
+            }
+        }
+        res.add(newInterval);
+        //将剩余的区间加入结果集
+        for(; i < intervals.length; ++i){
+            res.add(intervals[i]);
+        }
+        return res.toArray(new int[res.size()][2]);
+    }
+}
+```
+
+
+
+
+
+
+
 
 
 
