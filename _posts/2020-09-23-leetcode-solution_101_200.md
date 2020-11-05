@@ -33,13 +33,15 @@ pin: true
 
 [113.路径总和 II](#jump113)
 
-[144.二叉树的前序遍历](#jump144)
+
 
 [116.填充每个节点的下一个右侧节点指针](#jump116)
 
 [117.填充每个节点的下一个右侧节点指针 II](#jump117)
 
 [120.三角形最小路径和](#jump120)
+
+[127.单词接龙](#jump127)
 
 [129.求根到叶子节点数字之和](#jump129)
 
@@ -54,6 +56,8 @@ pin: true
 [142.环形链表II](#jump142)
 
 [143.重排链表](#jump143)
+
+[144.二叉树的前序遍历](#jump144)
 
 [145.二叉树的后序遍历](#jump145)
 
@@ -696,54 +700,6 @@ class Solution {
 
 
 
-<span id = "jump114"></span>
-
-## 144.二叉树的前序遍历
-
-给定一个二叉树，返回它的 前序 遍历。
-
- 示例:
-
-```java
-输入: [1,null,2,3]  
-   1
-    \
-     2
-    /
-   3 
-
-输出: [1,2,3]
-```
-
-
-进阶: 递归算法很简单，你可以通过迭代算法完成吗？
-
-```java
-class Solution {
-    public List<Integer> preorderTraversal(TreeNode root) {
-        List<Integer> res = new ArrayList<>();
-        if(root == null)    return res;
-        Deque<TreeNode> stack = new LinkedList<>();
-        TreeNode node = root;
-        while(!stack.isEmpty() || node != null){
-            //访问当前节点以及左子树节点，并入栈
-            while(node != null){
-                res.add(node.val);
-                stack.push(node);
-                node = node.left;
-            }
-            //到叶节点了，出栈，转向右子树
-            node = stack.pop();
-            node = node.right;
-        }
-        return res;
-
-    }
-}
-```
-
-
-
 
 
 <span id = "jump116"></span>
@@ -1050,6 +1006,139 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id ="jump127"></span>
+
+## 127.单词接龙
+
+给定两个单词（beginWord 和 endWord）和一个字典，找到从 beginWord 到 endWord 的最短转换序列的长度。转换需遵循如下规则：
+
+每次转换只能改变一个字母。
+转换过程中的中间单词必须是字典中的单词。
+说明:
+
+* 如果不存在这样的转换序列，返回 0。
+* 所有单词具有相同的长度。
+* 所有单词只由小写字母组成。
+* 字典中不存在重复的单词。
+* 你可以假设 beginWord 和 endWord 是非空的，且二者不相同。
+
+示例 1:
+
+```java
+输入:
+beginWord = "hit",
+endWord = "cog",
+wordList = ["hot","dot","dog","lot","log","cog"]
+
+输出: 5
+
+解释: 一个最短转换序列是 "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+     返回它的长度 5。
+```
+
+
+示例 2:
+
+```java
+输入:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log"]
+
+输出: 0
+
+解释: endWord "cog" 不在字典中，所以无法进行转换。
+```
+
+
+
+深度优先遍历超时了。
+
+广度优先遍历：
+
+1. 用一个集合存放字典元素，便于判断某个单词是否在字典内。
+2. 广度优先：startWord开始，尝试修改每一位字符，将修改后，存在于字典中的新单词全部放入队列。
+3. 每一次广度优先尝试step+1。
+4. 若在一次广度优先尝试中，有一个单词修改一个字母后，变成了endWord，就返回step+1。
+
+
+
+```java
+class Solution {
+
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+
+        if(wordList.size() == 0 || !wordList.contains(endWord)) return 0;
+
+        //将wordList放入集合中，便于查询某个单词是否在字典中
+        Set<String> wordSet = new HashSet<>();
+        for(String word : wordList){
+            wordSet.add(word);
+        }
+
+        wordSet.remove(beginWord);
+
+        //队列，用于广度优先遍历
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        //标记某个单词是否被访问过
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+        int step = 1;
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                String w = queue.poll();
+                if(modifyEachLetter(w, endWord, queue, visited, wordSet)){
+                    return step+1;
+                }
+            }
+            step++;
+        }
+        return 0;
+    }
+
+    boolean modifyEachLetter(String w, String endWord, Queue<String> queue, Set<String> visited, Set<String> wordSet){
+
+        char[] wordChar = w.toCharArray();
+        //修改每个位置的字符
+        for(int i = 0; i < w.length(); ++i){
+            char orignChar = wordChar[i];
+            //每个位置遍历26种情况
+            for(char c = 'a'; c <= 'z'; ++c){
+                if(orignChar == c)    continue;
+                wordChar[i] = c;
+                String new_w = new String(wordChar);
+                if(!wordSet.contains(new_w))    continue;
+                //字典内存在这个新单词
+                if(new_w.equals(endWord)){
+                    return true;
+                }else{
+                    if(!visited.contains(new_w)){
+                        queue.offer(new_w);
+                        visited.add(new_w);
+                    }
+                }
+            }
+            wordChar[i] = orignChar;
+            
+        }
+        return false;
+        
+
+    }
+
+}
+```
+
+
 
 
 
@@ -1574,6 +1663,54 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump114"></span>
+
+## 144.二叉树的前序遍历
+
+给定一个二叉树，返回它的 前序 遍历。
+
+ 示例:
+
+```java
+输入: [1,null,2,3]  
+   1
+    \
+     2
+    /
+   3 
+
+输出: [1,2,3]
+```
+
+
+进阶: 递归算法很简单，你可以通过迭代算法完成吗？
+
+```java
+class Solution {
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<>();
+        if(root == null)    return res;
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode node = root;
+        while(!stack.isEmpty() || node != null){
+            //访问当前节点以及左子树节点，并入栈
+            while(node != null){
+                res.add(node.val);
+                stack.push(node);
+                node = node.left;
+            }
+            //到叶节点了，出栈，转向右子树
+            node = stack.pop();
+            node = node.right;
+        }
+        return res;
+
+    }
+}
+```
 
 
 
