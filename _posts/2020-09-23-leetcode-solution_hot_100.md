@@ -35,6 +35,8 @@ pin: true
 
 [39.组合总和](#jump39)
 
+[46. 全排列](#jump46)
+
 [48.旋转图像](#jump48)
 
 [62.不同路径](jump62)
@@ -683,6 +685,71 @@ class Solution {
             list.add(candidates[i]);
             dfs(candidates,list,sum + candidates[i],i);
             list.remove(list.size()-1);
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump46"></span>
+
+## 46. 全排列
+
+给定一个 没有重复 数字的序列，返回其所有可能的全排列。
+
+示例:
+
+```java
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+```
+
+
+
+回溯交换：
+
+```java
+class Solution {
+    List<List<Integer>> res;
+    public List<List<Integer>> permute(int[] nums) {
+        res = new ArrayList<>();
+        backTrack(nums, 0);
+        return res;
+    }
+
+    void backTrack(int[] nums,int cur){
+        if(cur == nums.length){
+            List<Integer> list = new ArrayList<>();
+            for(int k : nums){
+                list.add(k);
+            }
+            res.add(list);
+            return;
+        }   
+        for(int i = cur; i < nums.length; ++i){
+            swap(nums, cur, i);
+            backTrack(nums, cur + 1);
+            swap(nums, cur, i);
+        }
+    }
+    void swap(int[] nums, int i, int j){
+        if(i != j){
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
         }
     }
 }
