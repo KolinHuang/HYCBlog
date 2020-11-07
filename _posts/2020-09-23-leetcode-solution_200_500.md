@@ -28,6 +28,8 @@ pin: true
 
 [257.二叉树的所有路径](#jump257)
 
+[327.区间和的个数[tag]](#jump327)
+
 [332.重新安排行程](#jump332)
 
 [336.回文对](#jump336)
@@ -787,6 +789,120 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump327"></span>
+
+## 327.区间和的个数[tag]
+
+给定一个整数数组 nums，返回区间和在 [lower, upper] 之间的个数，包含 lower 和 upper。
+区间和 S(i, j) 表示在 nums 中，位置从 i 到 j 的元素之和，包含 i 和 j (i ≤ j)。
+
+说明:
+最直观的算法复杂度是 O(n2) ，请在此基础上优化你的算法。
+
+示例:
+
+```java
+输入: nums = [-2,5,-1], lower = -2, upper = 2,
+输出: 3 
+解释: 3个区间分别是: [0,0], [2,2], [0,2]，它们表示的和分别为: -2, -1, 2。
+```
+
+
+
+
+
+归并排序是从最小子数组开始统计的，我们是在归并之前统计下标对，之后再归并，所以不影响。
+
+```java
+class Solution {
+    //目的是为了统计符合
+    //pre[j] - pre[i] >= lower && pre[j] - pre[i] <= upper
+    //的下标（i,j）的个数
+    //归并排序
+    //让排好序的，待归并的两个子数组作为pre
+    //计算从左边数组下标i到右边数组下标j的和是否满足条件
+    public int countRangeSum(int[] nums, int lower, int upper) {
+        long s = 0;
+        long[] sum = new long[nums.length + 1];
+        //计算[0,i]的前缀和
+        for(int i = 0; i < nums.length; ++i){
+            s += nums[i];
+            sum[i + 1] = s;
+        }
+        return count(0, sum.length - 1, sum, lower, upper);
+    }
+
+    int count(int left, int right, long[] sum, int lower, int upper){
+        if(left == right){
+            return 0;
+        }else{
+            int mid = (right - left) / 2 + left;
+            //归并
+            int n1 = count(left, mid, sum, lower, upper);
+            int n2 = count(mid + 1, right, sum, lower, upper);
+            int res = n1 + n2;
+
+            //统计下标对的数量
+
+            //枚举左边数组的每一位
+            int i = left;
+            
+            //让l和r指向右边数组的开头
+            //让l向右移动，直到sum[l] - sum[i] >= lower
+            //让r向右移动，直到sum[r] - sum[i] > upper
+            //这样 r - l就是下标对的数量了
+             int l = mid + 1;
+             int r = mid + 1;
+             while(i <= mid){
+                 while(l <= right && sum[l] - sum[i] < lower){
+                     l++;
+                 }
+                 while(r <= right && sum[r] - sum[i] <= upper){
+                     r++;
+                 }
+                 res += r - l;
+                 ++i;
+             }
+             //执行左右数组合并
+             int[] arr = new int[right - left + 1];
+             int ptr1 = left, ptr2 = mid + 1;
+             int ptr = 0;
+
+             while(ptr1 <= mid || ptr2 <= right){
+                 if(ptr1 > mid){
+                     arr[ptr++] = (int) sum[ptr2++];
+                 }else if(ptr2 > right){
+                     arr[ptr++] = (int) sum[ptr1++];
+                 }else{
+                     if(sum[ptr1] < sum[ptr2]){
+                         arr[ptr++] = (int) sum[ptr1++];
+                     }else{
+                         arr[ptr++] = (int) sum[ptr2++];
+                     }
+                 }
+             }
+
+             //将归并好的数组放入前缀和数组中
+             for(int k = 0; k < arr.length; ++k){
+                 sum[left + k] = arr[k];
+             }
+             return res;
+
+        }
+    }
+}
+```
+
+
+
+
 
 
 
