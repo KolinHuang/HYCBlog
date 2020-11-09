@@ -31,6 +31,8 @@ pin: true
 
 [20.有效的括号](#jump20)
 
+[31.下一个排列](#jump31)
+
 [33.搜索旋转排序数组](#jump33)
 
 [39.组合总和](#jump39)
@@ -524,6 +526,103 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump31"></span>
+
+## 31.下一个排列
+
+实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+
+必须原地修改，只允许使用额外常数空间。
+
+以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+
+```java
+1,2,3 → 1,3,2
+3,2,1 → 1,2,3
+1,1,5 → 1,5,1
+```
+
+
+
+观察变化规律，每次都是从数组结尾开始找到一个逆序对，即`nums[i] <= nums[i+1]`的元素，然后再从数组结尾开始找到第一个比`nums[i]`大的，二者交换，再反转`[i+1,end]`
+
+```java
+1,2,3,4,5
+1,2,3,5,4
+1,2,4,3,5
+1,2,4,5,3
+1,2,5,3,4
+1,2,5,4,3
+1,3,2,4,5
+...
+```
+
+
+
+
+
+```java
+class Solution {
+    public void nextPermutation(int[] nums) {
+        if(nums.length == 1)    return;        
+        int l = 0;
+        int r = nums.length - 2;
+        //让r指针从右往左走，直到下一个元素比num[r]小，这个位置的元素需要换到后面来增大字典序
+        //所以还需要从后面找到一个比这个位置元素大的元素，二者交换
+        while(r >= 0 && nums[r] >= nums[r + 1]){
+            r--;
+        }
+        //如果r == -1，就直接reverse全部
+        if(r >= 0){
+            //从后面的序列中，找到第一个比nums[r]大的元素，换到前面去
+            int cur = nums.length - 1;
+            while(cur >= 0 && nums[cur] <= nums[r]){
+                --cur;
+            }
+            swap(nums, cur, r);
+        }
+        //将逆序序列变为正序
+        reverse(nums, r + 1);
+        
+    }
+
+    void reverse(int[] nums, int s){
+        int i = s, j = nums.length - 1;
+        while(i < j){
+            swap(nums, i ,j);
+            ++i;
+            --j;
+        }
+    }
+
+    void swap(int[] nums, int i, int j){
+        if(i != j){
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+        }
+    }
+
+    
+}
+```
+
+
+
+
+
+
 
 
 
