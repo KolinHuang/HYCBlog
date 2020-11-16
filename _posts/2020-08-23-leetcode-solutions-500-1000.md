@@ -14,6 +14,8 @@ pin: true
 
 [501.二叉搜索树中的众数](#jump501)
 
+[514.自由之路](#jump514)
+
 [529.扫雷游戏](#jump529)
 
 [530.二叉搜索树的最小绝对差](#jump530)
@@ -57,6 +59,8 @@ pin: true
 [844.比较含退格的字符串](#jump844)
 
 [845.数组中的最长山脉](#jump845)
+
+[922.按奇偶排序数组 II](#jump922)
 
 [925.长按键入](jump925)
 
@@ -204,6 +208,101 @@ class Solution {
             inOrder(root.right);
         }
     } 
+}
+```
+
+
+
+
+
+
+
+
+
+<span id = "jump514"></span>
+
+## 514.自由之路
+
+视频游戏“辐射4”中，任务“通向自由”要求玩家到达名为“Freedom Trail Ring”的金属表盘，并使用表盘拼写特定关键词才能开门。
+
+给定一个字符串 ring，表示刻在外环上的编码；给定另一个字符串 key，表示需要拼写的关键词。您需要算出能够拼写关键词中所有字符的最少步数。
+
+最初，ring 的第一个字符与12:00方向对齐。您需要顺时针或逆时针旋转 ring 以使 key 的一个字符在 12:00 方向对齐，然后按下中心按钮，以此逐个拼写完 key 中的所有字符。
+
+旋转 ring 拼出 key 字符 key[i] 的阶段中：
+
+* 您可以将 ring 顺时针或逆时针旋转一个位置，计为1步。旋转的最终目的是将字符串 ring 的一个字符与 12:00 方向对齐，并且这个字符必须等于字符 key[i] 。
+* 如果字符 key[i] 已经对齐到12:00方向，您需要按下中心按钮进行拼写，这也将算作 1 步。按完之后，您可以开始拼写 key 的下一个字符（下一阶段）, 直至完成所有拼写。
+
+```java
+输入: ring = "godding", key = "gd"
+输出: 4
+解释:
+ 对于 key 的第一个字符 'g'，已经在正确的位置, 我们只需要1步来拼写这个字符。 
+ 对于 key 的第二个字符 'd'，我们需要逆时针旋转 ring "godding" 2步使它变成 "ddinggo"。
+ 当然, 我们还需要1步进行拼写。
+ 因此最终的输出是 4。
+```
+
+
+提示：
+
+* ring 和 key 的字符串长度取值范围均为 1 至 100；
+* 两个字符串中都只有小写字符，并且均可能存在重复字符；
+* 字符串 key 一定可以由字符串 ring 旋转拼出。
+
+
+
+```java
+class Solution {
+    //用dp[i][j]表示从游戏开始到拼接完成key[0:i]在ring[j] == key[i]时的最小步数
+    //因为存在重复字符串，所以我们把所有重复的位置都考虑到。
+    //无论顺时针还是逆时针，同一个字符出现的所有位置都有可能是最小的步数
+    //所以干脆将每个字符出现的位置放入一个哈希表中，用列表维护某个字符的所有出现位置
+    //状态转移：枚举上一次与12:00方向对齐的位置k，
+    //计算顺时针从k转到j和逆时针从k转到j的最小步数，即：min{abs(j - k), n - abs(j - k)} + 1
+    //加上之前走的步数dp[i-1][k]
+    //再将上面的值跟dp[i][j]比较，取最小值:
+    //dp[i][j] = min{dp[i][j], dp[i-1][k] + min{abs(j - k), n - abs(j - k)} + 1}
+    public int findRotateSteps(String ring, String key) {
+
+        int n = ring.length(), m = key.length();
+        int[][] dp = new int[m][n];
+
+        for(int i = 0; i < m; ++i){
+            Arrays.fill(dp[i],0x3f3f3f);
+        }
+
+        //维护一个map，存放每个字符在ring中出现的位置集合
+        Map<Character, List<Integer>> map = new HashMap<>();
+
+        for(int i = 0; i < n; ++i){
+            List<Integer> list = map.getOrDefault(ring.charAt(i), new ArrayList<>());
+            list.add(i);
+            map.put(ring.charAt(i), list);
+        }
+        //边界初始化：即使第一个字符就对应好了，也不一定是最优解，因为很有可能其他位置的才是更优的
+        for(int i : map.get(key.charAt(0))){
+            dp[0][i] = Math.min(i, n - i) + 1;
+        }
+
+        for(int i = 1; i < m; ++i){
+            for(int j : map.get(key.charAt(i))){
+                for(int k : map.get(key.charAt(i - 1))){
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][k] + Math.min(Math.abs(j - k), n - Math.abs(j - k)) + 1);
+                }
+            }
+        }
+
+        int res = dp[m - 1][0];
+        for(int i = 1; i < n; ++i){
+            res = Math.min(res, dp[m-1][i]);
+        }
+        return res;
+        
+    }
+
+    
 }
 ```
 
@@ -1994,6 +2093,108 @@ class Solution {
 
 
 
+<span id = "jump922"></span>
+
+## 922.按奇偶排序数组 II
+
+给定一个非负整数数组 A， A 中一半整数是奇数，一半整数是偶数。
+
+对数组进行排序，以便当 A[i] 为奇数时，i 也是奇数；当 A[i] 为偶数时， i 也是偶数。
+
+你可以返回任何满足上述条件的数组作为答案。
+
+示例：
+
+```java
+输入：[4,2,5,7]
+输出：[4,5,2,7]
+解释：[4,7,2,5]，[2,5,4,7]，[2,7,4,5] 也会被接受。
+```
+
+
+提示：
+
+* 2 <= A.length <= 20000
+* A.length % 2 == 0
+* 0 <= A[i] <= 1000
+
+
+
+双指针：
+
+```java
+class Solution {
+    public int[] sortArrayByParityII(int[] A) {
+        int j = 1;
+        //每找到一个偶数位上的奇数，就移动指针j，使其找到奇数位上的第一个偶数，交换
+        for(int i = 0; i < A.length; i += 2){
+            if(A[i] % 2 != 0){
+                while(j < A.length && A[j] % 2 != 0){
+                    j += 2;
+                }
+                swap(A, i,j);
+            }
+        }
+        return A;
+    }
+
+    void swap(int[] A, int i, int j){
+        if(i != j){
+            int tmp = A[i];
+            A[i] = A[j];
+            A[j] = tmp;   
+        }
+    }
+}
+```
+
+辅助数组：
+
+```java
+class Solution {
+    public int[] sortArrayByParityII(int[] A) {
+        int[] res = new int[A.length];
+        int cur_o = 1;
+        int cur_e = 0;
+        for(int i = 0; i < A.length; ++i){
+            if(A[i] % 2 != 0){
+                res[cur_o] = A[i];
+                cur_o += 2;
+            }else{
+                res[cur_e] = A[i];
+                cur_e += 2;
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+Golang:
+
+```go
+func sortArrayByParityII(A []int) []int {
+    j := 1
+    for i := 0; i < len(A); i += 2 {
+        if A[i] % 2 != 0 {
+            for j < len(A) && A[j] % 2 != 0 {
+                j += 2;
+            }
+            A[i], A[j] = A[j], A[i]
+        }
+    }
+    return A
+}
+```
+
+
+
+
+
+
+
 
 
 <span id = "jump925"></span>
@@ -2089,6 +2290,12 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
 
 
 

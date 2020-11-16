@@ -25,6 +25,8 @@ pin: true
 
 [5.最长回文子串](#jump5)
 
+[11.盛最多水的容器](#jump11)
+
 [17.电话号码的字母组合](#jump17)
 
 [19.删除链表的倒数第N个节点](#jump19)
@@ -43,6 +45,8 @@ pin: true
 
 [62.不同路径](jump62)
 
+[64.最小路径和](#jump64)
+
 [75.颜色分类](jump75)
 
 [78.子集](jump78)
@@ -56,6 +60,8 @@ pin: true
 [98.验证二叉搜索树](#jump98)
 
 [101.对称二叉树](#jump101)
+
+[122.买卖股票的最佳时机 II](#jump122)
 
 [136.只出现一次的数字](#jump136)
 
@@ -78,6 +84,12 @@ pin: true
 [239.滑动窗口最大值](#jump239)
 
 [240.搜索二维矩阵 II](#jump240)
+
+[279.完全平方数](#jump279)
+
+[283.移动零](#283)
+
+[287.寻找重复数](#jump287)
 
 [309.最佳买卖股票时机含冷冻期](#jump309)
 
@@ -297,6 +309,114 @@ class Solution {
 
 
 
+## 3.无重复字符的最长子串
+
+给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+
+示例 1:
+
+```java
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+```
+
+示例 2:
+
+```java
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+```
+
+示例 3:
+
+```java
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+```
+
+
+
+滑动窗口：
+
+```java
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        char[] arr = s.toCharArray();
+        int n = arr.length;
+        if(n <= 1) return n;
+
+        Set<Character> set = new HashSet<>();
+        int res = 0;
+        int start = 0;
+        int end = 0;
+        //滑动窗口，探索每个以start开始的子串
+        //假设我们找到了当前最长的某个无重复子串：
+        //即[start,end)都没有重复字符，那么[start+1,end)肯定也是无重复字符的
+        //所以可以在此基础上继续增大end，探索更长的无重复子串
+        while(start < n && end < n){
+            while(end < n && !set.contains(arr[end])){
+                set.add(arr[end]);
+                end++;
+            }
+            res = Math.max(res, end - start);
+            set.remove(arr[start]);
+            start++;
+            
+        }
+
+        return res;
+    }
+}
+```
+
+```go
+func lengthOfLongestSubstring(s string) int {
+    n := len(s);
+    if n < 2 {
+        return n;
+    }
+    //用map定义一个set
+    set := map[byte]int{}
+    start := 0
+    end := 0
+    res := 0
+    
+    for start < n && end < n {
+        //判断set中有没有s[end]这个元素
+        for end < n && set[s[end]] == 0 {
+            //把s[end]放入set
+            set[s[end]]++
+            end++
+        }
+        res = max(res, end - start)
+        //从set中删除s[start]
+        delete(set, s[start])
+        start++
+    }
+    return res
+}
+
+func max(a int, b int) int {
+    if a > b {
+        return a
+    }else{
+        return b
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 
 
 <span id="jump5"></span>
@@ -304,6 +424,119 @@ class Solution {
 ## 5.最长回文子串
 
 [点这里跳转](HYCBlog/posts/algorithm-manacher)
+
+
+
+
+
+<span id = "jump11"></span>
+
+## 11.盛最多水的容器
+
+给你 n 个非负整数 `a1，a2，...，an`，每个数代表坐标中的一个点 `(i, ai)` 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 `(i, ai)` 和` (i, 0)` 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+
+说明：你不能倾斜容器。
+
+暴力枚举+剪枝优化：
+
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int max = 0;
+        int max_l = 0;
+        int max_h = 0;
+        for(int i = 0; i <height.length; ++i){
+            max_h = Math.max(max_h, height[i]);
+        }
+
+        for(int i = 0; i < height.length-1; ++i){
+            if((height.length - i) * max_h <= max){
+                break;
+            }
+            //剪枝（1）
+            if(max_l < height[i]){
+                int max_r = 0;
+                for(int j = height.length - 1; j > i; --j){
+                    //剪枝（2）
+                    if((j - i) * height[i] <= max){
+                        break;
+                    }
+                    //剪枝（3）
+                    if(max_r < height[j]){
+                        max = Math.max(max, Math.min(height[i],height[j]) * (j - i));
+                        max_r = height[j];
+                    }
+                    
+                }
+                max_l = height[i];
+            }
+            
+        }
+        return max;
+    }
+}
+```
+
+双指针内缩短板，一句话理解：只有不断克服短板，才能增加成功的可能性
+
+```java
+class Solution {
+    public int maxArea(int[] height) {
+        int res = 0;
+        //双指针指向两端，不断将短板内缩，因为只有将短板内缩才有可能把短板增大，容量才有可能增大
+        int l = 0, r = height.length - 1;
+        while(l < r){
+            res = Math.max(res, Math.min(height[l],height[r]) * (r - l));
+            if(height[l] >= height[r]){
+                r--;
+            }else{
+                l++;
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+golang
+
+```go
+func maxArea(height []int) int {
+    res := 0
+
+    l,r := 0, len(height) - 1
+    for l < r {
+        res = max(res, min(height[l],height[r]) * (r - l))
+        if height[l] >= height[r] {
+            r--
+        }else{
+            l++
+        }
+    }
+    return res
+}
+
+
+func max(a int, b int) int {
+    if a >= b {
+        return a
+    }else{
+        return b
+    }
+}
+
+func min(a int, b int) int {
+    if a >= b {
+        return b
+    }else{
+        return a
+    }
+}
+```
+
+
 
 
 
@@ -1019,6 +1252,109 @@ class Solution {
 
 
 
+<span id = "jump64"></span>
+
+## 64.最小路径和
+
+给定一个包含非负整数的 `*m* x *n*` 网格 `grid` ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+**说明：**每次只能向下或者向右移动一步。
+
+```java
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+```
+
+示例 2：
+
+```java
+输入：grid = [[1,2,3],[4,5,6]]
+输出：12
+```
+
+
+提示：
+
+* `m == grid.length`
+* `n == grid[i].length`
+* `1 <= m, n <= 200`
+* `0 <= grid[i][j] <= 100`
+
+```go
+func minPathSum(grid [][]int) int {
+    
+    var m int = len(grid)
+    var n int = len(grid[0])
+  	//动态数组声明，太麻烦了吧
+    dp := make([][]int, m)
+    for i := 0; i < m; i++ {
+        dp[i] = make([]int, n)
+    }
+    //边界初始化
+    dp[0][0] = grid[0][0]
+    for i := 1; i < m; i++ {
+        dp[i][0] = dp[i-1][0] + grid[i][0]
+    }
+
+    for j := 1; j < n; j++ {
+        dp[0][j] = dp[0][j-1] + grid[0][j]
+    }
+
+    for i := 1; i < m; i++ {
+        for j:= 1; j < n; j++ {
+            dp[i][j] = mymin(dp[i-1][j], dp[i][j-1]) + grid[i][j]
+        }
+    }
+    return dp[m-1][n-1]
+}
+//还得自己写min，因为不支持函数重载，所以math包里只支持float64的min和max，美其名曰保持简洁干净？
+func mymin(a int, b int) int{
+    if a < b {
+        return a
+    }else{
+        return b
+    }
+}
+```
+
+```java
+class Solution {
+    public int minPathSum(int[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        //dp[i][j]表示从grid[0][0]走到grid[i][j]的最小路径和
+        int[][] dp = new int[m][n];
+        dp[0][0] = grid[0][0];
+        //边界初始化
+        for(int j = 1; j < n; ++j){
+            dp[0][j] = dp[0][j-1] + grid[0][j];
+        }
+
+        for(int i = 1; i < m; ++i){
+            dp[i][0] = dp[i-1][0] + grid[i][0];
+        }
+
+        for(int i = 1; i < m; ++i){
+            for(int j = 1; j < n; ++j){
+                dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+            }
+        }
+
+        return dp[m-1][n-1];
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 <span id = "jump75"></span>
 
 ## 75.颜色分类
@@ -1556,6 +1892,99 @@ class Solution {
         return true;
     }
 
+}
+```
+
+
+
+
+
+
+
+<span id = "jump122"></span>
+
+## 122.买卖股票的最佳时机 II
+
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+示例 1:
+
+```java
+输入: [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+```
+
+示例 2:
+
+```java
+输入: [1,2,3,4,5]
+输出: 4
+解释: 在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。
+     因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。
+```
+
+示例 3:
+
+```java
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+
+提示：
+
+* 1 <= prices.length <= 3 * 10 ^ 4
+* 0 <= prices[i] <= 10 ^ 4
+
+
+
+动态规划：
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length - 1;
+        //dp[i]表示第i天结束后，最大的累积收益
+        //dp[i][0]持有一支股票->hs
+        //dp[i][1]不持有任何股票->nhs
+        //边界
+        int hs = -prices[0];
+        int nhs = 0;
+
+        for(int i = 1; i <= n; ++i){
+            hs = Math.max(hs, nhs - prices[i]);
+            nhs = Math.max(nhs, hs + prices[i]);
+        }
+
+        return nhs;
+    }
+}
+```
+
+贪心：
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+
+        int res = 0;
+        //涨了就卖，跌了就不卖
+        //不管到底有没有买入，只要涨了，我就认为我买入了，直接卖即可，贪心
+        for(int i = 1; i < prices.length; ++i){
+            if(prices[i] - prices[i-1] > 0){
+                res += prices[i] - prices[i-1];
+            }
+        }
+        return res;
+    }
 }
 ```
 
@@ -2814,6 +3243,271 @@ class Solution {
 
 
 
+
+<span id = "jump279"></span>
+
+## 279.完全平方数
+
+给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+
+示例 1:
+
+```java
+输入: n = 12
+输出: 3 
+解释: 12 = 4 + 4 + 4.
+```
+
+示例 2:
+
+```java
+输入: n = 13
+输出: 2
+解释: 13 = 4 + 9.
+```
+
+
+
+动态规划：
+
+```java
+class Solution {
+
+    public int numSquares(int n) {
+        if(n == 1)  return 1;
+        //dp[i]表示组成数字i最少需要的完全平方数个数
+        //dp[n]就是答案
+        int[] dp = new int[n+1];
+        //那么dp[i]为min(dp[i - 可用的每个完全平方数] + 1)
+        Arrays.fill(dp, 4);
+        //边界处理
+        dp[0] = 0;
+        //找出可用的完全平方数
+        int max_s_i = (int)Math.sqrt(n);
+        int[] square_nums = new int[max_s_i + 1];
+        for(int i = 1; i <= max_s_i; ++i){
+            square_nums[i] = i * i;
+        }
+
+        //遍历1～n所有的数
+        for(int i = 1; i <= n; ++i){
+            //遍历所有的完全平方数
+            for(int s = 1; s <= max_s_i; ++s){
+                if(i < square_nums[s])  break;
+                dp[i] = Math.min(dp[i], dp[i - square_nums[s]] + 1);
+            }
+        }
+        return dp[n];
+    }
+
+}
+```
+
+数学方法：
+
+```java
+class Solution {
+
+  protected boolean isSquare(int n) {
+    int sq = (int) Math.sqrt(n);
+    return n == sq * sq;
+  }
+
+  //拉格朗日四平方数定理：所有的自然数都可以被表示为4个整数的平方和
+  public int numSquares(int n) {
+    while (n % 4 == 0)
+      n /= 4;
+    if (n % 8 == 7)
+      return 4;
+		//只要n ！= 4^k (8m+7)，那么这个正整数可以表示为3个平方
+    //但是可以更少时，我们取更少
+    //即当前数字就是个完全平方数
+    if (this.isSquare(n))
+      return 1;
+    //当前数字可以被分解为两个完全平方数
+    for (int i = 1; i * i <= n; ++i) {
+      if (this.isSquare(n - i * i))
+        return 2;
+    }
+    //不可以分解为1个或2个完全平方数，那么根据Adrien-Marie-Legendre的三平方定理只能是3个完全平方数了
+    return 3;
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+<span id = "jump283"></span>
+
+## 283.移动零
+
+给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+
+示例:
+
+```java
+输入: [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
+
+
+说明:
+
+* 必须在原数组上操作，不能拷贝额外的数组。
+* 尽量减少操作次数。
+
+冒泡法：
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        if(nums.length == 0)    return;
+        int  left = 0, right = 0;
+   
+        while(left < nums.length){
+            while(left < nums.length && nums[left] != 0) ++left;
+            if(left >= nums.length) return;
+            right = left + 1;
+            while(right < nums.length && nums[right] == 0)  ++right;
+            if(right >= nums.length)    return;
+            swap(nums, left, right);
+            left++;
+        }
+    }
+
+    void swap(int[] nums, int i, int j){
+        if(i != j){
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+        }
+    }
+}
+```
+
+先排列所有非0元素，再填充0:
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int ptr = 0;
+        for(int i = 0; i < nums.length; ++i){
+            if(nums[i] != 0){
+                nums[ptr++] = nums[i];
+            }
+        }
+        for(int i = ptr; i < nums.length; ++i){
+            nums[i] = 0;
+        }   
+    }
+}
+```
+
+快慢指针，快指针正常遍历，慢指针始终指向第一个0。
+
+```java
+class Solution {
+    public void moveZeroes(int[] nums) {
+        int ptr = 0;
+        for(int i = 0; i < nums.length; ++i){
+            if(nums[i] != 0){
+                swap(nums, ptr, i);
+                ++ptr;
+            }
+        }
+    }
+
+    void swap(int[] nums, int i, int j){
+        if(i != j){
+            int tmp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = tmp;
+        }
+    }
+}
+```
+
+
+
+
+
+<span id = "jump287"></span>
+
+## 287.寻找重复数
+
+给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。
+
+示例 1:
+
+```java
+输入: [1,3,4,2,2]
+输出: 2
+```
+
+示例 2:
+
+```java
+输入: [3,1,3,4,2]
+输出: 3
+```
+
+
+说明：
+
+* 不能更改原数组（假设数组是只读的）。
+* 只能使用额外的 O(1) 的空间。
+* 时间复杂度小于 O(n2) 。
+* 数组中只有一个重复的数字，但它可能不止重复出现一次。
+
+
+
+数字分布在1～n之间，如果重复的数字为k：
+
+1. 那么在[1,k-1]范围内的数字nums[i]有：数组中小于等于nums[i]的数字个数为不会超过nums[i]个，例如1，小于等于1的数字有1个
+2. 在[k,n]范围内的数字nums[i]有：小于等于nums[i]数字个数均大于nums[i]，例如3，小于等于3的数字有4个。
+
+二分法，搜索单调性变化的边界即可。
+
+```java
+class Solution {
+    public int findDuplicate(int[] nums) {
+        //二分法：在1，2，3，4，...,n之间搜索
+        //我们发现：如果重复的数字为k，
+        //1、那么在[1,k-1]范围内的数字nums[i]有：
+        //      数组中小于等于nums[i]的数字个数为不会超过nums[i]个，例如1，小于等于1的数字有1个
+        //2、在[k,max]范围内的数字nums[i]有：
+        //      小于等于nums[i]数字个数均大于nums[i]，例如3，小于等于3的数字有4个。
+        int l = 1, r = nums.length - 1;
+        int res = -1;
+        while(l <= r){
+            int mid = (l + r) >> 1;
+            int cnt = 0;
+            for(int i = 0; i < nums.length; ++i){
+                if(nums[i] <= mid){
+                    cnt++;
+                }
+            }
+
+            if(cnt <= mid){
+                l = mid + 1;
+            }else{
+                r = mid - 1;
+                res = mid;
+            }
+        }
+        return res;
+
+    }
+}
+```
 
 
 

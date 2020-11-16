@@ -30,6 +30,8 @@ pin: true
 
 [327.区间和的个数[tag]](#jump327)
 
+[328.奇偶链表](#jump328)
+
 [332.重新安排行程](#jump332)
 
 [336.回文对](#jump336)
@@ -42,9 +44,13 @@ pin: true
 
 [344.反转字符串](#jumo344)
 
+[402.移掉K位数字](#jump402)
+
 [404.左叶子之和](#jump404)
 
 [416.分割等和子集](#jump416)
+
+[437.路径总和 III](#jump437)
 
 [459.重复的子字符串](#jump459)
 
@@ -796,6 +802,16 @@ class Solution {
 
 
 
+
+
+
+
+
+
+
+
+
+
 <span id = "jump327"></span>
 
 ## 327.区间和的个数[tag]
@@ -903,6 +919,83 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump328"></span>
+
+## 328.奇偶链表
+
+给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。请注意，这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
+
+请尝试使用原地算法完成。你的算法的空间复杂度应为 O(1)，时间复杂度应为 O(nodes)，nodes 为节点总数。
+
+示例 1:
+
+```java
+输入: 1->2->3->4->5->NULL
+输出: 1->3->5->2->4->NULL
+```
+
+示例 2:
+
+```java
+输入: 2->1->3->5->6->4->7->NULL 
+输出: 2->3->6->7->1->5->4->NULL
+```
+
+
+说明:
+
+* 应当保持奇数节点和偶数节点的相对顺序。
+* 链表的第一个节点视为奇数节点，第二个节点视为偶数节点，以此类推。
+
+```java
+class Solution {
+    public ListNode oddEvenList(ListNode head) {
+        if(head == null)    return head;
+        //双指针
+        ListNode pto = head;
+        ListNode pte = head.next;
+        while(pte != null){
+            //移动节点
+            ListNode o = pte.next;
+            if(o == null)   break;
+            ListNode tmp = o.next;
+            o.next = pto.next;
+            pto.next = o;
+            pte.next = tmp;
+            //让这两个指针分别指向奇数子链表和偶数子链表的末端
+            pte = pte.next;
+            pto = pto.next;
+        }
+        return head;
+    }
+}
+```
+
+```go
+func oddEvenList(head *ListNode) *ListNode {
+    if head == nil{
+        return head
+    }
+    var pto *ListNode = head;
+    var pte *ListNode = head.Next;
+    for pte != nil {
+        var o *ListNode = pte.Next;
+        if o == nil {
+            break;
+        }
+        var tmp *ListNode = o.Next;
+        o.Next = pto.Next;
+        pto.Next = o;
+        pte.Next = tmp;
+        pte = pte.Next;
+        pto = pto.Next;
+    }
+    return head;
+}
+```
 
 
 
@@ -1759,6 +1852,94 @@ class RandomizedCollection {
 
 
 
+<span id = "jump402"></span>
+
+## 402.移掉K位数字
+
+给定一个以字符串表示的非负整数 num，移除这个数中的 k 位数字，使得剩下的数字最小。
+
+注意:
+
+* num 的长度小于 10002 且 ≥ k。
+* num 不会包含任何前导零。
+
+示例 1 :
+
+```java
+输入: num = "1432219", k = 3
+输出: "1219"
+解释: 移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219。
+```
+
+示例 2 :
+
+```java
+输入: num = "10200", k = 1
+输出: "200"
+解释: 移掉首位的 1 剩下的数字为 200. 注意输出不能有任何前导零。
+```
+
+示例 3 :
+
+```java
+输入: num = "10", k = 2
+输出: "0"
+解释: 从原数字移除所有的数字，剩余为空就是0。
+```
+
+
+
+逐个删除数字期望开头的数字越小越好。
+
+```java
+class Solution {
+    public String removeKdigits(String num, int k) {
+        if(num.length() <= k) return "0";
+        //双端队列
+        Deque<Character> deque = new LinkedList<>();
+        //将所有元素依次入栈
+        for(int i = 0; i < num.length(); ++i){
+            char c = num.charAt(i);
+            //当当前元素比栈顶元素小时，且k>0时，将栈顶弹出
+            while(!deque.isEmpty() && k > 0 && deque.peekLast() > c){
+                deque.pollLast();
+                k--;
+            }
+            deque.offerLast(c);
+        }
+        //若序列都已经单调不降了，但是还有没删干净的数字，那么就将最后几个数字删了
+        while(k > 0){
+            deque.pollLast();
+            k--;
+        }
+        //去除前导0
+        while(deque.peekFirst() != null && deque.peekFirst() == '0'){
+            deque.pollFirst();
+        }
+        //读取数字
+        StringBuffer sb = new StringBuffer();
+        while(!deque.isEmpty()){
+            sb.append(deque.pollFirst());
+        }
+        //队列为空，就返回0
+        if(sb.length() == 0){
+            return "0";
+        }
+        return sb.toString();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 <span id = "jump404"></span>
 
 ## 404.左叶子之和
@@ -1803,6 +1984,68 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump437"></span>
+
+## 437.路径总和 III
+
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+示例：
+
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+          10
+         /  \
+        5   -3
+       / \    \
+      3   2   11
+     / \   \
+    3  -2   1
+    
+    返回 3。和等于 8 的路径有:
+    
+     5 -> 3
+     5 -> 2 -> 1
+    -3 -> 11
+
+和第560题类似，只不过这里是多个数组。
+
+```java
+class Solution {
+    int cnt = 0;
+    public int pathSum(TreeNode root, int sum) {
+        //统计每个节点的前缀和pre，放入哈希表中
+        //再遍历每条路径，统计pre - sum出现的个数
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0,1);
+        preOrder(map, root,0, sum);
+        return cnt;
+    }
+
+    void preOrder(Map<Integer, Integer> map, TreeNode root, int pre, int k){
+        if(root != null){
+            pre += root.val;
+            if(map.containsKey(pre - k)){
+                cnt += map.get(pre - k);
+            }
+            map.put(pre, map.getOrDefault(pre, 0) + 1);
+            preOrder(map, root.left, pre, k);
+            preOrder(map, root.right, pre, k);
+            //回溯，这样在每个时刻，map中的节点都是同一条路径上的
+            map.put(pre, map.get(pre) - 1);
+        }
+    }
+}
+```
 
 
 
