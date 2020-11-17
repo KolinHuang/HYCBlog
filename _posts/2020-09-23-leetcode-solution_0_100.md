@@ -38,6 +38,8 @@ pin: true
 
 [47.全排列](#jump47)
 
+[50.Pow(x, n)](#jump50)
+
 [51.N 皇后](#jump51)
 
 [52.N皇后 II[tag]](#jump52)
@@ -761,6 +763,76 @@ class Solution {
 ```
 
 
+
+
+
+<span id = "jump50"></span>
+
+## 50.Pow(x, n)
+
+实现 pow(x, n) ，即计算 x 的 n 次幂函数。
+
+示例 1:
+
+```java
+输入: 2.00000, 10
+输出: 1024.00000
+```
+
+示例 2:
+
+```java
+输入: 2.10000, 3
+输出: 9.26100
+```
+
+示例 3:
+
+```java
+输入: 2.00000, -2
+输出: 0.25000
+解释: 2-2 = 1/22 = 1/4 = 0.25
+```
+
+
+说明:
+
+* -100.0 < x < 100.0
+* n 是 32 位有符号整数，其数值范围是 [−231, 231 − 1] 。
+
+快速幂解法：
+
+```markdown
+n = 1*b1 + 2*b2 + 4*b3 + ... + 2^m-1 * bm
+x^n = x^(b1 + 2*b2 + 4*b3 + ... + 2^m-1 * bm)
+= x^b1 * x^2b2 * x^4b3 * ... x^2^m-1*bm
+分两步：
+求x^1, x^2, x^4...x^2^m-1	-> x *= x即可
+求b1,b2,b3,...,bm					-> b_i = n & 1; n >>= 1;
+```
+
+
+
+```java
+class Solution {
+    public double myPow(double x, int n) {
+        if(x == 0.0f)   return 0.0d;
+        long b = n;
+        double res = 1.0;
+        if(b < 0){
+            x = 1 / x;
+            b = -b;
+        }
+        double y = x;
+        while(b > 0){
+            if((b & 1) == 1)  res *= y;
+            b >>= 1;
+            y *= y;
+        }
+        return res;
+    }
+}
+```
 
 
 
