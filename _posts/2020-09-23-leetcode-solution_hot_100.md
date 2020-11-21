@@ -53,6 +53,8 @@ pin: true
 
 [79.单词搜索](#jump79)
 
+[86.分隔链表](#jump86)
+
 [94.二叉树的中序遍历](#jump94)
 
 [96. 不同的二叉搜索树](#jump96)
@@ -60,6 +62,8 @@ pin: true
 [98.验证二叉搜索树](#jump98)
 
 [101.对称二叉树](#jump101)
+
+[114.二叉树展开为链表](#jump114)
 
 [122.买卖股票的最佳时机 II](#jump122)
 
@@ -91,11 +95,15 @@ pin: true
 
 [287.寻找重复数](#jump287)
 
+[300.最长上升子序列](#jump300)
+
 [309.最佳买卖股票时机含冷冻期](#jump309)
 
 [337. 打家劫舍 3](#jump337)
 
 [347.前 K 个高频元素](#jump347)
+
+[394.字符串解码](#jump394)
 
 [406.根据身高重建队列](#jump406)
 
@@ -1609,6 +1617,78 @@ class Solution {
 
 
 
+
+
+<span id = "jump86"></span>
+
+## 86.分隔链表
+
+给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+
+你应当保留两个分区中每个节点的初始相对位置。
+
+ 
+
+示例:
+
+```java
+输入: head = 1->4->3->2->5->2, x = 3
+输出: 1->2->2->4->3->5
+```
+
+
+
+```java
+class Solution {
+    public ListNode partition(ListNode head, int x) {
+        ListNode fakeHead = new ListNode(0);
+        fakeHead.next = head;
+        //pre用于指向小于x节点的子链表的尾部，cur用于指向当前节点的前一个节点
+        ListNode pre = fakeHead, cur = fakeHead;
+
+        while(cur != null && pre != null){
+            //越过所有大于等于x的节点
+            while(cur.next != null && cur.next.val >= x){
+                cur = cur.next;
+            }
+            //到达结尾了，结束遍历
+            if(cur.next == null){
+                break;
+            }
+
+            //越过一开始就在正确位置的小于x的节点
+            if(cur == pre){
+                cur = cur.next;
+                pre = pre.next;
+                continue;
+            }
+            //将小于x的节点插到前面去
+            ListNode tmp = cur.next;
+            cur.next = tmp.next;
+            tmp.next = pre.next;
+            pre.next = tmp;
+
+            //向后移动指针
+            pre = pre.next;
+
+        }
+
+        return fakeHead.next;
+        
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
 <span id = "jump94"></span>
 
 ## 94.二叉树的中序遍历
@@ -1894,6 +1974,73 @@ class Solution {
 
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id= "jump114"></span>
+
+## 114.二叉树展开为链表
+
+给定一个二叉树，原地将它展开为一个单链表。
+
+ 
+
+例如，给定二叉树
+
+    		1
+       / \
+      2   5
+     / \   \
+    3   4   6
+
+
+将其展开为：
+
+```java
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+```
+
+
+
+```java
+class Solution {
+    TreeNode post;
+    public void flatten(TreeNode root) {
+        post = null;
+        postOrder(root);
+    }
+    //逆后序遍历，一个一个接上即可
+    void postOrder(TreeNode root){
+        if(root != null){
+            postOrder(root.right);
+            postOrder(root.left);
+            if(post != null){
+                root.left = null;
+                root.right = post;
+            }
+            post = root;
+        }
+    }
+
+}
+```
+
 
 
 
@@ -3513,6 +3660,110 @@ class Solution {
 
 
 
+
+
+<span id ="jump300"></span>
+
+## 300.最长上升子序列
+
+给定一个无序的整数数组，找到其中最长上升子序列的长度。
+
+示例:
+
+```java
+输入: [10,9,2,5,3,7,101,18]
+输出: 4 
+解释: 最长的上升子序列是 [2,3,7,101]，它的长度是 4。
+```
+
+
+说明:
+
+* 可能会有多种最长上升子序列的组合，你只需要输出对应的长度即可。
+* 你算法的时间复杂度应该为 O(n2) 。
+
+进阶: 你能将算法的时间复杂度降低到 O(n log n) 吗?
+
+
+
+动态规划：
+
+```java
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        if(n == 0)  return 0;
+        //dp[i]表示[0,i]的最长上升子序列长度
+        int[] dp = new int[n];
+        //初始化边界
+        Arrays.fill(dp,1);
+        int max = 1;
+        for(int i = 1; i < n; ++i){
+            for(int j = i - 1; j >= 0; --j){
+                if(nums[i] > nums[j]){
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                }
+            }
+            max = Math.max(dp[i], max);
+        }
+
+        return max;
+    }
+}
+```
+
+
+
+贪心：
+
+设计思路：
+
+新的状态定义：
+我们考虑维护一个列表 tails，其中每个元素 tails[k] 的值代表 长度为k+1 的子序列尾部元素的值。
+如 `[1,4,6]` 序列，长度为 `1,2,3` 的子序列尾部元素值分别为 tails=`[1,4,6]`。
+状态转移设计：
+设常量数字 N，和随机数字 x，我们可以容易推出：当 N 越小时，N<x 的几率越大。例如： N=0 肯定比 N=1000 更可能满足 N<x。
+在遍历计算每个 tails[k]，不断更新长度为` [1,k] `的子序列尾部元素值，始终保持每个尾部元素值最小 （例如 `[1,5,3]`， 遍历到元素 5 时，长度为 2 的子序列尾部元素值为 5；当遍历到元素 3 时，尾部元素值应更新至 3，因为 3 遇到比它大的数字的几率更大）。
+tails 列表一定是严格递增的： 即当尽可能使每个子序列尾部元素值最小的前提下，子序列越长，其序列尾部元素值一定更大。
+
+既然严格递增，每轮计算 tails[k] 时就可以使用二分法查找需要更新的尾部元素值的对应索引 i。
+
+```java
+class Solution {
+	
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        if(n == 0)  return 0;
+	      //其中每个元素 tails[k] 的值代表 长度为k+1 的子序列尾部元素的值。
+        int[] tail = new int[n];
+        int res = 0;
+        for(int num : nums){
+            int i = 0, j = res;
+            //计算 tails[k] 时就可以使用二分法查找需要更新的尾部元素值的对应索引 i
+            while(i < j){
+                int m = (j - i) / 2 + i;
+                if(tail[m] < num){
+                    i = m + 1;
+                }else{
+                    j = m;
+                }
+            }
+            tail[i] = num;
+            if(j == res) res++;
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 <span id="jump309"></span>
 
 ## 309.最佳买卖股票时机含冷冻期
@@ -3920,6 +4171,115 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "394"></span>
+
+## 394.字符串解码
+
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+
+ 
+
+示例 1：
+
+```java
+输入：s = "3[a]2[bc]"
+输出："aaabcbc"
+```
+
+示例 2：
+
+```java
+输入：s = "3[a2[c]]"
+输出："accaccacc"
+```
+
+示例 3：
+
+```java
+输入：s = "2[abc]3[cd]ef"
+输出："abcabccdcdcdef"
+```
+
+示例 4：
+
+```java
+输入：s = "abc3[cd]xyz"
+输出："abccdcdcdxyz"
+```
+
+
+
+```java
+class Solution {
+    public String decodeString(String s) {
+
+        Deque<String> chars = new LinkedList<>();
+        Deque<Integer> times = new LinkedList<>();
+
+        char[] arr = s.toCharArray();
+        //遍历字符数组，把数字放入time栈，把字符放入chars栈
+        //当遇到"]"时，出栈chars元素，直到碰到"["，再出栈一个times元素
+        //将组成的字符串重复多次，再放入chars
+        //当读取完了数组，就将chars字符串拼接并且reverse
+        for(int i = 0; i < arr.length; ++i){
+            if(arr[i] == ']'){
+                //出栈
+                StringBuffer sb = new StringBuffer();
+                while(!chars.peek().equals("[")){
+                    String tmp = chars.pop();
+                    sb.append(tmp);
+                }
+                //删除"]"
+                chars.pop();
+                int time = times.pop();
+                //重复字符串time-1次
+                String str = sb.toString();
+                for(int j = 0; j < time-1; ++j){
+                    sb.append(str);
+                }
+                chars.push(sb.toString());
+            }else if(Character.isDigit(arr[i])){
+                //连续读取数字如'1','0','0'读为100
+                StringBuffer digit = new StringBuffer();
+                digit.append(arr[i]);
+                while(i + 1 < arr.length && Character.isDigit(arr[i+1])){
+                    digit.append(arr[i+1]);
+                    i++;
+                }
+                times.push(Integer.parseInt(digit.toString()));
+            }else{
+                chars.push(arr[i] + "");
+            }
+        }
+
+        StringBuffer res = new StringBuffer();
+        while(!chars.isEmpty()){
+            res.append(chars.pop());
+        }
+        return res.reverse().toString();
+
+    }
+}
+```
+
+
+
+
 
 
 

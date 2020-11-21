@@ -33,8 +33,6 @@ pin: true
 
 [113.路径总和 II](#jump113)
 
-
-
 [116.填充每个节点的下一个右侧节点指针](#jump116)
 
 [117.填充每个节点的下一个右侧节点指针 II](#jump117)
@@ -61,7 +59,7 @@ pin: true
 
 [145.二叉树的后序遍历](#jump145)
 
-
+[147.对链表进行插入排序](#jump147)
 
 
 
@@ -1780,3 +1778,81 @@ class Solution {
 
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump147"></span>
+
+## 147.对链表进行插入排序
+
+
+ 
+
+插入排序算法：
+
+插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。
+每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
+重复直到所有输入数据插入完为止。
+
+示例 1：
+
+```java
+输入: 4->2->1->3
+输出: 1->2->3->4
+```
+
+示例 2：
+
+```java
+输入: -1->5->3->4->0
+输出: -1->0->3->4->5
+```
+
+
+
+```java
+class Solution {
+
+    public ListNode insertionSortList(ListNode head) {
+        if(head == null)    return null;
+        //新链表
+        ListNode fakeHead = new ListNode(0);
+
+        fakeHead.next = head;
+        ListNode cur = head;
+
+        ListNode lastSort = head;
+
+        while(cur.next != null){
+            //剪枝，指向当前已排序链表的最后一个元素，若cur.next比这个元素都大，那就不用插入了
+            if(cur.next.val >= lastSort.val){
+                lastSort = lastSort.next;
+                cur = cur.next;
+                continue;
+            }
+
+            ListNode ptr = fakeHead;
+            while(ptr.next != null && ptr.next.val < cur.next.val){
+                ptr = ptr.next;
+            }
+
+            ListNode tmp = cur.next;
+            cur.next = tmp.next;
+            tmp.next = ptr.next;
+            ptr.next = tmp;
+
+        }
+
+        return fakeHead.next;
+    }
+
+    
+}
+```
+
