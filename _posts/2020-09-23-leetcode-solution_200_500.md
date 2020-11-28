@@ -24,7 +24,11 @@ pin: true
 
 [221.最大正方形](#jump221)
 
+[222.完全二叉树的节点个数](#jump222)
+
 [235.二叉树的最近公共祖先](#jump235)
+
+[242.有效的字母异位词](#jump242)
 
 [257.二叉树的所有路径](#jump257)
 
@@ -52,13 +56,17 @@ pin: true
 
 [437.路径总和 III](#jump437)
 
+[438.找到字符串中所有字母异位词](#jump438)
+
+[452.用最少数量的箭引爆气球](#jump452)
+
 [459.重复的子字符串](#jump459)
 
 [463.岛屿的周长](#jump463)
 
 [486.预测赢家](#jump486)
 
-
+[493.翻转对](#jump493)
 
 
 
@@ -652,6 +660,137 @@ class Solution {
 
 
 
+<span id = "jump222"></span>
+
+## 222.完全二叉树的节点个数
+
+给出一个完全二叉树，求出该树的节点个数。
+
+说明：
+
+完全二叉树的定义如下：在完全二叉树中，除了最底层节点可能没填满外，其余每层节点数都达到最大值，并且最下面一层的节点都集中在该层最左边的若干位置。若最底层为第 h 层，则该层包含 1~ 2h 个节点。
+
+示例:
+
+```java
+输入: 
+    1
+   / \
+  2   3
+ / \  /
+4  5 6
+
+输出: 6
+```
+
+
+
+层序遍历：
+
+```java
+class Solution {
+    public int countNodes(TreeNode root) {
+        if(root == null)    return 0;
+        if(root.left == null)   return 1;
+        //首先求出二叉树的深度，再遍历倒数第二层的节点，统计最后一层的节点个数
+        //由于是完全二叉树，所以只要持续探索左节点，就能得到深度
+        TreeNode cur = root;
+        int depth = 0;
+        while(cur != null){
+            depth++;
+            cur = cur.left;
+        }
+        //层序遍历，直到到达第depth-1层
+        int cnt = depth;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while(!queue.isEmpty() && cnt > 2){
+            cnt--;
+            int size = queue.size();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                if(tmp.left != null)    queue.offer(tmp.left);
+                if(tmp.right != null)    queue.offer(tmp.right);
+            }
+        }
+        //此时queue中的节点都是倒数第二层的节点
+        int res = (int)Math.pow(2,depth-1) - 1;
+        int size = queue.size();
+        for(int i = 0; i < size; ++i){
+            TreeNode tmp = queue.poll();
+            if(tmp.left != null && tmp.right != null){
+                res+=2;
+            }else if(tmp.left != null && tmp.right == null){
+                res+=1;
+                break;
+            }else{
+                break;
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+二分+位运算
+
+```java
+class Solution {
+    public int countNodes(TreeNode root) {
+        if(root == null)    return 0;
+        if(root.left == null)   return 1;
+        //首先求出二叉树的深度
+        //由于是完全二叉树，所以只要持续探索左节点，就能得到深度
+        TreeNode cur = root;
+        int depth = 0;
+        while(cur.left != null){
+            depth++;
+            cur = cur.left;
+        }
+        //知道了深度，就知道了此二叉树的节点数范围：2^depth~2^(depth+1)-1
+        //可以利用二分搜索确定节点数
+        // 1 00000 ～ 1 11111
+        int low = 1 << depth, high = (1 << (depth + 1)) - 1;
+        while(low < high){
+            int mid = (high - low + 1) / 2 + low;
+            System.out.println("mid:" + mid);
+            //判断二叉树是否有mid个节点
+            if(exist(root, depth, mid)){
+                low = mid;
+            }else{
+                high = mid - 1;
+            }
+        }
+        return low;
+    }
+
+    //根据节点编号寻找路径，最后判断节点是否为空，即可知道第mid个节点是否存在了
+    //比如第mid个节点是第6个节点，那么编号为110，则1 0 表示二叉树先往右子树移动再往左子树移动，即可到达mid节点
+    boolean exist(TreeNode root, int depth, int mid){
+        //取出 11111，即最后一层的最大节点数
+        int bits = 1 << (depth - 1);
+        System.out.println("mid:" + mid + "; bits :" + bits);
+        TreeNode node = root;
+        while(node != null && bits > 0){
+            if((bits & mid) == 0){
+                node = node.left;
+            }else{
+                node = node.right;
+            }
+            bits >>= 1;
+        }
+
+        return node != null;
+    }
+}
+```
+
+
+
+
+
 
 
 
@@ -724,6 +863,85 @@ class Solution {
         //p,q在两侧
         return root;   
     }   
+}
+```
+
+
+
+
+
+<span id= "jump242"></span>
+
+## 242.有效的字母异位词
+
+给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。
+
+示例 1:
+
+```java
+输入: s = "anagram", t = "nagaram"
+输出: true
+```
+
+
+示例 2:
+
+```java
+输入: s = "rat", t = "car"
+输出: false
+```
+
+说明:
+你可以假设字符串只包含小写字母。
+
+进阶:
+如果输入字符串包含 unicode 字符怎么办？你能否调整你的解法来应对这种情况？
+
+
+
+排序比较：
+
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s.length() != t.length())    return false;
+
+        char[] char1 = s.toCharArray();
+        char[] char2 = t.toCharArray();
+
+        Arrays.sort(char1);
+        Arrays.sort(char2);
+
+        return Arrays.equals(char1,char2);
+    }
+}
+```
+
+哈希表：
+
+```java
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s.length() != t.length())    return false;
+
+        Map<Character, Integer> table = new HashMap<>();
+
+        for(int i = 0; i < s.length(); ++i){
+            char c = s.charAt(i);
+            table.put(c,table.getOrDefault(c, 0) + 1);
+        }
+
+        for(int i = 0; i < t.length(); ++i){
+            char c = t.charAt(i);
+            table.put(c,table.getOrDefault(c, 0) - 1);
+            if(table.get(c) < 0){
+                return false;
+            }
+        }
+        return true;
+
+        
+    }
 }
 ```
 
@@ -2051,6 +2269,275 @@ class Solution {
 
 
 
+<span id = "jump438"></span>
+
+## 438.找到字符串中所有字母异位词
+
+给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
+
+字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
+
+说明：
+
+字母异位词指字母相同，但排列不同的字符串。
+不考虑答案输出的顺序。
+示例 1:
+
+```java
+输入:
+s: "cbaebabacd" p: "abc"
+输出:
+[0, 6]
+
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的字母异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的字母异位词。
+```
+
+
+ 示例 2:
+
+```java
+输入:
+s: "abab" p: "ab"
+
+输出:
+[0, 1, 2]
+
+解释:
+起始索引等于 0 的子串是 "ab", 它是 "ab" 的字母异位词。
+起始索引等于 1 的子串是 "ba", 它是 "ab" 的字母异位词。
+起始索引等于 2 的子串是 "ab", 它是 "ab" 的字母异位词。
+```
+
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        int np = p.length();
+        int ns = s.length();
+        List<Integer> res = new ArrayList<>();
+        if(np == 0 || ns == 0)  return  res;
+
+        //现将p中的字符打到表中
+        int[] table = new int[26];
+        for(int i = 0; i < np; ++i){
+            table[p.charAt(i) - 'a']++;
+        }
+
+        //初始化滑动窗口，窗口大小为np
+        int l = 0, r = 0;
+        char[] arr = s.toCharArray();
+
+        //记录窗口状态的表
+        int[] cur = new int[26];
+        while(l <= (ns-np)){
+            //窗口增长期
+            if(r == l){
+                Arrays.fill(cur,0);
+                boolean tag = true;
+                for(int i = l; i < l+np; ++i){
+                    //table表中没有这个字符
+                    if(table[arr[i] - 'a'] == 0){
+                        l = i+1;
+                        tag = false;
+                        break;
+                    }
+                    //table表中有这个字符
+
+                    //这个字符出现的次数超过了table表
+                    if(table[arr[i] - 'a'] < cur[arr[i] - 'a']+1){
+                        l++;
+                        tag = false;
+                        break;
+                    }
+                    cur[arr[i] - 'a']++;
+                }
+                //是由于异常才结束循环的
+                if(tag == false){
+                    r = l;
+                    continue;
+                }
+                //正常结束循环，说明全部比较完毕了，都没有出现异常
+                res.add(l);
+                r = l + np;
+            }else{
+                //窗口滑动期
+                //指针l和r同时向右滑动一个单位
+                r++;
+                //超出了边界
+                if(r-1 == ns){
+                    break;
+                }
+                //新加入的字符和移出去的字符相同
+                if(arr[r-1] == arr[l]){
+                    l++;
+                    res.add(l);
+                }else{
+                    //回到窗口增长期
+                    l++;
+                    r = l;
+                }
+
+            }
+
+
+        }
+        return res;
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span id = "jump452"></span>
+
+## 452.用最少数量的箭引爆气球
+
+在二维空间中有许多球形的气球。对于每个气球，提供的输入是水平方向上，气球直径的开始和结束坐标。由于它是水平的，所以纵坐标并不重要，因此只要知道开始和结束的横坐标就足够了。开始坐标总是小于结束坐标。
+
+一支弓箭可以沿着 x 轴从不同点完全垂直地射出。在坐标 x 处射出一支箭，若有一个气球的直径的开始和结束坐标为 xstart，xend， 且满足  xstart ≤ x ≤ xend，则该气球会被引爆。可以射出的弓箭的数量没有限制。 弓箭一旦被射出之后，可以无限地前进。我们想找到使得所有气球全部被引爆，所需的弓箭的最小数量。
+
+给你一个数组 points ，其中 points [i] = [xstart,xend] ，返回引爆所有气球所必须射出的最小弓箭数。
+
+示例 1：
+
+```java
+输入：points = [[10,16],[2,8],[1,6],[7,12]]
+输出：2
+解释：对于该样例，x = 6 可以射爆 [2,8],[1,6] 两个气球，以及 x = 11 射爆另外两个气球
+```
+
+示例 2：
+
+```java
+输入：points = [[1,2],[3,4],[5,6],[7,8]]
+输出：4
+```
+
+示例 3：
+
+```java
+输入：points = [[1,2],[2,3],[3,4],[4,5]]
+输出：2
+```
+
+示例 4：
+
+```java
+输入：points = [[1,2]]
+输出：1
+```
+
+示例 5：
+
+```java
+输入：points = [[2,3],[2,3]]
+输出：1
+```
+
+
+
+
+
+
+提示：
+
+* 0 <= points.length <= 104
+* points[i].length == 2
+* -231 <= xstart < xend <= 231 - 1
+
+
+
+贪心左端点排序：
+
+```java
+class Solution {
+    
+    public int findMinArrowShots(int[][] points) {
+        if(points.length == 0)  return 0;
+        //区间排序：先按开始坐标升序排序，再按结束坐标升序排序
+        Arrays.sort(points, (a,b)->{
+            if(a[0] > b[0]){
+                return 1;
+            }else if(a[0] == b[0]){
+                return a[1] - b[1];
+            }else{
+                return -1;
+            }
+        });
+
+        int[] cur = points[0];
+        int res = 0;
+        //贪心地覆盖一个区间，使其包括后序与此区间相交区间，并更新此区间为二者的交集
+        for(int i = 1; i < points.length; ++i){
+            //cur的结束大于等于下一个区间的开始，说明可以一起戳破
+            if(cur[1] >= points[i][0]){
+                //更新cur
+                cur[0] = Math.max(cur[0], points[i][0]);
+                cur[1] = Math.min(cur[1], points[i][1]);
+            }else{
+                //cur的结束小于下一个区间的开始，说明没办法一起戳破了
+                //弓箭数+1，移动cur
+                res++;
+                cur[0] = points[i][0];
+                cur[1] = points[i][1];
+            }
+        }
+
+        return res+1;
+    }
+}
+```
+
+贪心右端点排序，只需要知道最远可射到的位置即可
+
+```java
+class Solution {
+    
+    public int findMinArrowShots(int[][] points) {
+        if(points.length == 0)  return 0;
+        //区间排序：先按开始坐标升序排序，再按结束坐标升序排序
+        Arrays.sort(points, (a,b)->{
+            if(a[1] > b[1]){
+                return 1;
+            }else{
+                return -1;
+            }
+        });
+
+        int cur = points[0][1];
+        int res = 0;
+        //贪心地覆盖一个区间，使其包括后序与此区间相交区间，并更新此区间为二者的交集
+        for(int i = 1; i < points.length; ++i){
+            //cur的结束大于等于下一个区间的开始，说明可以一起戳破
+            if(cur < points[i][0]){
+                res++;
+                cur = points[i][1];
+            }
+        }
+
+        return res+1;
+    }
+}
+```
+
+
+
+
+
+
+
 
 
 <span id="jump459"></span>
@@ -2439,6 +2926,102 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump493"></span>
+
+## 493.翻转对
+
+给定一个数组 nums ，如果 i < j 且 nums[i] > 2*nums[j] 我们就将 (i, j) 称作一个重要翻转对。
+
+你需要返回给定数组中的重要翻转对的数量。
+
+示例 1:
+
+```java
+输入: [1,3,2,3,1]
+输出: 2
+```
+
+示例 2:
+
+```java
+输入: [2,4,3,5,1]
+输出: 3
+```
+
+
+注意:
+
+* 给定数组的长度不会超过50000。
+* 输入数组中的所有数字都在32位整数的表示范围内。
+
+```java
+class Solution {
+    //归并排序，对于数组nums[l...r]
+    //我们已经分别求出了子数组nums[l...m]与nums[m+1...r]的翻转对数量
+    //并已经将两个子数组分别排好序(归并排序的特点)
+    //则nums[l...r]中的翻转对数量就是两个子数组翻转对数量之和
+    //加上左右端点分别位于两个子数组的翻转对数量
+    public int reversePairs(int[] nums) {
+        if(nums.length == 0)    return 0;
+        return reversePair(nums, 0, nums.length - 1);
+    }
+
+    public int reversePair(int[] nums, int left, int right){
+        if(left == right){
+            return 0;
+        }
+        
+        int mid = (right + left) / 2;
+        int n1 = reversePair(nums, left, mid);
+        int n2 = reversePair(nums, mid+1, right);
+
+        int res = n1 + n2;
+
+        //统计下标对的数量
+        int i = left;
+        int j = mid + 1;
+
+        //遍历每一个i
+        while(i <= mid){
+            //移动j,直到找到nums[i] <= 2 * nums[j]的位置，那么后续的nums[j]就没必要遍历了
+            while(j <= right && (long) nums[i] > 2 * (long) nums[j]){
+                ++j;
+            }
+            //记录符合要求的下标对
+            res += j - mid - 1;
+            i++;
+        }
+
+        //合并数组
+        int[] sorted = new int[right - left + 1];
+        int p1 = left, p2 = mid + 1;
+        int p = 0;
+
+        while(p1 <= mid || p2 <= right){
+            if(p1 > mid){
+                sorted[p++] = nums[p2++];
+            }else if(p2 > right){
+                sorted[p++] = nums[p1++];
+            }
+            else{
+                if(nums[p1] < nums[p2]){
+                    sorted[p++] = nums[p1++];
+                }else{
+                    sorted[p++] = nums[p2++];
+                }
+            }
+        }
+
+        for(int k = 0; k < sorted.length; ++k){
+            nums[left + k] = sorted[k];
+        }
+        return res;
+    }
+}
+```
 
 
 

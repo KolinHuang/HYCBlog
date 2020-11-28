@@ -65,6 +65,8 @@ pin: true
 
 [114.二叉树展开为链表](#jump114)
 
+[121.买卖股票的最佳时机](#jump121)
+
 [122.买卖股票的最佳时机 II](#jump122)
 
 [136.只出现一次的数字](#jump136)
@@ -72,6 +74,8 @@ pin: true
 [141.环形链表](#jump141)
 
 [142.环形链表II](#jump142)
+
+[146.LRU 缓存机制](#jump146)
 
 [148.排序链表](#jump148)
 
@@ -108,6 +112,8 @@ pin: true
 [406.根据身高重建队列](#jump406)
 
 [416.分割等和子集](jump416)
+
+[448.找到所有数组中消失的数字](#jump448)
 
 [494.目标和](jump494)
 
@@ -2047,6 +2053,68 @@ class Solution {
 
 
 
+<span id = "jump121"></span>
+
+## 121.买卖股票的最佳时机
+
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
+
+注意：你不能在买入股票前卖出股票。
+
+ 
+
+示例 1:
+
+```java
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+```
+
+示例 2:
+
+```java
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+```java
+class Solution {
+    //一次遍历，不断更新最低价格，这样后面的price[i]可以不用管前面比minPrice更高的价格
+    //直接跟minPrice相减，收益肯定是当前最大的。
+    public int maxProfit(int[] prices) {
+
+        int minPrice = Integer.MAX_VALUE;
+        int res = 0;
+        for(int i = 0; i < prices.length; ++i){
+            if(prices[i] < minPrice){
+                minPrice = prices[i];
+            }else{
+                res = Math.max(res, prices[i] - minPrice);
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <span id = "jump122"></span>
 
@@ -2359,6 +2427,160 @@ public class Solution {
 ```
 
 
+
+
+
+<span id = "jump146"></span>
+
+## 146.LRU 缓存机制
+
+运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
+实现 LRUCache 类：
+
+LRUCache(int capacity) 以正整数作为容量 capacity 初始化 LRU 缓存
+int get(int key) 如果关键字 key 存在于缓存中，则返回关键字的值，否则返回 -1 。
+void put(int key, int value) 如果关键字已经存在，则变更其数据值；如果关键字不存在，则插入该组「关键字-值」。当缓存容量达到上限时，它应该在写入新数据之前删除最久未使用的数据值，从而为新的数据值留出空间。
+
+
+进阶：你是否可以在 O(1) 时间复杂度内完成这两种操作？
+
+ 
+
+示例：
+
+```java
+输入
+["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+[[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+输出
+[null, null, null, 1, null, -1, null, -1, 3, 4]
+
+解释
+LRUCache lRUCache = new LRUCache(2);
+lRUCache.put(1, 1); // 缓存是 {1=1}
+lRUCache.put(2, 2); // 缓存是 {1=1, 2=2}
+lRUCache.get(1);    // 返回 1
+lRUCache.put(3, 3); // 该操作会使得关键字 2 作废，缓存是 {1=1, 3=3}
+lRUCache.get(2);    // 返回 -1 (未找到)
+lRUCache.put(4, 4); // 该操作会使得关键字 1 作废，缓存是 {4=4, 3=3}
+lRUCache.get(1);    // 返回 -1 (未找到)
+lRUCache.get(3);    // 返回 3
+lRUCache.get(4);    // 返回 4
+```
+
+
+
+
+
+
+提示：
+
+* 1 <= capacity <= 3000
+* 0 <= key <= 3000
+* 0 <= value <= 104
+* 最多调用 3 * 104 次 get 和 put
+
+
+
+双链表的删除或者移动都是O(1)，只有查询不是，所以用一个哈希表来存放双链表节点即可实现全O(1)
+
+自己实现一个双链表，再用一个哈希表存储链表节点和key的对应关系，方便直接取出节点。
+
+```java
+class LRUCache {
+    DLinkedNode head;
+    DLinkedNode tail;
+    Map<Integer, DLinkedNode> cache = new HashMap<>();
+    int capacity;
+    int size;
+    public LRUCache(int capacity) {
+        head = new DLinkedNode();
+        tail = new DLinkedNode();
+        head.next = tail;
+        tail.pre = head;
+        this.capacity = capacity;
+        size = 0;
+    }
+
+    public int get(int key) {
+        DLinkedNode node = cache.get(key);
+        if(node == null){
+            return -1;
+        }
+        moveToHead(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        DLinkedNode node = cache.get(key);
+        //cache中不存在key
+        if(node == null){
+            //cache满了吗？
+            if(cache.size() == capacity){
+                //删除尾巴的一个元素
+                cache.remove(tail.pre.key);
+                removeNode(tail.pre);
+            }
+            DLinkedNode newNode = new DLinkedNode(key, value);
+            addHead(newNode);
+            cache.put(key, newNode);
+        }else{
+            node.value = value;
+            cache.put(key, node);
+            moveToHead(node);
+        }
+
+    }
+
+    private void moveToHead(DLinkedNode node){
+        removeNode(node);
+        head.next.pre = node;
+        node.next = head.next;
+        node.pre = head;
+        head.next = node;
+    }
+
+
+
+    private void addHead(DLinkedNode node){
+        head.next.pre = node;
+        node.next = head.next;
+        node.pre = head;
+        head.next = node;
+    }
+
+    private void removeNode(DLinkedNode node){
+        node.pre.next = node.next;
+        node.next.pre = node.pre;
+    }
+}
+
+class DLinkedNode{
+    int key;
+    int value;
+    DLinkedNode pre;
+    DLinkedNode next;
+    public DLinkedNode(){}
+    public DLinkedNode(int _key, int _value){
+        key = _key;
+        value = _value;
+    }
+
+
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+<span id = "jump148"></span>
 
 ## 148.排序链表
 
@@ -4466,6 +4688,58 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump448"></span>
+
+## 448.找到所有数组中消失的数字
+
+给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
+
+找到所有在 [1, n] 范围之间没有出现在数组中的数字。
+
+您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
+
+示例:
+
+```java
+输入:
+[4,3,2,7,8,2,3,1]
+输出:
+[5,6]
+```
+
+另类哈希，这样可以处理哈希值是二值的情况！
+
+```java
+class Solution {
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> res = new ArrayList<>();
+    
+        //遍历数组每个元素，将|nums[i]| - 1处的数字标记为负数
+        //已经是负数的就不处理
+        //-1是为了让1~n映射到0~n-1
+        for(int i = 0; i < nums.length; ++i){
+            int idx = Math.abs(nums[i]) - 1;
+            if(nums[idx] > 0){
+                nums[idx] *= -1;
+            }
+        }
+
+        //遍历处理过后的nums，
+        //值为负数的位置对应的索引值就是出现在数组中的数字，
+        //非负数就是没出现在其中的数字
+        for(int i = 0; i  < nums.length; ++i){
+            if(nums[i] > 0){
+                res.add(i+1);
+            }
+        }
+
+        return res;
+    }
+}
+```
 
 
 

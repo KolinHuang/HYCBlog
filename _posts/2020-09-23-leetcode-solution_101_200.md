@@ -61,6 +61,10 @@ pin: true
 
 [147.对链表进行插入排序](#jump147)
 
+[152.乘积最大子数组](#jump152)
+
+[164.最大间距](#jump164)
+
 
 
 <span id = "jump106"></span>
@@ -1792,7 +1796,7 @@ class Solution {
 ## 147.对链表进行插入排序
 
 
- 
+
 
 插入排序算法：
 
@@ -1855,4 +1859,218 @@ class Solution {
     
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump152"></span>
+
+## 152.乘积最大子数组
+
+给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+ 
+
+示例 1:
+
+```java
+输入: [2,3,-2,4]
+输出: 6
+解释: 子数组 [2,3] 有最大乘积 6。
+```
+
+示例 2:
+
+```java
+输入: [-2,0,-1]
+输出: 0
+解释: 结果不能为 2, 因为 [-2,-1] 不是子数组。
+```
+
+
+
+动态规划：
+
+考虑`max[i]`为以第i个元素为结尾的最大子数组乘积，转移方程：
+
+```markdown
+max[i] = Math.max(max[i-1] * nums[i], nums[i]);
+```
+
+这样考虑有一个问题，就是如果数字为：3,-4,5,-2，我们计算max[3]的时候，会得出5这样的结果，实际上应该是前面所有数字的乘积，这是因为我们没有考虑负数的情况。
+
+所以为了将负数纳入考虑范围，我们再维护一个`min[i]`,表示以第i个元素为结尾的最小子数组乘积，这个`min[i]`，我们期望获得最小的乘积子数组，因此负数会被考虑在内。
+
+所以当`nums[i]`为正数时，转移方程为：
+
+```java
+max[i] = Math.max(max[i-1] * nums[i], nums[i]);
+```
+
+当`nums[i]`为负数时，转移方程为：
+
+```java
+max[i] = Math.max(min[i-1] * nums[i], nums[i]);
+```
+
+合起来就是：
+
+```java
+max[i] = max{max[i-1] * nums[i], min[i-1]*nums[i], nums[i]}
+```
+
+同时`min[i]`也需要更新：
+
+```java
+min[i] = min{max[i-1] * nums[i], min[i-1]*nums[i], nums[i]}
+```
+
+
+
+```java
+class Solution {
+    public int maxProduct(int[] nums) {
+        if(nums.length == 0) return 0;
+        int n = nums.length;
+        int[] max = new int[n];
+        int[] min = new int[n];
+
+        System.arraycopy(nums, 0, max, 0, n);
+        System.arraycopy(nums, 0, min, 0, n);
+
+        for(int i = 1; i < n; ++i){
+            max[i] = Math.max(max[i-1] * nums[i], Math.max(nums[i], min[i-1] * nums[i]));
+            min[i] = Math.min(min[i-1] * nums[i], Math.min(nums[i], max[i-1] * nums[i]));
+        }
+
+        int res = Integer.MIN_VALUE;
+
+        for( int i : max){
+            res = Math.max(res, i);
+        }
+
+        return res;
+    
+    }
+}
+```
+
+
+
+空间优化：
+
+```java
+class Solution {
+    public int maxProduct(int[] nums) {
+      
+        if(nums.length == 0) return 0;
+      
+        int n = nums.length;
+        int max = nums[0];
+        int min = nums[0];
+        int res = nums[0];
+      
+        for(int i = 1; i < n; ++i){
+            int mx = max, mn = min;
+            max = Math.max(mx * nums[i], Math.max(nums[i], mn * nums[i]));
+            min = Math.min(mn * nums[i], Math.min(nums[i], mx * nums[i]));
+            res = Math.max(res, max);
+        }    
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+<span id = "jump164"></span>
+
+## 164.最大间距
+
+给定一个无序的数组，找出数组在排序之后，相邻元素之间最大的差值。
+
+如果数组元素个数小于 2，则返回 0。
+
+示例 1:
+
+```java
+输入: [3,6,9,1]
+输出: 3
+解释: 排序后的数组是 [1,3,6,9], 其中相邻元素 (3,6) 和 (6,9) 之间都存在最大差值 3。
+```
+
+示例 2:
+
+```java
+输入: [10]
+输出: 0
+解释: 数组元素个数小于 2，因此返回 0。
+```
+
+
+说明:
+
+* 你可以假设数组中所有元素都是非负整数，且数值在 32 位有符号整数范围内。
+* 请尝试在线性时间复杂度和空间复杂度的条件下解决此问题。
+
+```java
+class Solution {
+    public int maximumGap(int[] nums) {
+
+        if(nums.length < 2) return 0;
+        int n = nums.length;
+        //基数排序
+        int maxVal = Arrays.stream(nums).max().getAsInt();
+        long exp = 1;
+
+        int[] buf = new int[n];
+
+        while(maxVal >= exp){
+            int[] cnt = new int[10];
+            //统计这一位上各个数字出现的次数
+            for(int i = 0; i < n; ++i){
+                int digit = (nums[i] / (int)exp) % 10;
+                cnt[digit]++;
+            }
+            //让cnt内的值有序
+            for(int i = 1; i < 10; ++i){
+                cnt[i] += cnt[i-1];
+            }
+            //倒着填回去
+            //如果不是倒着填
+            for(int i = n-1; i >= 0; --i){
+                int digit = (nums[i] / (int)exp) % 10;
+                buf[cnt[digit] - 1] = nums[i];
+                cnt[digit]--;
+            }
+
+            System.arraycopy(buf, 0, nums, 0, n);
+            exp *= 10;
+        }
+
+        int max = 0;
+        for(int i = 0; i < n-1; ++i){
+            max = Math.max(nums[i+1] - nums[i], max);
+        }
+        return max;
+    }
+}
+```
+
+因此，我们可以选取整数 
+$$
+d = \lfloor (\textit{max}-\textit{min}) / (N-1) \rfloor < \lceil (\textit{max}-\textit{min}) / (N-1)
+$$
+。随后，我们将整个区间划分为若干个大小为 dd 的桶，并找出每个整数所在的桶。根据前面的结论，能够知道，元素之间的最大间距一定不会出现在某个桶的内部，而一定会出现在不同桶当中。
+
+因此，在找出每个元素所在的桶之后，我们可以维护每个桶内元素的最大值与最小值。随后，只需从前到后不断比较相邻的桶，用后一个桶的最小值与前一个桶的最大值之差作为两个桶的间距，最终就能得到所求的答案。
 
