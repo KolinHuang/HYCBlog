@@ -37,11 +37,15 @@ pin: true
 
 [33.搜索旋转排序数组](#jump33)
 
+[34.[重要]在排序数组中查找元素的第一个和最后一个位置](#jump34)
+
 [39.组合总和](#jump39)
 
 [46. 全排列](#jump46)
 
 [48.旋转图像](#jump48)
+
+[49.字母异位词分组](#jump49)
 
 [62.不同路径](jump62)
 
@@ -962,6 +966,92 @@ class Solution {
 
 
 
+<span id = "jump34"></span>
+
+## 34.[重要]在排序数组中查找元素的第一个和最后一个位置
+
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+如果数组中不存在目标值 target，返回 [-1, -1]。
+
+进阶：
+
+* 你可以设计并实现时间复杂度为 O(log n) 的算法解决此问题吗？
+
+示例 1：
+
+```java
+输入：nums = [5,7,7,8,8,10], target = 8
+输出：[3,4]
+```
+
+示例 2：
+
+```java
+输入：nums = [5,7,7,8,8,10], target = 6
+输出：[-1,-1]
+```
+
+示例 3：
+
+```java
+输入：nums = [], target = 0
+输出：[-1,-1]
+```
+
+
+提示：
+
+* 0 <= nums.length <= 105
+* -109 <= nums[i] <= 109
+* nums 是一个非递减数组
+* -109 <= target <= 109
+
+
+
+```java
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        //二分查找左边界和右边界的问题
+        int n = nums.length;
+        if(n == 0)  return new int[]{-1,-1};
+        //查找左边界
+        int lower = binarySearch(nums,target,0,n-1,true);
+        
+
+        //查找右边界
+        int upper = binarySearch(nums,target, 0,n-1, false) - 1;
+        
+        if(lower <= upper && upper < nums.length && nums[lower] == target && nums[upper] == target){
+            return new int[]{lower,upper};
+        }
+
+        return new int[]{-1,-1};
+    }
+    //lower==true表示找到左边界，否则就是右边界
+    public int binarySearch(int[] nums, int target, int l, int r, boolean lower){
+        int ans = nums.length;
+        while(l <= r){
+            int mid = (l + r) / 2;
+
+            if(nums[mid] > target || (lower && nums[mid] >= target)){
+                r = mid-1;
+                ans = mid;
+            }else{
+                l = mid+1;
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+
+
+
+
+
 <span id = "jump39"></span>
 
 ## 39.组合总和
@@ -1185,6 +1275,73 @@ class Solution {
         }
 
     }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump49"></span>
+
+## 49.字母异位词分组
+
+给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+示例:
+
+```java
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"]
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+```
+
+
+说明：
+
+* 所有输入均为小写字母。
+* 不考虑答案输出的顺序。
+
+```java
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        //用哈希法找异位词
+        //两个互为异位词，则哈希数组肯定相同
+        //我们可以把哈希数组存为一个key值，然后再遍历每个字符串
+        Map<String, List> map = new HashMap<>();
+
+        int[] counts = new int[26];
+        for(int i = 0; i < strs.length; ++i){
+            char[] arr = strs[i].toCharArray();
+            Arrays.fill(counts,0);
+
+            for(char c : arr){
+                counts[c - 'a']++;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            for(int j = 0; j < 26; ++j){
+                //用分隔符隔开，这样可以防止11和1、1混在一起
+                sb.append('*');
+                sb.append(counts[j]);
+            }
+            String key = sb.toString();
+            if(!map.containsKey(key))   map.put(key, new ArrayList<>());
+            map.get(key).add(strs[i]);
+        }
+
+        return new ArrayList(map.values());
+        
+    }
+
+    
 }
 ```
 

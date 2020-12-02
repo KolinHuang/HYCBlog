@@ -32,6 +32,8 @@ pin: true
 
 [257.二叉树的所有路径](#jump257)
 
+[321.拼接最大数[tag]](#jump321)
+
 [327.区间和的个数[tag]](#jump327)
 
 [328.奇偶链表](#jump328)
@@ -1017,6 +1019,137 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump321"></span>
+
+## 321.拼接最大数[tag]
+
+给定长度分别为 m 和 n 的两个数组，其元素由 0-9 构成，表示两个自然数各位上的数字。现在从这两个数组中选出 k (k <= m + n) 个数字拼接成一个新的数，要求从同一个数组中取出的数字保持其在原数组中的相对顺序。
+
+求满足该条件的最大数。结果返回一个表示该最大数的长度为 k 的数组。
+
+说明: 请尽可能地优化你算法的时间和空间复杂度。
+
+示例 1:
+
+```java
+输入:
+nums1 = [3, 4, 6, 5]
+nums2 = [9, 1, 2, 5, 8, 3]
+k = 5
+输出:
+[9, 8, 6, 5, 3]
+```
+
+示例 2:
+
+```java
+输入:
+nums1 = [6, 7]
+nums2 = [6, 0, 4]
+k = 5
+输出:
+[6, 7, 6, 0, 4]
+```
+
+
+示例 3:
+
+```java
+输入:
+nums1 = [3, 9]
+nums2 = [8, 9]
+k = 3
+输出:
+[9, 8, 9]
+```
+
+与删除k个数字类似：
+
+```java
+class Solution {
+    //单调栈：保留k个数相当于移除nums1.length+nums2.length - k个数
+    //从两个数组中取k个数，相当于从nums1中取k1个数，从nums2中取k2个数
+    //k1 + k2 = k
+    //也就是:
+  	//1.从nums1中删除n1 - k1个数，使得子序列最大
+    //2.从nums2中删除n2 - k2个数，使得子序列最大
+    //若k < n1，那么nums1可以删除1、2、3、...、k个数
+    //但是k有可能大于n1或n2，所以需要遍历每一种情况
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int m = nums1.length, n = nums2.length;
+        int[] maxSubsequence = new int[k];
+        int start = Math.max(0, k - n), end = Math.min(k, m);
+        for (int i = start; i <= end; i++) {
+            int[] subsequence1 = maxSubsequence(nums1, i);
+            int[] subsequence2 = maxSubsequence(nums2, k - i);
+            int[] curMaxSubsequence = merge(subsequence1, subsequence2);
+            if (compare(curMaxSubsequence, 0, maxSubsequence, 0) > 0) {
+                System.arraycopy(curMaxSubsequence, 0, maxSubsequence, 0, k);
+            }
+        }
+        return maxSubsequence;
+    }
+    //单调栈，找到长度为leng-k的最大子序列
+    public int[] maxSubsequence(int[] nums, int k) {
+        int length = nums.length;
+        int[] stack = new int[k];
+        int top = -1;
+        int remain = length - k;
+        for (int i = 0; i < length; i++) {
+            int num = nums[i];
+            while (top >= 0 && stack[top] < num && remain > 0) {
+                top--;
+                remain--;
+            }
+            if (top < k - 1) {
+                stack[++top] = num;
+            } else {
+                remain--;
+            }
+        }
+        return stack;
+    }
+    //合并子序列
+    public int[] merge(int[] subsequence1, int[] subsequence2) {
+        int x = subsequence1.length, y = subsequence2.length;
+        if (x == 0) {
+            return subsequence2;
+        }
+        if (y == 0) {
+            return subsequence1;
+        }
+        int mergeLength = x + y;
+        int[] merged = new int[mergeLength];
+        int index1 = 0, index2 = 0;
+        for (int i = 0; i < mergeLength; i++) {
+            if (compare(subsequence1, index1, subsequence2, index2) > 0) {
+                merged[i] = subsequence1[index1++];
+            } else {
+                merged[i] = subsequence2[index2++];
+            }
+        }
+        return merged;
+    }
+    //自定义比较方法。首先比较两个子序列的当前元素，
+  	//如果两个当前元素不同，则选其中较大的元素作为下一个合并的元素，
+    //否则需要比较后面的所有元素才能决定选哪个元素作为下一个合并的元素。
+    public int compare(int[] subsequence1, int index1, int[] subsequence2, int index2) {
+        int x = subsequence1.length, y = subsequence2.length;
+        while (index1 < x && index2 < y) {
+            int difference = subsequence1[index1] - subsequence2[index2];
+            if (difference != 0) {
+                return difference;
+            }
+            index1++;
+            index2++;
+        }
+        return (x - index1) - (y - index2);
+    }
+}
+```
 
 
 

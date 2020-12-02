@@ -54,6 +54,8 @@ pin: true
 
 [763.划分字母区间](#jump763)
 
+[767.重构字符串](#jump767)
+
 [834.树中距离之和tag](#jump834)
 
 [841.钥匙和房间](#jump841)
@@ -71,6 +73,8 @@ pin: true
 [968.监控二叉树](#jump968)
 
 [973.最接近原点的 K 个点](#jump973)
+
+[976.三角形的最大周长](#jump976)
 
 [977.有序数组的平方](#jump977)
 
@@ -1723,6 +1727,100 @@ class Solution {
 
 
 
+
+
+<span id = "jump767"></span>
+
+## 767.重构字符串
+
+给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
+
+若可行，输出任意可行的结果。若不可行，返回空字符串。
+
+示例 1:
+
+```java
+输入: S = "aab"
+输出: "aba"
+```
+
+示例 2:
+
+```java
+输入: S = "aaab"
+输出: ""
+```
+
+
+注意:
+
+* S 只包含小写字母并且长度在[1, 500]区间内。
+
+```java
+//贪心插空填字母
+
+class Solution {
+    public String reorganizeString(String S) {
+        int n = S.length();
+        if(n <= 1)  return S;
+
+        char[] res = new char[n];
+
+        int[][] hash = new int[26][2];
+        //阈值，某个字母出现的次数大于这个值，说明无法重排
+        int threshold = n % 2 == 0 ? n / 2 : n / 2 + 1;
+
+        //哈希表：Hash[i][0]代表字符编号，Hash[i][1]代表字符出现次数
+        for(int i = 0; i < n; ++i){
+            hash[S.charAt(i)-'a'][0] = S.charAt(i) - 'a';
+            hash[S.charAt(i) - 'a'][1]++;
+            if(hash[S.charAt(i) - 'a'][1] > threshold)   return "";
+        }
+        //按字符出现次数升序排序
+        Arrays.sort(hash, (a,b)->{
+            if(a[1] > b[1]){
+                return -1;
+            }else{
+                return 1;
+            }
+        });
+        //插空填
+        //先排偶数位
+        int cur = 0;
+        while(cur < n){
+            for(int i = 0; i < 26; ++i){
+                while(cur < n && hash[i][1] > 0){
+                    res[cur] = (char) (hash[i][0] + 'a');
+                    cur+=2;
+                    hash[i][1]--;
+                }
+            }
+        }
+        //再排奇数位
+        cur = 1;
+        while(cur < n){
+            for(int i = 0; i < 26; ++i){
+                while(cur < n && hash[i][1] > 0){
+                    res[cur] = (char) (hash[i][0] + 'a');
+                    cur+=2;
+                    hash[i][1]--;
+                }
+            }
+        }
+        return new String(res);
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 <span id = "jump834"></span>
 
 ## 834.树中距离之和[tag]
@@ -2690,6 +2788,81 @@ class Solution {
         int[] temp = points[index1];
         points[index1] = points[index2];
         points[index2] = temp;
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump976"></span>
+
+## 976.三角形的最大周长
+
+给定由一些正数（代表长度）组成的数组 A，返回由其中三个长度组成的、面积不为零的三角形的最大周长。
+
+如果不能形成任何面积不为零的三角形，返回 0。
+
+ 
+
+示例 1：
+
+```java
+输入：[2,1,2]
+输出：5
+```
+
+示例 2：
+
+```java
+输入：[1,2,1]
+输出：0
+```
+
+示例 3：
+
+```java
+输入：[3,2,3,4]
+输出：10
+```
+
+示例 4：
+
+```java
+输入：[3,6,2,3]
+输出：8
+```
+
+
+提示：
+
+* 3 <= A.length <= 10000
+* 1 <= A[i] <= 10^6
+
+```java
+class Solution {
+    public int largestPerimeter(int[] A) {
+        int n = A.length;
+        Arrays.sort(A);
+
+        int p1 = n-1;
+        int p2 = n-2;
+
+        for(int i = n-3; i >= 0; --i){
+            //两边之差A[p1] - A[p2]
+            int dec = A[p1] - A[p2];
+            if(dec < A[i]){
+                return A[p1] + A[p2] + A[i];
+            }else{
+                p1 = p2;
+                p2--;
+            }
+        }
+
+        return 0;
     }
 }
 ```
