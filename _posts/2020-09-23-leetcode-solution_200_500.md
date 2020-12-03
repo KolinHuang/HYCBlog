@@ -14,6 +14,8 @@ pin: true
 
 [201.数字范围按位与](#jump201)
 
+[204.计数质数](#jump204)
+
 [206.反转链表](#jump206)
 
 [209.寻找长度最小的子数组](#jump209)
@@ -144,6 +146,104 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump204"></span>
+
+## 204.计数质数
+
+统计所有小于非负整数 n 的质数的数量。
+
+ 
+
+示例 1：
+
+```java
+输入：n = 10
+输出：4
+解释：小于 10 的质数一共有 4 个, 它们是 2, 3, 5, 7 。
+```
+
+示例 2：
+
+```java
+输入：n = 0
+输出：0
+```
+
+示例 3：
+
+```java
+输入：n = 1
+输出：0
+```
+
+
+提示：
+
+* 0 <= n <= 5 * 106
+
+```java
+class Solution {
+    //要判断数字x是不是质数，需要判断[2,x-1]中的每个数是否都不是x的因数
+    //考虑到如果y是x的因数，那么x/y肯定也是x的因数是，所以只需要判断y或者x/y是不是x的因数即可
+    //而y和x/y的较小值肯定落在[2,√x]中，所以只要枚举[2,√x]的值即可
+    public int countPrimes(int n) {
+        int res = 0;
+
+        for(int i = 2; i < n; ++i){
+            res += isPrime(i) ? 1 : 0;
+        }
+
+        return res;
+    }
+
+    public boolean isPrime(int x){
+        for(int i = 2; i * i <= x; ++i){
+            if(x % i == 0){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+```java
+class Solution {
+    //埃式筛：由希腊数学家厄拉多塞（Eratosthenes）提出
+    //如果x是质数，那么2x,3x,...等肯定不是质数
+    //所以只要用一个数组，记录下标对应的数字是不是质数即可
+    //遇到一个质数，就将其所有的倍数下标标记为合数
+    //优化：应该从x*x开始标记，因为2x,3x,...这些数一定在x之前就被其他质数的倍数标记了，例如2的所有倍数
+    public int countPrimes(int n) {
+        int[] isPrime = new int[n];
+
+        Arrays.fill(isPrime,1);
+        int res = 0;
+        for(int i = 2; i < n; ++i){
+            if(isPrime[i] == 1){
+                res += 1;
+
+                if((long) i * i < n){
+                    for(int j = i * i; j < n; j += i){
+                        isPrime[j] = 0;
+                    }
+                }
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+
 
 
 

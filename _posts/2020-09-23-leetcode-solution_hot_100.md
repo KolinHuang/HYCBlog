@@ -27,6 +27,8 @@ pin: true
 
 [11.盛最多水的容器](#jump11)
 
+[15.三数之和](#jump15)
+
 [17.电话号码的字母组合](#jump17)
 
 [19.删除链表的倒数第N个节点](#jump19)
@@ -553,6 +555,89 @@ func min(a int, b int) int {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump15"></span>
+
+## 15.三数之和
+
+给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有满足条件且不重复的三元组。
+
+注意：答案中不可以包含重复的三元组。
+
+示例：
+
+```java
+给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+
+
+```java
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        int n = nums.length;
+        List<List<Integer>> res = new ArrayList<>();
+        if(n <= 2)  return res;
+
+        Arrays.sort(nums);
+
+        for(int i = 0; i < n-2; ++i){
+            //剪枝：nums[i]太小了，即使最大的数字*2加起来，都没办法使其大于等于0
+            if(nums[i] + nums[n-1]*2 < 0)   continue;
+            //剪枝：nums[i]大于0了，后面再加肯定都是大于0的
+            if(nums[i] > 0) break;
+            //去重
+            if(i > 0 && nums[i] == nums[i-1])   continue;
+            //双指针
+            //让指针right指向最右端
+            int r = n-1;
+            int target = -nums[i];
+
+            for(int l = i + 1; l < n - 1; ++l){
+                if(nums[i]+nums[l]>0)   break;
+                //去重
+                if(l > i + 1 && nums[l] == nums[l-1])   continue;
+                //右指针向左移动,缩小nums[l] + nums[r]
+                while(l < r && nums[l] + nums[r] > target){
+                    --r;
+                }
+                //指针重合了，那么l继续增加也没有意义了，因为最小的nums[l] + nums[r]都大于target了
+                if(l == r){
+                    break;
+                }
+
+                if(nums[l] + nums[r] == target){
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[l]);
+                    list.add(nums[r]);
+                    res.add(list);
+                }
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+
+
+
 
 
 
