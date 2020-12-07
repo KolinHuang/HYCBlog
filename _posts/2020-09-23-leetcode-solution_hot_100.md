@@ -35,6 +35,10 @@ pin: true
 
 [20.有效的括号](#jump20)
 
+[21.合并两个有序链表](#jump21)
+
+[22.括号生成](#jump22)
+
 [31.下一个排列](#jump31)
 
 [33.搜索旋转排序数组](#jump33)
@@ -48,6 +52,8 @@ pin: true
 [48.旋转图像](#jump48)
 
 [49.字母异位词分组](#jump49)
+
+[53.最大子序和](#jump53)
 
 [62.不同路径](jump62)
 
@@ -869,6 +875,122 @@ class Solution {
 
 
 
+<span id = "jump21"></span>
+
+## 21.合并两个有序链表
+
+将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+ 
+
+示例：
+
+```java
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+
+
+```java
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode head = new ListNode(-1);
+        ListNode cur = head;
+        while(l1 != null && l2 != null){
+            if(l1.val < l2.val){
+                cur.next = l1;
+                l1 = l1.next;
+            }else{
+                cur.next = l2;
+                l2 = l2.next;
+            }
+            cur = cur.next;
+        }
+      	//直接接在后面即可
+        cur.next = l1 == null ? l2 : l1;
+        return head.next;
+    }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump22"></span>
+
+## 22.括号生成
+
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+ 
+
+示例：
+
+```java
+输入：n = 3
+输出：[
+       "((()))",
+       "(()())",
+       "(())()",
+       "()(())",
+       "()()()"
+     ]
+```
+
+回溯法，判断是排左括号还是右括号，当左右括号都排完了，就记录。
+
+```java
+class Solution {
+    List<String> res = new ArrayList<>();
+    public List<String> generateParenthesis(int n) {
+        if(n == 0)  return res;
+        dfs(new StringBuilder(), n, n);
+        return res;
+    }
+
+    void dfs(StringBuilder sb, int left, int right){
+        //左右括号都排完了
+        if(left == 0 && right == 0){
+            res.add(sb.toString());
+            return;
+        }
+        //左右括号数量相等，只能排左括号
+        if(left == right){
+            sb.append('(');
+            dfs(sb, left - 1, right);
+          	//回溯
+            sb.deleteCharAt(sb.length()-1);
+        }else{
+            //左括号排完了，只能排右括号
+            if(left == 0){
+                sb.append(')');
+                dfs(sb, left, right - 1);
+              	//回溯
+                sb.deleteCharAt(sb.length()-1);
+            }else{
+                //左右括号都可以排
+                sb.append('(');
+                dfs(sb, left - 1, right);
+                //回溯
+                sb.deleteCharAt(sb.length()-1);
+                sb.append(')');
+                dfs(sb, left, right - 1);
+	              //回溯
+                sb.deleteCharAt(sb.length()-1);
+            }
+        }
+    }
+}
+```
+
+
+
+
+
 
 
 <span id = "jump31"></span>
@@ -1433,6 +1555,115 @@ class Solution {
 
 
 
+
+
+
+<span id = "jump53"></span>
+
+## 53.最大子序和
+
+给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+示例:
+
+```java
+输入: [-2,1,-3,4,-1,2,1,-5,4]
+输出: 6
+解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+```
+
+
+进阶:
+
+* 如果你已经实现复杂度为 O(n) 的解法，尝试使用更为精妙的分治法求解。
+
+
+
+```java
+class Solution {
+  	//dp[i]表示以第i个元素为结尾的最大子序列和
+  	//dp[i] = dp[i-1] > 0 ? dp[i-1] + nums[i] : nums[i];
+    public int maxSubArray(int[] nums) {
+        if(nums.length == 0)    return 0;
+
+        if(nums.length == 1)    return nums[0];
+        int dp = nums[0];
+        int res = nums[0];
+        for(int i = 1; i < nums.length; ++i){
+            dp = dp > 0 ? nums[i] + dp : nums[i];
+            res = Math.max(res, dp);
+        }
+
+        return res;
+    }
+}
+```
+
+
+
+分治：
+
+```java
+class Solution {
+    //线段树解法：
+    /*对于一个区间 [l, r][l,r]，我们可以维护四个量：
+        lSum 表示 [l, r][l,r] 内以 ll 为左端点的最大子段和
+        rSum 表示 [l, r][l,r] 内以 rr 为右端点的最大子段和
+        mSum 表示 [l, r][l,r] 内的最大子段和
+        iSum 表示 [l, r][l,r] 的区间和*/
+
+    public class Status{
+        public int lSum, rSum, mSum, iSum;
+
+        public Status(int _lSum, int _rSum, int _mSum, int _iSum){
+            lSum = _lSum;
+            rSum = _rSum;
+            mSum = _mSum;
+            iSum = _iSum;
+        }
+
+        public int getMSum(){
+            return this.mSum;
+        }
+    }
+    
+    public int maxSubArray(int[] nums) {
+        return getInfo(nums, 0, nums.length-1).getMSum();
+    }
+
+    public Status getInfo(int[] nums, int l, int r){
+        if(l == r){
+            return new Status(nums[l],nums[l],nums[l],nums[l]);
+        }
+
+        int m = ((r - l) >> 1) + l;
+        Status left = getInfo(nums, l, m);
+        Status right = getInfo(nums, m+1, r);
+
+        return pushUp(left, right);
+    }
+
+    public Status pushUp(Status s1, Status s2){
+        
+        int ls = Math.max(s1.lSum, s1.iSum + s2.lSum);
+        
+        int rs = Math.max(s2.rSum, s1.rSum + s2.iSum);
+
+        int is = s1.iSum + s2.iSum;
+        //合并区间的最大子序和可能是左区间的最大子序和或者右区间的最大子序和，
+        //也可能跨越分界点m：左区间以右端点为结尾的的最大子序和+右区间以左端点为起始的最大子序和
+        int ms = Math.max(Math.max(s1.mSum, s2.mSum), s1.rSum + s2.lSum);
+
+
+        return new Status(ls, rs, ms, is);
+    }
+
+
+
+}
+```
+
+不仅可以解决区间` [0,n−1]`，还可以用于解决任意的子区间 `[l, r]` 的问题。如果我们把`[0,n−1] `分治下去出现的所有子区间的信息都用堆式存储的方式记忆化下来，即建成一颗真正的树之后，我们就可以在O(logn) 的时间内求到任意区间内的答案，我们甚至可以修改序列中的值，做一些简单的维护，之后仍然可以在O(logn) 的时间内求到任意区间内的答案，对于大规模查询的情况下，这种方法的优势便体现了出来。这棵树就是上文提及的一种神奇的数据结构——线段树。
 
 
 

@@ -38,6 +38,8 @@ pin: true
 
 [657.机器人能否返回原点](#jump657)
 
+[659.分割数组为连续子序列](#jump659)
+
 [679.24点游戏](#jump679)
 
 [685.冗余连接2](#jump685)
@@ -63,6 +65,8 @@ pin: true
 [844.比较含退格的字符串](#jump844)
 
 [845.数组中的最长山脉](#jump845)
+
+[861.翻转矩阵后的得分](#jump861)
 
 [922.按奇偶排序数组 II](#jump922)
 
@@ -888,6 +892,102 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump659"></span>
+
+## 659.分割数组为连续子序列
+
+给你一个按升序排序的整数数组 num（可能包含重复数字），请你将它们分割成一个或多个子序列，其中每个子序列都由连续整数组成且长度至少为 3 。
+
+如果可以完成上述分割，则返回 true ；否则，返回 false 。
+
+示例 1：
+
+```java
+输入: [1,2,3,3,4,5]
+输出: True
+解释:
+你可以分割出这样两个连续子序列 : 
+1, 2, 3
+3, 4, 5
+```
+
+示例 2：
+
+```java
+输入: [1,2,3,3,4,4,5,5]
+输出: True
+解释:
+你可以分割出这样两个连续子序列 : 
+1, 2, 3, 4, 5
+3, 4, 5
+```
+
+示例 3：
+
+```java
+输入: [1,2,3,4,4,5]
+输出: False
+```
+
+
+提示：
+
+* 输入的数组长度范围为 [1, 10000]
+
+```java
+//贪心
+//由于序列是升序，所以在遍历过程中，不会过度增长子序列
+//因为只会把较小的每个数字都安排完以后，才会去处理更大的数字
+class Solution {
+    public boolean isPossible(int[] nums) {
+        //记录nums中数字的个数
+        Map<Integer, Integer> count = new HashMap<>();
+        //记录以数字key结尾的子序列个数
+        Map<Integer, Integer> tail = new HashMap<>();
+
+        for(int i : nums){
+            count.put(i, count.getOrDefault(i, 0) + 1);
+        }
+
+        for(int num : nums){
+            if(count.get(num) == 0) continue;
+            //当前数字可以接在以num-1为结尾的子序列后
+            if(tail.get(num - 1) != null && tail.get(num - 1) > 0){
+                tail.put(num,tail.getOrDefault(num,0) + 1);
+                //消耗掉一个以num-1为结尾的子序列
+                tail.put(num - 1, tail.get(num - 1) - 1);
+                //消耗掉一个num
+                count.put(num, count.get(num) - 1);
+            //当前数字只能自成一个序列
+            }else if(count.get(num+1) != null && count.get(num+2) != null
+                        && count.get(num+1) > 0 && count.get(num+2) > 0){
+                tail.put(num+2, tail.getOrDefault(num+2,0) + 1);
+                count.put(num, count.get(num) - 1);
+                count.put(num + 1, count.get(num + 1) - 1);
+                count.put(num + 2, count.get(num + 2) - 1);
+            }else{
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+
+
+
+
 
 
 
@@ -2234,6 +2334,93 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump861"></span>
+
+## 861.翻转矩阵后的得分
+
+有一个二维矩阵 A 其中每个元素的值为 0 或 1 。
+
+移动是指选择任一行或列，并转换该行或列中的每一个值：将所有 0 都更改为 1，将所有 1 都更改为 0。
+
+在做出任意次数的移动后，将该矩阵的每一行都按照二进制数来解释，矩阵的得分就是这些数字的总和。
+
+返回尽可能高的分数。
+
+ 示例：
+
+```java
+输入：[[0,0,1,1],[1,0,1,0],[1,1,0,0]]
+输出：39
+解释：
+转换为 [[1,1,1,1],[1,0,0,1],[1,1,1,1]]
+0b1111 + 0b1001 + 0b1111 = 15 + 9 + 15 = 39
+```
+
+
+提示：
+
+* 1 <= A.length <= 20
+* 1 <= A[0].length <= 20
+* `A[i][j]` 是 0 或 1
+
+
+
+贪心策略，最高位全部为1，剩余情况1越多越好
+
+```java
+class Solution {
+    public int matrixScore(int[][] A) {
+        int m = A.length;
+        int n = A[0].length;
+
+        for(int i = 0; i < m; ++i){
+            //最高位为0的行都翻转一遍
+            if(A[i][0] == 0){
+                for(int j = 0; j < n; ++j){
+                    A[i][j] = A[i][j] == 0 ? 1 : 0;
+                }
+            }
+        }
+
+        int threshold = m % 2 == 0 ? (m/2) : (m/2 + 1);
+        //从第二列开始，遍历每一列，0比1多的列都翻转一遍
+        for(int j = 1; j < n; ++j){
+            int cnt = 0;
+            for(int i = 0; i < m; ++i){
+                cnt += A[i][j] == 1 ? 1 : 0;
+            }
+            if(cnt >= threshold)    continue;
+            //翻转此列
+            for(int i = 0; i < m; ++i){
+                A[i][j] = A[i][j] == 0 ? 1 : 0;
+            }
+        }
+
+        int res = 0;
+        //读取数字
+        for(int i = 0; i < m; ++i){
+            int num = 0;
+            for(int j = 0; j < n; ++j){
+                num <<= 1;
+                if(A[i][j] == 1)    num += 1;
+            }
+            res += num;
+        }
+        return res;
+    }
+}
+```
+
+
+
+
 
 
 
