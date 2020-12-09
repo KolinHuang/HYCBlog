@@ -55,9 +55,13 @@ pin: true
 
 [53.最大子序和](#jump53)
 
+[55. 跳跃游戏](#jump55)
+
 [62.不同路径](jump62)
 
 [64.最小路径和](#jump64)
+
+[70. 爬楼梯](#jump70)
 
 [75.颜色分类](jump75)
 
@@ -1669,6 +1673,101 @@ class Solution {
 
 
 
+<span id = "jump55"></span>
+
+## 55. 跳跃游戏
+
+给定一个非负整数数组，你最初位于数组的第一个位置。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个位置。
+
+示例 1:
+
+```java
+输入: [2,3,1,1,4]
+输出: true
+解释: 我们可以先跳 1 步，从位置 0 到达 位置 1, 然后再从位置 1 跳 3 步到达最后一个位置。
+```
+
+示例 2:
+
+```java
+输入: [3,2,1,0,4]
+输出: false
+解释: 无论怎样，你总会到达索引为 3 的位置。但该位置的最大跳跃长度是 0 ， 所以你永远不可能到达最后一个位置。
+```
+
+
+
+```java
+class Solution {
+    public boolean canJump(int[] nums) {
+        int n = nums.length;
+
+        if(n <= 1)  return true;
+        //维护一个maxStep，表示当前能够跳过的最大长度
+        //只要这个小于等于连续0序列的长度，就没办法越过
+        int maxStep = 0;
+        int i = 0;
+        while(i < n){
+            maxStep = Math.max(nums[i], maxStep);
+
+            if(nums[i] != 0){
+                maxStep--;
+                i++;
+                continue;
+            }
+            //统计连续0序列的长度
+            int cur = i;
+            while(cur < n && nums[cur] == 0)
+                cur++;
+          	//到达了最后一个序列，那么最大长度可以只需大于等于连续0序列长度-1即可，最后一个0无所谓
+            if(cur == n){
+                if(maxStep >= (cur-i-1)){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            if(maxStep < (cur - i))
+                return false;
+            maxStep -= (cur - i);
+            i = cur;
+        }
+
+        return true;
+    }
+}
+```
+
+```java
+public class Solution {
+    public boolean canJump(int[] nums) {
+        int n = nums.length;
+        int rightmost = 0;
+        for (int i = 0; i < n; ++i) {
+            if (i <= rightmost) {
+                rightmost = Math.max(rightmost, i + nums[i]);
+                if (rightmost >= n - 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 <span id = "jump62"></span>
 
 ## 62.不同路径
@@ -1836,7 +1935,69 @@ class Solution {
 
 
 
+<span id = "jump70"></span>
 
+## 70. 爬楼梯
+
+假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+注意：给定 n 是一个正整数。
+
+示例 1：
+
+```java
+输入： 2
+输出： 2
+解释： 有两种方法可以爬到楼顶。
+
+1.  1 阶 + 1 阶
+2.  2 阶
+```
+
+示例 2：
+
+```java
+输入： 3
+输出： 3
+解释： 有三种方法可以爬到楼顶。
+
+1.  1 阶 + 1 阶 + 1 阶
+2.  1 阶 + 2 阶
+3.  2 阶 + 1 阶
+```
+
+
+
+```java
+class Solution {
+    public int climbStairs(int n) {
+        //斐波那契数列
+
+        int a = 1, b = 1;
+        for(int i = 2; i <= n; ++i){
+            int tmp = a + b;
+            a = b;
+            b = tmp;
+        }
+
+        return b;
+    }
+}
+```
+
+
+
+进阶：不能连续爬两步，即有一次跳了2步，下一次就不能跳2步了
+
+```java
+维护dp[i][1]和dp[i][2]，表示
+第i次爬楼跳1步可以从上一次爬楼跳1步而来，也可以从上一次爬楼跳2步而来
+而第i次爬楼跳2步只能从上一次爬楼跳1步而来
+dp[i][1] = dp[i-1][1] + dp[i-1][2];
+dp[i][2] = dp[i-1][1]
+```
 
 
 
