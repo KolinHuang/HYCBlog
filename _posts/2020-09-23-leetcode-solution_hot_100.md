@@ -23,6 +23,8 @@ pin: true
 
 [2.两数相加](#jump2)
 
+[4. 寻找两个正序数组的中位数](#jump4)
+
 [5.最长回文子串](#jump5)
 
 [11.盛最多水的容器](#jump11)
@@ -78,6 +80,8 @@ pin: true
 [98.验证二叉搜索树](#jump98)
 
 [101.对称二叉树](#jump101)
+
+[105. 从前序与中序遍历序列构造二叉树](#jump105)
 
 [114.二叉树展开为链表](#jump114)
 
@@ -440,6 +444,143 @@ func max(a int, b int) int {
 ```
 
 
+
+
+
+
+
+<span id = "jump4"></span>
+
+## 4. 寻找两个正序数组的中位数
+
+给定两个大小为 m 和 n 的正序（从小到大）数组 nums1 和 nums2。请你找出并返回这两个正序数组的中位数。
+
+进阶：你能设计一个时间复杂度为 O(log (m+n)) 的算法解决此问题吗？
+
+ 
+
+示例 1：
+
+```java
+输入：nums1 = [1,3], nums2 = [2]
+输出：2.00000
+解释：合并数组 = [1,2,3] ，中位数 2
+```
+
+示例 2：
+
+```java
+输入：nums1 = [1,2], nums2 = [3,4]
+输出：2.50000
+解释：合并数组 = [1,2,3,4] ，中位数 (2 + 3) / 2 = 2.5
+```
+
+示例 3：
+
+```java
+输入：nums1 = [0,0], nums2 = [0,0]
+输出：0.00000
+```
+
+示例 4：
+
+```java
+输入：nums1 = [], nums2 = [1]
+输出：1.00000
+```
+
+示例 5：
+
+```java
+输入：nums1 = [2], nums2 = []
+输出：2.00000
+```
+
+
+提示：
+
+* nums1.length == m
+* nums2.length == n
+* 0 <= m <= 1000
+* 0 <= n <= 1000
+* 1 <= m + n <= 2000
+* -106 <= nums1[i], nums2[i] <= 106
+
+
+
+
+
+用二分才能达到这样的时间复杂度
+
+```java
+/* 主要思路：要找到第 k (k>1) 小的元素，那么就取 pivot1 = nums1[k/2-1] 和 pivot2 = nums2[k/2-1] 进行比较
+* 这里的 "/" 表示整除
+* nums1 中小于等于 pivot1 的元素有 nums1[0 .. k/2-2] 共计 k/2-1 个
+* nums2 中小于等于 pivot2 的元素有 nums2[0 .. k/2-2] 共计 k/2-1 个
+* 取 pivot = min(pivot1, pivot2)，两个数组中小于等于 pivot 的元素共计不会超过 (k/2-1) + (k/2-1) <= k-2 个
+* 这样 pivot 本身最大也只能是第 k-1 小的元素
+* 如果 pivot = pivot1，那么 nums1[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums1 数组
+* 如果 pivot = pivot2，那么 nums2[0 .. k/2-1] 都不可能是第 k 小的元素。把这些元素全部 "删除"，剩下的作为新的 nums2 数组
+* 由于我们 "删除" 了一些元素（这些元素都比第 k 小的元素要小），因此需要修改 k 的值，减去删除的数的个数
+*/
+class Solution {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        int m = nums1.length;
+        int n = nums2.length;
+        
+        int len = m + n;
+        //总长为奇数
+        if(len % 2 == 1){
+            //中位数在合并数组中的的索引为mid
+            int mid = len / 2;
+            //找到两个数组中第mid+1小的数就是中位数
+            return getKthElement(nums1, nums2, mid + 1);
+        }else{
+            int mid1 = len / 2 -1, mid2 = len / 2;
+            return (getKthElement(nums1, nums2, mid1+1) + getKthElement(nums1, nums2, mid2+1))*1.0/2;
+        }
+    }
+    //找到两个数组中第k小的数
+    public int getKthElement(int[] nums1, int[] nums2, int k){
+        int m = nums1.length;
+        int n = nums2.length;
+
+        int cur1 = 0, cur2 = 0;
+
+
+        while(true){
+            //超出数组边界了，就从另外一个数组中找第k小的数直接返回
+            if(cur1 == m){
+                return nums2[cur2 + k - 1];
+            }
+            if(cur2 == n){
+                return nums1[cur1 + k - 1];
+            }
+            //两个都没有超出边界，且k == 1就从两个数组的当前首索引找出一个最小值返回
+            if(k == 1){
+                return Math.min(nums1[cur1], nums2[cur2]);
+            }
+
+            //k > 1，且两个数组都未越界
+            int half = k / 2;
+            //本来是比较 nums1[k/2-1]和nums2[k/2-1]的值的
+            //但是k/2-1可能会越界，如果越界了就取数组最后一个元素比较
+            int newCur1 = Math.min(cur1 + half, m) - 1;
+            int newCur2 = Math.min(cur2 + half, n) - 1;
+
+            if(nums1[newCur1] <= nums2[newCur2]){
+                //更新k，排除了多少个数，就把k缩小多少
+                k -= (newCur1 - cur1 + 1);
+                cur1 = newCur1 + 1;
+            }else{
+                k -= (newCur2 - cur2 + 1);
+                cur2 = newCur2 + 1;
+            }
+
+        }
+    }
+}
+```
 
 
 
@@ -2531,6 +2672,111 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump105"></span>
+
+## 105. 从前序与中序遍历序列构造二叉树
+
+根据一棵树的前序遍历与中序遍历构造二叉树。
+
+注意:
+你可以假设树中没有重复的元素。
+
+例如，给出
+
+前序遍历 preorder = [3,9,20,15,7]
+中序遍历 inorder = [9,3,15,20,7]
+返回如下的二叉树：
+
+    		3
+       / \
+      9  20
+        /  \
+       15   7
+
+
+
+可以解决有重复元素的树：
+
+```java
+class Solution {
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        if(preorder.length == 0)    return null;
+        return build(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+
+    TreeNode build(int[] preorder, int pS, int pE, int[] inorder, int iS, int iE){
+        
+        if(pE < pS){
+            return null;
+        }
+
+        if(pS == pE){
+            return new TreeNode(preorder[pS]);
+        }
+        
+        TreeNode root = new TreeNode(preorder[pS]);
+        
+        int idx = iS;
+        while(inorder[idx] != root.val){
+            ++idx;
+        }
+        
+        TreeNode left = build(preorder, pS + 1, pS + (idx - iS), inorder, iS, idx - 1);
+        TreeNode right = build(preorder, pS + (idx - iS) + 1, pE, inorder, idx + 1, iE);
+
+        root.left = left;
+        root.right = right;
+        return root;
+    }
+}
+```
+
+```java
+class Solution {
+    Map<Integer, Integer> inMap = new HashMap<>();
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        //由于树中无重复元素，所以可以为每个元素建立哈希索引，后面可以直接在中序遍历序列中定位根节点
+        for(int i = 0; i < inorder.length; ++i){
+            inMap.put(inorder[i],i);
+        }
+
+        return build(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1);
+    }
+
+    TreeNode build(int[] preorder, int pS, int pE, int[] inorder, int iS, int iE){
+        
+        if(pE < pS){
+            return null;
+        }
+
+        if(pS == pE){
+            return new TreeNode(preorder[pS]);
+        }
+        
+        TreeNode root = new TreeNode(preorder[pS]);
+        
+        int idx = inMap.get(root.val);
+        
+        TreeNode left = build(preorder, pS + 1, pS + (idx - iS), inorder, iS, idx - 1);
+        TreeNode right = build(preorder, pS + (idx - iS) + 1, pE, inorder, idx + 1, iE);
+
+        root.left = left;
+        root.right = right;
+        return root;
+    }
+}
+```
+
+
+
+
+
+
 
 
 
