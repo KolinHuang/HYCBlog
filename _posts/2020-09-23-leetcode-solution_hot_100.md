@@ -45,6 +45,8 @@ pin: true
 
 [31.下一个排列](#jump31)
 
+[32. 最长有效括号](#jump32)
+
 [33.搜索旋转排序数组](#jump33)
 
 [34.[重要]在排序数组中查找元素的第一个和最后一个位置](#jump34)
@@ -100,6 +102,10 @@ pin: true
 [146.LRU 缓存机制](#jump146)
 
 [148.排序链表](#jump148)
+
+[160. 相交链表](#jump160)
+
+[169. 多数元素](#jump169)
 
 [200.岛屿数量](#jump200)
 
@@ -1444,6 +1450,114 @@ class Solution {
     }
 
     
+}
+```
+
+
+
+
+
+
+
+<span id ="jump32"></span>
+
+## 32. 最长有效括号
+
+给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+
+示例 1:
+
+```java
+输入: "(()"
+输出: 2
+解释: 最长有效括号子串为 "()"
+```
+
+示例 2:
+
+```java
+输入: ")()())"
+输出: 4
+解释: 最长有效括号子串为 "()()"
+```
+
+
+
+
+
+双向扫描
+
+```java
+class Solution {
+    public int longestValidParentheses(String s) {
+        int n = s.length();
+        if(n < 2)   return 0;
+        //统计连续的括号对数量
+        //维护两个变量：left和right分别作为当前子序列的左括号数和右括号数
+        //当右括号数大于左括号数时，全部归0
+        //当左括号数等于右括号数时，有效的“括号对”等于右括号数
+        int left = 0, right = 0;
+        int res = 0;
+        for(int i = 0; i < n; ++i){
+            if(s.charAt(i) == '('){
+                left++;
+            }else{
+                right++;
+            }
+            if(right > left){
+                left = 0;
+                right = 0;
+            }else if(right == left){
+                res = Math.max(res, right * 2);
+            }
+        }
+        //反向扫描一次，因为上面的从左到右会出现left始终大于right的情况
+        left = right = 0;
+        for(int i = n-1; i >= 0; --i){
+            if(s.charAt(i) == '('){
+                left++;
+            }else{
+                right++;
+            }
+            if(left > right){
+                left = 0;
+                right = 0;
+            }else if(right == left){
+                res = Math.max(res, right * 2);
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+动态规划：
+
+```java
+class Solution {
+    public int longestValidParentheses(String s) {
+        int[] dp = new int[s.length()];
+        int max = 0;
+        //dp[i]表示以第i个字符为结尾的最长有效括号子串长度
+        for(int i = 1; i < dp.length; ++i){
+            if(s.charAt(i) == ')'){
+                if(s.charAt(i-1) == '('){
+                    dp[i] = (i >= 2 ? dp[i-2] : 0) + 2;
+                }else{
+                    //如果连续两个字符为)，假设倒数第二个字符)为一个有效括号子串str的结尾，
+                    //那么如果最后一个)是有效括号子串结尾，则str的前一个元素必须是(
+                    if(i - dp[i-1] -1 >= 0 && s.charAt(i - dp[i-1] - 1) == '('){
+                        dp[i] = dp[i-1] + (i - dp[i-1] - 2 >= 0 ? dp[i - dp[i-1] - 2] : 0) + 2; 
+                    }
+                }
+                max = Math.max(max, dp[i]);
+            }
+        }
+
+        return max;
+
+    }
 }
 ```
 
@@ -3898,6 +4012,189 @@ class Solution {
 来源：力扣（LeetCode）
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
+
+
+
+
+
+<span id = "jump160"></span>
+
+## 160. 相交链表
+
+编写一个程序，找到两个单链表相交的起始节点。
+
+如下面的两个链表：
+
+
+
+在节点 c1 开始相交。
+
+ ![img](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/160_statement.png)
+
+示例 1：
+
+![img](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/160_example_1.png)
+
+```java
+输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
+输出：Reference of the node with value = 8
+输入解释：相交节点的值为 8 （注意，如果两个链表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [4,1,8,4,5]，链表 B 为 [5,0,1,8,4,5]。在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
+```
+
+
+
+
+
+
+示例 2：
+
+```java
+输入：intersectVal = 2, listA = [0,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
+输出：Reference of the node with value = 2
+输入解释：相交节点的值为 2 （注意，如果两个链表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [0,9,1,2,4]，链表 B 为 [3,2,4]。在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
+```
+
+
+
+
+注意：
+
+* 如果两个链表没有交点，返回 null.
+* 在返回结果后，两个链表仍须保持原有的结构。
+* 可假定整个链表结构中没有循环。
+* 程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
+
+
+
+```java
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode ptr1 = headA;
+        ListNode ptr2 = headB;
+        if(ptr1== null || ptr2 == null) return null;
+        int cnt = 0;
+        //ptr1和ptr2分别从A和B链表头移动，到尾部后，移动到另外一个链表，直到相遇或遍历完毕
+        //二者都为空时，也视为相遇，可以退出循环，但是空代表不相交
+        while(ptr1 != ptr2){
+            ptr1 = ptr1 == null ? headB : ptr1.next;
+            ptr2 = ptr2 == null ? headA : ptr2.next;
+        }
+
+
+        return ptr1;
+        
+    }
+}
+```
+
+
+
+
+
+<span id = "jump169"></span>
+
+## 169. 多数元素
+
+给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+ 
+
+示例 1:
+
+```java
+输入: [3,2,3]
+输出: 3
+```
+
+示例 2:
+
+```java
+输入: [2,2,1,1,1,2,2]
+输出: 2
+```
+
+
+
+1. 最简单的是排序，排完之后，索引n/2位置的就是众数。
+
+
+
+2. 我们使用经典的分治算法递归求解，直到所有的子问题都是长度为 1 的数组。长度为 1 的子数组中唯一的数显然是众数，直接返回即可。如果回溯后某区间的长度大于 1，我们必须将左右子区间的值合并。如果它们的众数相同，那么显然这一段区间的众数是它们相同的值。否则，我们需要比较两个众数在整个区间内出现的次数来决定该区间的众数。
+
+```java
+class Solution {
+    private int countInRange(int[] nums, int num, int lo, int hi) {
+        int count = 0;
+        for (int i = lo; i <= hi; i++) {
+            if (nums[i] == num) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private int majorityElementRec(int[] nums, int lo, int hi) {
+        // base case; the only element in an array of size 1 is the majority
+        // element.
+        if (lo == hi) {
+            return nums[lo];
+        }
+
+        // recurse on left and right halves of this slice.
+        int mid = (hi - lo) / 2 + lo;
+        int left = majorityElementRec(nums, lo, mid);
+        int right = majorityElementRec(nums, mid + 1, hi);
+
+        // if the two halves agree on the majority element, return it.
+        if (left == right) {
+            return left;
+        }
+
+        // otherwise, count each element and return the "winner".
+        int leftCount = countInRange(nums, left, lo, hi);
+        int rightCount = countInRange(nums, right, lo, hi);
+
+        return leftCount > rightCount ? left : right;
+    }
+
+    public int majorityElement(int[] nums) {
+        return majorityElementRec(nums, 0, nums.length - 1);
+    }
+}
+```
+
+
+
+3. 摩尔投票法：如果我们把众数记为 +1，把其他数记为 -1，将它们全部加起来，显然和大于 `0`，从结果本身我们可以看出众数比其他数多。
+
+   1. 如果候选人不是众数，则众数会和其他非候选人一起反对候选人，所以候选人一定会下台(count==0时发生换届选举)
+   2. 如果候选人是众数，则众数会支持自己，其他候选人会反对，同样因为众数票数超过一半，所以众数一定会成功当选。
+
+   ```java
+   class Solution {
+       public int majorityElement(int[] nums) {
+           int count = 0;
+           Integer candidate = null;
+   
+           for (int num : nums) {
+               if (count == 0) {
+                   candidate = num;
+               }
+               count += (num == candidate) ? 1 : -1;
+           }
+   
+           return candidate;
+       }
+   }
+   ```
+
+   
+
+
+
+
 
 
 
