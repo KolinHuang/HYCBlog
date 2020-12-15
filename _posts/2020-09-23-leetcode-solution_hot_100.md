@@ -53,6 +53,8 @@ pin: true
 
 [39.组合总和](#jump39)
 
+[42. 接雨水](#jump42)
+
 [46. 全排列](#jump46)
 
 [48.旋转图像](#jump48)
@@ -106,6 +108,8 @@ pin: true
 [160. 相交链表](#jump160)
 
 [169. 多数元素](#jump169)
+
+[198. 打家劫舍](#jump198)
 
 [200.岛屿数量](#jump200)
 
@@ -1819,6 +1823,146 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump42"></span>
+
+## 42. 接雨水
+
+给定 *n* 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+示例 1：
+
+![img](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/rainwatertrap-20201215205906366.png)
+
+```java
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+```
+
+
+
+
+示例 2：
+
+```java
+输入：height = [4,2,0,3,2,5]
+输出：9
+```
+
+
+
+
+
+
+提示：
+
+* n == height.length
+* 0 <= n <= 3 * 104
+* 0 <= height[i] <= 105
+
+
+
+```java
+class Solution {
+    public int trap(int[] height) {
+        if(height.length <= 2)  return 0;
+        //最终的结果肯定是一组先非严格递增后非严格递减的序列
+        //找到最高点
+        //从左往右遍历，如果还没到最高点，出现了下降的趋势，就开始填山谷，直到填平
+        int max = height[0];
+        int maxCount = 1;
+        for(int i = 0; i < height.length; ++i){
+            if(height[i] > max){
+                max = height[i];
+                maxCount = 1;
+            }else if(height[i] == max && i != 0){
+                maxCount++;
+            }
+        }
+        int res = 0;
+
+        //开始填谷
+        for(int i = 0; i < height.length; ++i){
+            //遇到一个最高点
+            if(height[i] == max){
+                maxCount--;
+            }
+            //后面还有最高点
+            if(maxCount > 0){
+                //遇到谷就填
+                if(i > 0 && height[i-1] > height[i]){
+                    res += height[i-1] - height[i];
+                    height[i] = height[i-1];
+                }
+            }
+        }
+
+        //这时左半边序列已经完全非严格递增
+        //接下来要反向填谷，从序列尾端开始填，直到遇到最高点就停止
+        for(int i = height.length - 1; i > 0; --i){
+            if(height[i] == max)    break;
+            if(height[i] > height[i-1]){
+                res += height[i] - height[i-1];
+                height[i-1] = height[i];
+            }
+        }
+
+        return res;
+    }
+}
+```
+
+```go
+func trap(height []int) int {
+    len := len(height)
+    if len <= 2 {
+        return 0
+    }
+     max := height[0]
+     maxCount := 1
+
+     for i := 0; i < len; i++ {
+         if height[i] > max {
+             max, maxCount = height[i], 1
+         }else if height[i] == max && i != 0 {
+             maxCount++
+         }
+     }
+
+     res := 0
+
+     for i := 0; i < len; i++ {
+         if height[i] == max {
+             maxCount--
+         }
+         if maxCount > 0 {
+             if i > 0 && height[i-1] > height[i] {
+                 res += height[i-1] - height[i]
+                 height[i] = height[i-1]
+             }
+         }
+     }
+
+     for i := len - 1; i > 0; i-- {
+         if height[i] == max {
+             break
+         }
+         if height[i] > height[i-1] {
+             res += height[i] - height[i-1]
+             height[i-1] = height[i]
+         }
+     }
+
+     return res
+}
+```
+
+
 
 
 
@@ -4191,6 +4335,83 @@ class Solution {
    ```
 
    
+
+
+
+<span id = "jump198"></span>
+
+## 198. 打家劫舍
+
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+ 
+
+示例 1：
+
+```java
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+```
+
+示例 2：
+
+```java
+输入：[2,7,9,3,1]
+输出：12
+解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+```
+
+
+提示：
+
+* 0 <= nums.length <= 100
+* 0 <= nums[i] <= 400
+
+
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        if(nums.length == 0)    return 0;
+        //dp[i][1]表示要偷第i户人家，dp[i][0]表示不偷第i户人家
+        int[][] dp = new int[nums.length][2];
+
+        dp[0][0] = 0;
+        dp[0][1] = nums[0];
+        for(int i = 1; i < nums.length; ++i){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1]);
+            dp[i][1] = dp[i-1][0] + nums[i];
+        }
+
+        return Math.max(dp[nums.length - 1][0], dp[nums.length - 1][1]);
+    }
+}
+```
+
+空间优化：
+
+```java
+class Solution {
+    public int rob(int[] nums) {
+        if(nums.length == 0)    return 0;
+        //d表示要偷第i户人家，nd表示不偷第i户人家
+        int nd = 0;
+        int d = nums[0];
+        for(int i = 1; i < nums.length; ++i){
+            int tmp_nd = Math.max(d, nd);
+            d = nd + nums[i];
+            nd = tmp_nd;
+        }
+
+        return Math.max(d, nd);
+    }
+}
+```
 
 
 
