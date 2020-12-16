@@ -71,6 +71,8 @@ pin: true
 
 [70. 爬楼梯](#jump70)
 
+[72. 编辑距离](#jump72)
+
 [75.颜色分类](jump75)
 
 [78.子集](jump78)
@@ -2623,6 +2625,120 @@ class Solution {
 dp[i][1] = dp[i-1][1] + dp[i-1][2];
 dp[i][2] = dp[i-1][1]
 ```
+
+
+
+
+
+
+
+<span id = "jump72"></span>
+
+## 72. 编辑距离
+
+给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+
+你可以对一个单词进行如下三种操作：
+
+插入一个字符
+删除一个字符
+替换一个字符
+
+示例 1：
+
+```java
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+```
+
+
+示例 2：
+
+```java
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+```
+
+
+
+
+
+
+提示：
+
+* 0 <= word1.length, word2.length <= 500
+* word1 和 word2 由小写英文字母组成
+
+
+
+    1.对单词 A 删除一个字符和对单词 B 插入一个字符是等价的。
+    	例如当单词 A 为 doge，单词 B 为 dog 时，
+        1.我们既可以删除单词 A 的最后一个字符 e，得到相同的 dog，
+        2.也可以在单词 B 末尾添加一个字符 e，得到相同的 doge；
+    2.同理，对单词 B 删除一个字符和对单词 A 插入一个字符也是等价的；
+    3.对单词 A 替换一个字符和对单词 B 替换一个字符是等价的。
+    	例如当单词 A 为 bat，单词 B 为 cat 时，
+        1.我们修改单词 A 的第一个字母 b -> c，
+        2.和修改单词 B 的第一个字母 c -> b 是等价的。
+    
+    这样一来，本质不同的操作实际上只有三种：
+        1.在单词 A 中插入一个字符；
+        2.在单词 B 中插入一个字符；
+        3.修改单词 A 的一个字符。
+
+```java
+class Solution {
+
+    public int minDistance(String word1, String word2) {
+        int m = word1.length();
+        int n = word2.length();
+        //dp[i][j]表示A的前i个字符到B的前j个字符的最小编辑距离
+        int[][] dp = new int[m+1][n+1];
+        //边界初始化
+        for(int i = 0; i < m+1; ++i){
+            dp[i][0] = i;
+        }
+        for(int j = 0; j < n+1; ++j){
+            dp[0][j] = j;
+        }
+
+        for(int i = 1; i < m+1; ++i){
+            for(int j = 1; j < n+1; ++j){
+                //如果A的第i个字符和B的第j个字符不相同
+                //A前i个字符到B的前j个字符的最小编辑距离可以从
+                //  B的前j-1个字符后添加一个与A的第i个字符相同的字符得到A的前i个字符dp[i][j-1] + 1
+                //  A的前i-1个字符后添加一个与B的第j个字符相同的字符得到B的前j个字符dp[i-1][j] + 1
+                //  修改A的第i个字符为B的第j个字符使二者相同，dp[i-1][j-1] + 1
+                //如果A的第i个字符和B的第j个字符相同
+                //  B的前j-1个字符后添加一个与A的第i个字符相同的字符得到A的前i个字符dp[i][j-1] + 1
+                //  A的前i-1个字符后添加一个与B的第j个字符相同的字符得到B的前j个字符dp[i-1][j] + 1
+                // 不用修改第i个字符为B的第j个字符，二者已经相同，dp[i-1][j-1]
+                if(word1.charAt(i-1) != word2.charAt(j-1)){
+                    dp[i][j] = 1 + Math.min(dp[i-1][j], Math.min(dp[i][j-1], dp[i-1][j-1]));
+                }else{
+                    dp[i][j] = 1 + Math.min(dp[i-1][j], Math.min(dp[i][j-1], dp[i-1][j-1]-1));
+                }
+            }
+        }
+
+        return dp[m][n];
+    }
+}
+```
+
+
+
+
 
 
 
