@@ -75,6 +75,8 @@ pin: true
 
 [75.颜色分类](jump75)
 
+[76. 最小覆盖子串](#jump76)
+
 [78.子集](jump78)
 
 [79.单词搜索](#jump79)
@@ -114,6 +116,8 @@ pin: true
 [198. 打家劫舍](#jump198)
 
 [200.岛屿数量](#jump200)
+
+[207. 课程表](#jump207)
 
 [215.数组中的第k大元素](#jump215)
 
@@ -2841,6 +2845,193 @@ class Solution {
 
 
 
+<span id = "jump76"></span>
+
+## 76. 最小覆盖子串
+
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+
+ 
+
+示例 1：
+
+```java
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+```
+
+示例 2：
+
+```java
+输入：s = "a", t = "a"
+输出："a"
+```
+
+
+提示：
+
+* 1 <= s.length, t.length <= 105
+* s 和 t 由英文字母组成
+
+进阶：你能设计一个在 o(n) 时间内解决此问题的算法吗？
+
+滑动窗口
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        int sl = s.length();
+        int st = t.length();
+        Map<Character, Integer> map1 = new HashMap<>();
+        for(int i = 0; i < st; ++i){
+            map1.put(t.charAt(i), map1.getOrDefault(t.charAt(i), 0) + 1);
+        }
+        Map<Character, Integer> map2 = new HashMap<>();
+        //从左往右遍历字符串，先找到一个符合条件的子串
+        //再滑动窗口寻找下一个子串，如果长度更小就记录
+        int l = 0, r = -1, start = 0, end = -1;
+        while(r <= sl){
+            //刚开始遍历，需要找到一个左端点
+            if(r == -1){
+                if(l >= sl) break;
+                if(!map1.keySet().contains(s.charAt(l))){
+                    l++;
+                    continue;
+                }else{
+                    //找到了第一个左端点
+                    r = l;
+                }
+            }
+            //s中找到的字符数还不够
+            if(!check(map1, map2)){
+                if(r >= sl) break;
+                //当前字符不是有效字符
+                if(!map1.keySet().contains(s.charAt(r))){
+                    r++;
+                    continue;
+                }else{//是有效字符，放入哈希表中，无论是不是新的字符，都要放入
+                    map2.put(s.charAt(r), map2.getOrDefault(s.charAt(r), 0) + 1);
+                    r++;
+                }
+            }else{
+                //s中找到的字符种类已经覆盖了t字符串中的所有字符
+                //当前结果是一个满足要求的子串
+                if(end == -1){//如果这是第一个子串
+                    //直接记录
+                    start = l;
+                    end = r;
+                }else{
+                    //需要比较当前找到的是否为更小的子串
+                    if(r - l < end - start){
+                        //更新
+                        start = l;
+                        end = r;
+                    }
+                }
+
+                //移动左指针，直至map2无法cover map1
+                while( l < r){
+                    if(map1.containsKey(s.charAt(l))){
+                        if(check(map1, map2)){
+                            if(r - l < end - start){
+                                //更新
+                                start = l;
+                                end = r;
+                            }
+                            map2.put(s.charAt(l), map2.get(s.charAt(l)) - 1);
+                            l++;
+                        }else{
+                            break;
+                        }
+                    }else{
+                        l++;
+                    }
+                }
+                if(r >= sl)  break;
+            }
+        }
+
+        return end == -1 ? "" : s.substring(start, end);
+    }
+
+    boolean check(Map<Character, Integer> map1, Map<Character, Integer> map2){
+        for (Character key : map1.keySet()) {
+            if(map2.get(key) == null ||
+                    (map2.get(key) != null && map2.get(key) < map1.get(key))){
+                return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+
+
+
+
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        int sl = s.length();
+        int st = t.length();
+        Map<Character, Integer> map1 = new HashMap<>();
+        for(int i = 0; i < st; ++i){
+            map1.put(t.charAt(i), map1.getOrDefault(t.charAt(i), 0) + 1);
+        }
+        Map<Character, Integer> map2 = new HashMap<>();
+        //从左往右遍历字符串，先找到一个符合条件的子串
+        //再滑动窗口寻找下一个子串，如果长度更小就记录
+        int l = 0, r = -1, start = -1, end = -1;
+        int len = Integer.MAX_VALUE;
+        while(r < sl){
+          	//窗口不断往右移动
+            ++r;
+            if(r < sl && map1.containsKey(s.charAt(r)))
+                map2.put(s.charAt(r), map2.getOrDefault(s.charAt(r), 0) + 1);
+          	//如果已经实现了覆盖，就从左边缩小窗口
+          	//每缩小一步，都需要判断是否仍能覆盖
+            while(check(map1, map2) && l <= r){
+                if(r - l + 1 < len){
+                    len = r-l+1;
+                    start = l;
+                    end = r;
+                }
+                if(map1.containsKey(s.charAt(l)))
+                    map2.put(s.charAt(l), map2.getOrDefault(s.charAt(l), 0) - 1);
+                ++l;
+            }
+        }
+
+
+        return end == -1 ? "" : s.substring(start, end+1);
+    }
+
+    public boolean check(Map<Character, Integer> map1, Map<Character, Integer> map2) {
+        Iterator iter = map1.entrySet().iterator(); 
+        while (iter.hasNext()) { 
+            Map.Entry entry = (Map.Entry) iter.next(); 
+            Character key = (Character) entry.getKey(); 
+            Integer val = (Integer) entry.getValue(); 
+            if (map2.getOrDefault(key, 0) < val) {
+                return false;
+            }
+        } 
+        return true;
+    }
+}
+```
+
+
+
+
+
+
+
+
+
 <span id = "jump78"></span>
 
 ## 78.子集
@@ -4617,6 +4808,168 @@ class Solution {
         dfs(i - 1, j, grid);
         dfs(i, j - 1, grid);
     }
+}
+```
+
+
+
+
+
+
+
+<span id = "jump207"></span>
+
+## 207. 课程表
+
+你这个学期必须选修 numCourse 门课程，记为 0 到 numCourse-1 。
+
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们：[0,1]
+
+给定课程总量以及它们的先决条件，请你判断是否可能完成所有课程的学习？
+
+ 
+
+示例 1:
+
+```java
+输入: 2, [[1,0]] 
+输出: true
+解释: 总共有 2 门课程。学习课程 1 之前，你需要完成课程 0。所以这是可能的。
+```
+
+示例 2:
+
+```java
+输入: 2, [[1,0],[0,1]]
+输出: false
+解释: 总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0；并且学习课程 0 之前，你还应先完成课程 1。这是不可能的。
+```
+
+
+
+
+
+
+提示：
+
+* 输入的先决条件是由 边缘列表 表示的图形，而不是 邻接矩阵 。详情请参见图的表示法。
+* 你可以假定输入的先决条件中没有重复的边。
+* 1 <= numCourses <= 10^5
+
+```java
+class Solution {
+    //深度优先遍历：判断图是否有环
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        //建立邻接表
+        List<List<Integer>> adj = new ArrayList<>();
+
+        for(int i = 0; i < numCourses; ++i){
+            adj.add(new ArrayList<>());
+        }
+        for(int i = 0; i <prerequisites.length; ++i){
+            adj.get(prerequisites[i][0]).add(prerequisites[i][1]);
+        }
+        int[] flag = new int[numCourses];
+        for(int i = 0; i < numCourses; ++i){
+            if(!dfs(i, adj, flag)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    boolean dfs(int cur, List<List<Integer>> adj, int[] flag){
+        //flag -1表示从当前节点出发没有环路， 1表示从当前节点被访问过了， 0表示还没访问
+        if(flag[cur] == 1)   return false;
+        if(flag[cur] == -1)     return true;
+        List<Integer> list = adj.get(cur);
+        flag[cur] = 1;
+        for(Integer v : list){
+            if(!dfs(v, adj, flag)){
+                return false;
+            }
+        }
+        flag[cur] = -1;
+        return true;
+    }
+
+}
+```
+
+
+
+
+
+```go
+func canFinish(numCourses int, prerequisites [][]int) bool {
+    in := make([]int, numCourses)
+    frees := make([][] int, numCourses)
+    next := make([]int, 0, numCourses)
+
+    for _, v := range prerequisites {
+        //v[0]的入度++
+        in[v[0]]++
+        //让pre[1]指向pre[0]
+        frees[v[1]] = append(frees[v[1]], v[0])
+    }
+    //将所有入度为0的顶点放入next中
+    for i := 0; i < numCourses; i++ {
+        if in[i] == 0 {
+            next = append(next, i)
+        }
+    }
+
+    for i := 0; i != len(next); i++ {
+        c := next[i]
+        //取出此节点指向的节点数组，入度均减1
+        v := frees[c]
+        for _, vv := range v {
+            in[vv]--
+            if in[vv] == 0 {
+                next = append(next, vv)
+            }
+        }
+    }
+
+    return len(next) == numCourses
+}
+```
+
+```java
+class Solution {
+    //AOV 网的拓扑排序
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        int[] in = new int[numCourses];
+        List<Integer> next = new ArrayList<>();
+        List<List<Integer>> frees = new ArrayList<>();
+
+        for(int i = 0; i < numCourses; ++i){
+            frees.add(new ArrayList<>());
+        }
+
+        for(int i = 0; i < prerequisites.length; ++i){
+            in[prerequisites[i][0]]++;
+            frees.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+
+        for(int i = 0; i < numCourses; ++i){
+            if(in[i] == 0){
+                next.add(i);
+            }
+        }
+
+        for(int i = 0; i != next.size(); ++i) {
+            List<Integer> list = frees.get(next.get(i));
+            for(Integer v : list){
+                in[v]--;
+                if(in[v] == 0){
+                    next.add(v);
+                }
+            }
+        }
+        return next.size() == numCourses;
+    }
+
 }
 ```
 
