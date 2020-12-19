@@ -81,6 +81,8 @@ pin: true
 
 [79.单词搜索](#jump79)
 
+[84. 柱状图中最大的矩形](#jump84)
+
 [86.分隔链表](#jump86)
 
 [94.二叉树的中序遍历](#jump94)
@@ -3186,6 +3188,123 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump84"></span>
+
+## 84. 柱状图中最大的矩形
+
+给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+
+求在该柱状图中，能够勾勒出来的矩形的最大面积。
+
+ 
+
+
+
+以上是柱状图的示例，其中每个柱子的宽度为 1，给定的高度为 [2,1,5,6,2,3]。
+
+ 
+
+<img src="/Users/huangyucai/Library/Application Support/typora-user-images/image-20201219141243827.png" alt="image-20201219141243827" style="zoom:67%;" />
+
+图中阴影部分为所能勾勒出的最大矩形面积，其面积为 10 个单位。
+
+<img src="/Users/huangyucai/Library/Application Support/typora-user-images/image-20201219141334854.png" alt="image-20201219141334854" style="zoom:67%;" />
+
+示例:
+
+```java
+输入: [2,1,5,6,2,3]
+输出: 10
+```
+
+
+
+```java
+class Solution {
+    //枚举矩形的高度，然后向两边扩展找到第一个小于该高度的元素，就能求出此高度对应的最大面积了
+    //使用单调栈查找
+    public int largestRectangleArea(int[] heights) {
+        int n = heights.length;
+        //记录当前高度左边 第一个小于此高度的索引
+        int[] left = new int[n];
+        //记录当前高度右边 第一个小于此高度的索引
+        int[] right = new int[n];
+
+        Deque<Integer> stack = new LinkedList<>();
+
+        for(int i = 0; i < n; ++i){
+            //栈中比当前高度大的都出栈
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]){
+                stack.pop();
+            }
+            //记录左边第一个比当前高度小的位置索引，如果没有，就记-1
+            left[i] = stack.isEmpty() ? -1 : stack.peek();
+            //当前高度入栈
+            stack.push(i);
+        }
+
+        stack.clear();
+
+        for(int i = n-1; i >= 0; --i){
+            while(!stack.isEmpty() && heights[stack.peek()] >= heights[i]){
+                stack.pop();
+            }
+            //记录右边第一个比当前高度小的位置索引，如果没有，就记n
+            right[i] = stack.isEmpty() ? n : stack.peek();
+            stack.push(i);
+        }
+
+        int res = 0;
+				//算面积
+        for(int i = 0; i < n; ++i){
+            res = Math.max(res, (right[i] - left[i] - 1) * heights[i]);
+        }
+
+        return res;
+
+    }
+}
+```
+
+
+
+优化：
+
+```java
+class Solution {
+public:
+    int largestRectangleArea(vector<int>& heights) {
+        int n = heights.size();
+        vector<int> left(n), right(n, n);
+        
+        stack<int> mono_stack;
+        for (int i = 0; i < n; ++i) {
+            while (!mono_stack.empty() && heights[mono_stack.top()] >= heights[i]) {
+                right[mono_stack.top()] = i;
+                mono_stack.pop();
+            }
+            left[i] = (mono_stack.empty() ? -1 : mono_stack.top());
+            mono_stack.push(i);
+        }
+        
+        int ans = 0;
+        for (int i = 0; i < n; ++i) {
+            ans = max(ans, (right[i] - left[i] - 1) * heights[i]);
+        }
+        return ans;
+    }
+};
+
+```
+
+
+
+
 
 
 

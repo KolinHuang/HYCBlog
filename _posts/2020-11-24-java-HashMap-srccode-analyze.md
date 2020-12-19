@@ -1,430 +1,206 @@
 ---
-title: Java源码分析之HashMap
+title: JVM 类文件结构
 author: Kol Huang
-date: 2020-11-24 20:30:00 +0800
-categories: [Blogging, 容器]
-tags: [Java源码学习]
+date: 2020-12-19 15:50:00 +0800
+categories: [Blogging, java]
+tags: [jvm]
 comments: true
 math: true
-
 ---
 
 
 
+Class文件是一组以8个字节为基础单位的二进制流，各个数据项严格按照顺序紧凑地排列在文件之中，中间没有添加任何分隔符。当遇到需要占用8个字节以上空间的数据项时，则会**以大端格式（Big-Endian）存储**（高位在前）。
+
+根据《Java虚拟机规范》的规定，Class文件格式采用一种类似于C语言结构体的伪结构来存储数 据，这种伪结构中只有两种数据类型：“无符号数”和“表”。
+
+无符号数属于基本的数据类型，以**u1、u2、u4、u8来分别代表1个字节、2个字节、4个字节和8个 字节的无符号数**，无符号数可以用来描述数字、索引引用、数量值或者按照UTF-8编码构成字符 值。
+
+表是由多个无符号数或者其他表作为数据项构成的复合数据类型，为了便于区分，**所有表的命名都习惯性地以“_info”结尾。**表用于描述有层次关系的复合结构的数据，整个Class文件本质上也可以视作是一张表。
+
+无论是无符号数还是表，当需要描述同一类型但数量不定的多个数据时，经常会使用一个**前置的容量计数器**加若干个连续的数据项的形式，这时候称这一系列连续的某一类型的数据为某一类型的“集合”。
+
+Class的结构不像XML等描述语言，由于它没有任何分隔符号，所以所有数据项，无论是顺序还是数量，甚至于数据存储的字节序（Byte Ordering，Class 文件中字节序为Big-Endian）这样的细节，都是被严格限定的**，哪个字节代表什么含义，长度是多少， 先后顺序如何，全部都不允许改变。**
+
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218085843611.png" alt="image-20201218085843611" style="zoom: 50%;" />
+
+#### 魔数
+
+**头4个字节是魔数：0xCAFEBABE**，用于确定这个文件是否为一个能被虚拟机接受的Class文件。
+
+
+
+#### Class文件版本号
+
+接下来**4个字节是Class文件的版本号**：第5和第6个字节是次版本号（Minor Version），第7和第8个字节是主版本号（Major Version）Java的版本号是从**45**开始的，JDK 1.1之后 的每个JDK大版本发布主版本号向上**加1**（**JDK 1.0～1.1使用了45.0～45.3的版本号**），高版本的JDK能 向下兼容以前版本的Class文件，但不能运行以后版本的Class文件
+
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218090430886.png" alt="image-20201218090430886" style="zoom:50%;" />
+
+次版本号，曾经在现代Java（即Java 2）出现前被短暂使用过，JDK 1.0.2支持的版本45.0～ 45.3（包括45.0～45.3）。JDK 1.1支持版本45.0～45.65535，从JDK 1.2以后，直到JDK 12之前次版本号均未使用，全部固定为零。而到了JDK 12时期，由于JDK提供的功能集已经非常庞大，**有一些复杂 的新特性需要以“公测”的形式放出，所以设计者重新启用了副版本号**，将它用于标识“技术预览版”功 能特性的支持。如果Class文件中使用了该版本JDK尚未列入正式特性清单中的预览功能，则必须把次版**本号标识为65535**，以便Java虚拟机在加载类文件时能够区分出来。
+
+
+
+#### 常量池
+
+**紧接着主、次版本号之后的是常量池入口**：由于常量池中常量的数量是不固定的，所以在常量池的入口需要放置一项u2类型的数据，代表常量池容量计数值（**constant_pool_count**），计数从**1**开始。例如：常量池容量（偏移地址：0x00000008）为十六进制数0x0016，即十进制**的22**，这就 代表常量池中有**21**项常量，索引值范围为**1～21**。设计者将**第0项常量** 空出来是有特殊考虑的，这样做的目的在于，如果后面某些指向常量池的索引值的数据在特定情况下 需要表达“**不引用任何一个常量池项目**”的含义，可以把索引值设置为0来表示。Class文件中只有常量池计数是从1开始，其他计数器都是从0计数。
+
+
+
+常量池主要存放两大类常量：**字面量（Literal）**和**符号引用（Symbolic Refernces）**。字面量比较接近于于Java语言层面的常量概念，如文本字符串、被声明为final的常量值等。而符号引用则属于编译原理方面的概念，主要包括：
+
+* 被模块导出或者开放的包（Package） 
+* 类和接口的全限定名（Fully Qualified Name）
+* 字段的名称和描述符（Descriptor）
+* 方法的名称和描述符 
+* 方法句柄和方法类型（Method Handle、Method Type、Invoke Dynamic）
+* 动态调用点和动态常量（Dynamically-Computed Call Site、Dynamically-Computed Constant）
+
+当虚拟机做类加载时，将会从常量池获得对应的符号引用，再在类创建时或运行时解析、翻译到具体的内存地址之中。
+
+常量池中每一项常量都是一个表，最初常量表中共有11种结构各不相同的表结构数据，后来为了更好地支持动态语言调用，额外增加了4种动态语言相关的常量，为了支持Java模块化系统 （Jigsaw），又加入了CONSTANT_Module_info和CONSTANT_Package_info两个常量，所以截至JDK 13，常量表中分别有17种不同类型的常量。
+
+![image-20201218091828646](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218091828646.png)
+
+![image-20201218091806209](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218091806209.png)
+
+
+
+![image-20201218091937387](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218091937387.png)
+
+![image-20201218091954804](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218091954804.png)
+
+![image-20201218092012816](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218092012816.png)
+
+![image-20201218092025218](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218092025218.png)
+
+由于Class文件中方法、字段等都需要引用CONSTANT_Utf8_info型常量来描述名 称，所以CONSTANT_Utf8_info型常量的最大长度也就是Java中方法、字段名的最大长度。而这里的 最大长度就是length的最大值，既u2类型能表达的最大值65535。所以Java程序中如果定义了超过64KB 英文字符的变量或方法名，即使规则和全部字符都是合法的，也会无法编译。
+
+
+
+#### 访问标志
+
+在常量池结束之后，紧接着的2个字节代表访问标志（access_flags），这个标志用于识别一些类或 者接口层次的访问信息
+
+![image-20201218092405687](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218092405687.png)
+
+access_flags中一共有16个标志位可以使用，当前只定义了其中9个，没有使用到的标志位要求一律为零。**上述所有标志位取或，得access_flags。**
+
+
+
+#### 类索引、父类索引、接口索引集合
+
+类索引（this_class）和父类索引（super_class）都是一个u2类型的数据，而接口索引集合 （interfaces）是一组u2类型的数据的集合，Class文件中由这三项数据来**确定该类型的继承关系。**
+
+类索引用于确定**这个类的全限定名**，父类索引用于确定这个类的**父类的全限定名**。
+
+接口索引集合就用来描述这个类实现了哪些接 口，这些被实现的接口将按implements关键字（如果这个Class文件表示的是一个接口，则应当是 extends关键字）后的**接口顺序从左到右排列在接口索引集合中**。
+
+![image-20201218092739073](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218092739073.png)
+
+对于接口索引集合，入口的第一项u2类型的数据为接口计数器（interfaces_count），表示索引表 的容量。
 
 
 
 
 
+#### 字段表集合
 
-## 类前注释
+字段表（field_info）用于描述**接口或者类中声明的变量**。Java语言中的“字段”（Field）包括类级变量以及实例级变量，但不包括在方法内部声明的局部变量。
 
-**关键点：**
+字段可以包括的修饰符有字段的**作用域（public、private、protected修饰符**）、是实例变量还是类变量（**static修饰符**）、**可变性（final）**、**并发可见性（volatile修饰符，是否强制从主内存读写）**、**可否被序列化（transient修饰符**）、字段**数据类型（基本类型、对象、数组）**、**字段名称**。上述这些信息中，各个修饰符都是布尔值，要么有某个修饰符，要么没有，很适合使用标志位来表示。而字段叫做什么名字、字段被定义为什么数据类型，这些都是无法固定的，只能引用常量池中的常量来描述。
 
-* `HashMap`和`HashTable`大致相当，只不过`HashMap`是非线程安全的，并且允许空值。`HashMap`集合内的元素顺序是无法保证的，可能会改变。
+![image-20201218093323308](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218093323308.png)
 
-* 如果哈希函数将元素正确分散在存储桶中，`get`和`put`操作只花费常量时间。迭代整个集合，花费的时间为桶的数量 x 键值对的数量。如果需要对此集合进行迭代操作，那么一定不要把桶的数量初始化地太大，或者装载因子设地太低。
+字段修饰符放在**access_flags**项目中，是一个u2的数据类型。
 
-* 如前所述，`HashMap`有两个参数会影响其实例的性能：（1）`initail capacity`和`load factor`。`capacity`表示哈希表中桶的数量；`load factor`是在`capacity`自动增长前，表可以装得多满。当哈希表中的键值对数量超过了当前`capacity`和`load factor`的乘积，哈希表将执行`rehash`，增加一倍的桶。
+![image-20201218093407350](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219095538074.png)
 
-* 一般情况下，`load factor = 0.75`能够比较好的平衡时间和空间开销。更高的值会降低空间负载，但是会增加查询成本（会影响哈希表的大多数操作，例如`get`和`put`）。设置其初始容量时，应考虑映射中的预期条目数及其负载因子，以最大程度地减少重新哈希操作的次数。当初始容量大于 （最大键值对数量/`load factor`）时，不会发生任何的`rehash`操作。
+跟随access_flags标志的是两项索引值：**name_index**和**descriptor_index**。它们都是对常量池项的引用，分别代表着字段的**简单名称**以及字段和方法的**描述符**。简单名称指的是**没有类型和参数修饰**的方法或者字段名称。描述符的作用是用来描述字段的**数据类型**、**方法的参数列表**（包括**数量、类型以及顺序**）和**返回值**。
 
-* 许多键使用相同的`HashCode()`对降低哈希表的性能，为了改善这种影响，当键是可比较的时，`HashMap`会根据比较的顺序来安排键，来帮助打破性能瓶颈。
+```markdown
+org/fenixsoft/clazz/TestClass 这是一个全限定类名。
+function	这是方法function(xxx)的简单名称
+```
 
-* 如果没有其他方法来保证线程安全，那么在创建`HashMap`的时候，可以使用以下方法来保证线程安全：
+描述符：基本数据类型（byte、char、double、float、int、long、short、boolean）以及代表无返回值的void**类型都用一个大写字符来表示**，而对象类型则用**字符L加对象的全限定名**来表示
 
-  ```jav
-  Map m = Collections.synchronizedMap(new HashMap(...));
-  ```
+![image-20201218093840471](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218093840471.png)
 
-* 支持`fail-fast`机制：当迭代器创建后，有其他线程修改了此HashMap，那么会快速并且简洁地抛出`ConcurrentModificationException`异常。
+对于数组类型，每一维度将使用一个前置的“[”字符来描述，如一个定义为**“java.lang.String[][]”类型** 的二维数组将被记录成“**[[Ljava/lang/String；**”，一个整型数组“int[]”将被记录成“[I”。
 
-  
+用描述符来描述方法时，按照先参数列表、后返回值的顺序描述，参数列表按照参数的严格顺序放在一组小括号“()”之内。如方法`void inc()`的描述符为“`()V`”，方法`java.lang.String toString()`的描述符 为“`()Ljava/lang/String；`”，方法`int indexOf(char[]source，int sourceOffset，int sourceCount，char[]target， int targetOffset，int targetCount，int fromIndex)`的描述符为“`([CII[CIII)I`”。
 
-## Implementation notes
+字段表所包含的固定数据项目到descriptor_index为止就全部结束了，不过在descriptor_index之后 跟随着一个**属性表集合**，用于存储一些额外的信息，字段表可以在属性表中附加描述零至多项的额外 信息。
 
-JDK1.8在JDK1.7的基础上增加了红黑树进行优化。即当链表长度超过8时，链表就转换为红黑树，利用红黑树快速增删改查的特点提高HashMap的性能，其中会用到红黑树的插入、删除、查找等算法。
+字段表集合中**不会列出从父类或者父接口中继承而来的字段**，但有**可能出现**原本Java代码之中**不存在的字段**，譬如在内部类中为了保持对外部类的访问性，编译器就会自动添加指向外部类实例的字段。
 
-
+**在Java语言中字段是无法重载**的，两个字段的数据类型、修饰符不管是否相同，都必须使用不一样的名称，但是**对于Class文件格式来讲，只要两个字段的描述符不是完全相同，那字段重名就是合法的。**
 
 
 
-## 变量
+#### 方法表集合
 
-```java
-//默认的initial capacity=16
-static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
-//允许的最大capacity
-static final int MAXIMUM_CAPACITY = 1 << 30;
-//默认的load factor=0.75
-static final float DEFAULT_LOAD_FACTOR = 0.75f;
-//当桶中的entry数量大于8时，这个bin会被转化为树。 
-static final int TREEIFY_THRESHOLD = 8;
-//当发生了resize操作时，节点数需低于6才能从树节点转化为普通的bin节点。
-static final int UNTREEIFY_THRESHOLD = 6;
-//节点可被树化的最小容量。
-static final int MIN_TREEIFY_CAPACITY = 64;
+Class文件存储格式中对方法的描述与对字段的描述采用了几乎完全一致的方式，方法表的结构如同字段表一样，依次包括访问标志（access_flags）、名称索引（name_index）、描述符索引（descriptor_index）、属性表集合（attributes）几项。
 
-//存放键值对的表格
-transient Node<K,V>[] table;
+![image-20201219095538074](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219095538074.png)
 
-transient Set<Map.Entry<K,V>> entrySet;
-//map中的键值对数量
-transient int size;
-//用于记录线程修改操作的次数，用于fail-fast
-transient int modCount;
-//threshold = capacity * load factor，当键值对数量超过了这个阈值，就需要resize了
-int threshold;
+因为`volatile`关键字和`transient`关键字不能修饰方法，所以方法表的访问标志中没有了` ACC_VOLATILE`标志和`ACC_TRANSIENT`标志。与之相对，`synchronized`、`native`、`strictfp`和`abstract` 关键字可以修饰方法，方法表的访问标志中也相应地增加了`ACC_SYNCHRONIZED`、` ACC_NATIVE`、`ACC_STRICTFP`和`ACC_ABSTRACT`标志。
+
+![image-20201219095700121](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219095700121.png)
+
+方法的代码经过Javac编译器编译成字节码指令之后，存放在**方法属性表集合**中的一个名为"Code"的属性中。
+
+如果父类方法在子类中没有被重写，方法表集合中就不会出现来自父类的方法信息。但有可能会出现编译器自动添加的方法，如`<clinit>()`和`<init>()`。
+
+在Java语言中，要重载（Overload）一个方法，除了要与原方法具有相同的简单名称之外，还要求必须拥有一个与**原方法不同的特征签名** 。特征签名是指一个方法中**各个参数在常量池中的字段符号引用的集合**，也正是因为**返回值不会包含在特征签名之中**，所以Java语言里面是无法仅仅依靠返回值 的不同来对一个已有方法进行重载的。但是在Class文件格式之中，特征签名的范围明显要更大一些， 只要描述符不是完全一致的两个方法就可以共存。
+
+```markdown
+描述符：“`([CII[CIII)I`”
+特征签名：I
+返回值：([CII[CIII)
 ```
 
 
 
+#### 属性表集合
 
+Class文件、字段表、方法表都可以携带自己的属性表（attribute_info）集合，以描述某些场景专有的信息。
 
-## 四种构造方法
+方法表集合之后的属性表集合，指的是class文件所携带的辅助信息，比如该class文件的源文件的名称，以及任何带有RetentionPolicy.CLASS或者RetentionPolicy.RUNTIME的注解。这类信息通常被用于Java虚拟机的验证与运行，以及Java程序的调试，一班无需深入了解。
 
-1. ```java
-   		public HashMap() {
-           this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
-       }
-   //所有参数均按默认初始化
-   ```
+与Class文件中其他的数据项目要求严格的顺序、长度和内容不同，属性表集合的限制稍微宽松一 些，**不再要求各个属性表具有严格顺序**，并且《Java虚拟机规范》允许只要不与已有属性名重复，任何人实现的编译器都可以向属性表中写入自己定义的属性信息，Java虚拟机运行时会忽略掉它不认识的属性。
 
-2. ```java
-       public HashMap(int initialCapacity) {
-           this(initialCapacity, DEFAULT_LOAD_FACTOR);
-       }
-   //自定义初始容量，其他参数默认
-   ```
+对于每一个属性，它的名称都要从常量池中引用一个CONSTANT_Utf8_info类型的常量来表示， 而属性值的结构则是完全自定义的，只需要通过一个u4的长度属性去说明属性值所占用的位数即可。
 
-3. ```java
-       public HashMap(int initialCapacity, float loadFactor) {
-           if (initialCapacity < 0)
-               throw new IllegalArgumentException("Illegal initial capacity: " +
-                                                  initialCapacity);
-           if (initialCapacity > MAXIMUM_CAPACITY)
-               initialCapacity = MAXIMUM_CAPACITY;
-           if (loadFactor <= 0 || Float.isNaN(loadFactor))
-               throw new IllegalArgumentException("Illegal load factor: " +
-                                                  loadFactor);
-           this.loadFactor = loadFactor;
-           this.threshold = tableSizeFor(initialCapacity);
-       }
-   //初始容量和load factor都自定义
-   ```
+一个符合规则的属性表应该满足
 
-4. ```java
-       public HashMap(Map<? extends K, ? extends V> m) {
-           this.loadFactor = DEFAULT_LOAD_FACTOR;
-           putMapEntries(m, false);
-       }
-   //使用一个现成的集合来初始化
-       final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
-           int s = m.size();
-           if (s > 0) {
-               if (table == null) { // pre-size
-                   float ft = ((float)s / loadFactor) + 1.0F;
-                   int t = ((ft < (float)MAXIMUM_CAPACITY) ?
-                            (int)ft : MAXIMUM_CAPACITY);
-                   if (t > threshold)
-                       threshold = tableSizeFor(t);
-               }
-               else if (s > threshold)
-                   resize();
-               for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
-                   K key = e.getKey();
-                   V value = e.getValue();
-                 	//将值逐个放入哈希表中，这个方法放到后面讲put的时候再分析
-                   putVal(hash(key), key, value, false, evict);
-               }
-           }
-       }
-   		//把cap规整为2的指数
-       static final int tableSizeFor(int cap) {
-           int n = cap - 1;
-           n |= n >>> 1;
-           n |= n >>> 2;
-           n |= n >>> 4;
-           n |= n >>> 8;
-           n |= n >>> 16;
-           return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
-       }
-   
-   ```
-
-
-
-## put方法
-
-```java
-    public V put(K key, V value) {
-        return putVal(hash(key), key, value, false, true);
-    }
-
-    final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
-                   boolean evict) {
-        Node<K,V>[] tab; Node<K,V> p; int n, i;
-        if ((tab = table) == null || (n = tab.length) == 0)
-            n = (tab = resize()).length;
-      	//用 (n-1) & hash作为这个键值对要放入数组中的位置，很巧妙
-      	//n肯定是2的指数，那么n-1除最高位外，其余均为1
-      	//例如n = 16, n - 1 = 15 = (0 1111)
-      	//将这个值与hash相与，能够保证i不超出数组的范围，所以这是替代mod运算的高效方式
-      
-      	//如果这个位置不存在节点，之前没有hash到这里过，就直接创建一个新节点并赋值
-        if ((p = tab[i = (n - 1) & hash]) == null)
-            tab[i] = newNode(hash, key, value, null);
-        else {
-          	//这个位置已经有节点了
-            Node<K,V> e; K k;
-          	//key是否存在，如果存在就直接覆盖
-            if (p.hash == hash &&
-                ((k = p.key) == key || (key != null && key.equals(k))))
-              	////链表中存在这个key，赋给e
-                e = p;
-          	//当前节点是否为TreeNode
-            else if (p instanceof TreeNode)
-              	//红黑树直接插入键值对
-                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-            else {
-              	//不是TreeNode的话，遍历链表准备插入节点
-                for (int binCount = 0; ; ++binCount) {
-                  	//找到了末尾
-                    if ((e = p.next) == null) {
-                        p.next = newNode(hash, key, value, null);
-                        if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                            treeifyBin(tab, hash);
-                        break;
-                    }
-                  	//链表中存在这个key，赋给e
-                    if (e.hash == hash &&
-                        ((k = e.key) == key || (key != null && key.equals(k))))
-                        break;
-                    p = e;
-                }
-            }
-          	//e不为空，说明在table[i]这个位置的链表中找到了key对应的节点覆盖value即可
-            if (e != null) { // existing mapping for key
-                V oldValue = e.value;
-                if (!onlyIfAbsent || oldValue == null)
-                    e.value = value;
-              	// Callbacks to allow LinkedHashMap post-actions
-                afterNodeAccess(e);
-                return oldValue;
-            }
-        }
-        ++modCount;
-        if (++size > threshold)
-            resize();
-      	//回调函数，用于LinkedHashMap post-actions
-        afterNodeInsertion(evict);
-        return null;
-    }
-
-    // Create a regular (non-tree) node
-    Node<K,V> newNode(int hash, K key, V value, Node<K,V> next) {
-        return new Node<>(hash, key, value, next);
-    }
-    static class Node<K,V> implements Map.Entry<K,V> {
-        final int hash;
-        final K key;
-        V value;
-        Node<K,V> next;
-      ...
-    }
-```
-
-借用网图，出处见水印：
-
-![java_HashMap_put方法逻辑](/HYCBlog/assets/img/java/java_HashMap_put方法逻辑.png)
-
-## get方法
-
-```java
-    public V get(Object key) {
-        Node<K,V> e;
-        return (e = getNode(hash(key), key)) == null ? null : e.value;
-    }
-		//返回key的哈希
-    static final int hash(Object key) {
-        int h;
-      	//hashCode是用来在散列存储结构中确定对象的存储地址的
-      	//														高16位不变，低16位和高16位异或
-        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
-    }
-		
-    final Node<K,V> getNode(int hash, Object key) {
-        Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
-      	//去(n-1)&hash的位置找，取此位置的链表首节点first
-        if ((tab = table) != null && (n = tab.length) > 0 &&
-            (first = tab[(n - 1) & hash]) != null) {
-          	//总是会先检查首节点是否为要找的节点
-            if (first.hash == hash && // always check first node
-                ((k = first.key) == key || (key != null && key.equals(k))))
-                return first;
-            if ((e = first.next) != null) {
-              	//如果这个首节点是TreeNode，就执行红黑树查找
-                if (first instanceof TreeNode)
-                    return ((TreeNode<K,V>)first).getTreeNode(hash, key);
-              	//否则就遍历链表，直到找到key对应的节点
-                do {
-                    if (e.hash == hash &&
-                        ((k = e.key) == key || (key != null && key.equals(k))))
-                        return e;
-                } while ((e = e.next) != null);
-            }
-        }
-      	//没找到就返回null
-        return null;
-    }
-```
-
-
-
-## Resize方法
-
-初始化，或者double哈希表的大小。
-
-```java
-    final Node<K,V>[] resize() {
-        Node<K,V>[] oldTab = table;
-        int oldCap = (oldTab == null) ? 0 : oldTab.length;
-        int oldThr = threshold;
-        int newCap, newThr = 0;
-      	//原来的哈希表不为空
-        if (oldCap > 0) {
-          	//如果最大capacity已经达到了限定的最大值，不作resize
-            if (oldCap >= MAXIMUM_CAPACITY) {
-                threshold = Integer.MAX_VALUE;
-                return oldTab;
-            }
-          	//如果当前capacity大于16并且加倍后，小于限定的最大值，就加倍
-          	//threshold也加倍
-            else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
-                     oldCap >= DEFAULT_INITIAL_CAPACITY)
-                newThr = oldThr << 1; // double threshold
-        }
-      	//oldCap==0,就初始化capacity为threshold
-        else if (oldThr > 0) // initial capacity was placed in threshold
-            newCap = oldThr;
-      	//如果oldCap==0 && oldThr == 0，就初始化为默认的capacity和默认的threshold
-        else {               // zero initial threshold signifies using defaults
-            newCap = DEFAULT_INITIAL_CAPACITY;
-            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
-        }
-      	
-      	//经过以上操作后，newThr == 0说明在oldCap == 0 && oldThr > 0时将oldThr赋给了newCap
-        if (newThr == 0) {
-          	//更新newThr为newCap * loadFactor
-            float ft = (float)newCap * loadFactor;
-            newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
-                      (int)ft : Integer.MAX_VALUE);
-        }
-        threshold = newThr;
-        @SuppressWarnings({"rawtypes","unchecked"})
-      	//新建一个节点数组
-        Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
-        table = newTab;
-      	//整体迁移
-        if (oldTab != null) {
-            for (int j = 0; j < oldCap; ++j) {
-                Node<K,V> e;
-                if ((e = oldTab[j]) != null) {
-                    oldTab[j] = null;
-                  	//j位置只有一个节点
-                    if (e.next == null)
-                      	//直接rehash
-                        newTab[e.hash & (newCap - 1)] = e;
-                  	//如果不止一个节点，并且是树节点
-                    else if (e instanceof TreeNode)
-                      	//直接调用红黑树的分裂方法
-                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
-                  	//不止一个节点，但都是普通节点
-                    else { // preserve order
-                        Node<K,V> loHead = null, loTail = null;
-                        Node<K,V> hiHead = null, hiTail = null;
-                        Node<K,V> next;
-                      	//遍历链表节点
-                        do {
-                            next = e.next;
-                          	//e.hash & oldCap == 0说明e.hash值小于oldCap
-                          	//将低的一半放在loHead链表中
-                            if ((e.hash & oldCap) == 0) {
-                                if (loTail == null)
-                                    loHead = e;
-                                else
-                                    loTail.next = e;
-                                loTail = e;
-                            }
-                          	//将e.hash值高的一半放在hiHead链表中
-                            else {
-                                if (hiTail == null)
-                                    hiHead = e;
-                                else
-                                    hiTail.next = e;
-                                hiTail = e;
-                            }
-                        } while ((e = next) != null);
-                      	//loHead链表存放在原位
-                        if (loTail != null) {
-                            loTail.next = null;
-                            newTab[j] = loHead;
-                        }
-                      	//hiHead链表放在j + oldCap的位置
-                      	//以oldCap为offset
-                        if (hiTail != null) {
-                            hiTail.next = null;
-                            newTab[j + oldCap] = hiHead;
-                        }
-                    }
-                }
-            }
-        }
-        return newTab;
-    }
-
-```
+![image-20201219102930077](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219102930077.png)
 
 
 
 
 
-## treeifyBin方法
+##### Code属性
 
-当当前hash值对应索引的链表长度大于MIN_TREEIFY_CPACITY时，将这个链表节点转化为红黑树节点。
-
-```java
-    final void treeifyBin(Node<K,V>[] tab, int hash) {
-        int n, index; Node<K,V> e;
-        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
-            resize();
-        else if ((e = tab[index = (n - 1) & hash]) != null) {
-            TreeNode<K,V> hd = null, tl = null;
-            do {
-                TreeNode<K,V> p = replacementTreeNode(e, null);
-                if (tl == null)
-                    hd = p;
-                else {
-                    p.prev = tl;
-                    tl.next = p;
-                }
-                tl = p;
-            } while ((e = e.next) != null);
-            if ((tab[index] = hd) != null)
-                hd.treeify(tab);
-        }
-    }
-
-```
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219104211632.png" alt="image-20201219104211632" style="zoom:50%;" />
 
 
 
-## 总结
+code属性中，attribute_info表也可以有许多属性：
 
-* 在`HashMap`中，table的长度必须是2的n次方（一定是合数），但是素数导致冲突的概率要小于合数，HashTable初始化桶的大小为11，就是素数的应用，但是HashTable扩容后不能保证容量还是素数。之所以要选择以2的n次方作为数组的长度，是为了在取模和扩容时做优化。同时为了减少冲突，HashMap将HashCode的高16位与第16位相异或，充分利用键的特性。
-* 扩容是一个特别耗性能的操作，所以当程序员在使用HashMap的时候，估算map的大小，初始化的时候给一个大致的数值，避免map进行频繁的扩容。
-* 负载因子是可以修改的，也可以大于1，但是建议不要轻易修改，除非情况非常特殊。
+* LineNumberTable（字节码指令行号与Java代码行号的对应）；
+
+  <img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219110800803.png" alt="image-20201219110800803" style="zoom:50%;" />
+
+* LocalVariableTable（局部变量表）
+
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219110444297.png" alt="image-20201219110444297" style="zoom:50%;" />
 
 
 
-参考：https://blog.csdn.net/woshimaxiao1/article/details/83661464
+
+
+##### SourceFile属性
+
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201219142118481.png" alt="image-20201219142118481" style="zoom: 50%;" />
+
