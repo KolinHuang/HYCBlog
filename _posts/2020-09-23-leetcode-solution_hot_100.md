@@ -83,6 +83,8 @@ pin: true
 
 [84. 柱状图中最大的矩形](#jump84)
 
+[85. 最大矩形](#jump85)
+
 [86.分隔链表](#jump86)
 
 [94.二叉树的中序遍历](#jump94)
@@ -3301,6 +3303,126 @@ public:
 };
 
 ```
+
+
+
+
+
+
+
+<span id = "jump85"></span>
+
+## 85. 最大矩形
+
+给定一个仅包含 `0` 和 `1` 、大小为 `rows x cols` 的二维二进制矩阵，找出只包含 `1` 的最大矩形，并返回其面积。
+
+示例1:
+
+<img src="https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201221142217366.png" alt="image-20201221142217366" style="zoom:50%;" />
+
+```java
+输入：matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]
+输出：6
+解释：最大矩形如上图所示。
+```
+
+
+
+提示：
+
+* rows == matrix.length
+* cols == matrix[0].length
+* 0 <= row, cols <= 200
+* `matrix[i][j]` 为 '0' 或 '1'
+
+
+
+```java
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        int m = matrix.length;
+        if(m == 0)  return 0;
+        int n = matrix[0].length;
+        
+        int maxarea = 0;
+        int[][] dp = new int[m][n];
+        //动态规划：dp[i][j]表示第i行中，第j个元素为结尾的矩阵最大宽度
+        //我们枚举每一行的每个点的最大宽度，然后向上探索
+        //实际上就是求以当前点开始，到上边界的最大矩形宽度序列组成的矩形能够得到的最大面积
+        //例如：
+        //  ***[***]...
+        //  ---[***]...
+        //  --*[***]...
+        //  --*[***]...
+        //  ... ...
+        //括号扩起来的就是最大的面积了
+        for(int i = 0; i < m; ++i){
+            for(int j = 0; j < n; ++j){
+                if(matrix[i][j] == '1'){
+                    //计算以当前点为右下角的矩阵的最大宽度
+                    dp[i][j] = j==0 ? 1 : dp[i][j-1] + 1;
+                    int width = dp[i][j];
+                    //找到最大的面积，遍历每个宽度，计算面积
+                    for(int k = i; k >= 0; --k){
+                        width = Math.min(width, dp[k][j]);
+                        maxarea = Math.max(maxarea, width * (i - k + 1));
+                    }
+                }
+            }
+        }
+
+        return maxarea;
+    }
+}
+```
+
+以84题的思路，可以用栈来优化，以行为底边建立柱状图，上面那个方法是以列为底边建立柱状图。
+
+```java
+class Solution {
+    public int maximalRectangle(char[][] matrix) {
+        int m = matrix.length;
+        if(m == 0)  return 0;
+        int n = matrix[0].length;
+        
+        int maxarea = 0;
+        int[] dp = new int[n];
+        //利用84题的思路，用单调栈求柱形图的最大面积
+        //按照行建立柱状图
+        for(int i = 0; i < m; ++i){
+            for(int j = 0; j < n; ++j){
+                dp[j] = matrix[i][j] == '1' ? dp[j] + 1 : 0;
+            }
+
+            maxarea = Math.max(maxarea, leetcode84(dp));
+        }
+
+        return maxarea;
+    }
+
+
+    int leetcode84(int[] nums){
+        Deque<Integer> stack = new LinkedList<>();
+        stack.push(-1);
+        int max = 0;
+
+        for(int i = 0; i < nums.length; ++i){
+            while(stack.peek() != -1 && nums[stack.peek()] >= nums[i]){
+                //遇到了一个更小的高度，就将栈顶的高度h弹出，并计算h对应的矩阵的面积 = h * (i - stack.peek() - 1)
+                max = Math.max(max, nums[stack.pop()] * (i - stack.peek() - 1));
+            }
+            stack.push(i);
+        }
+        while(stack.peek() != -1)
+            max = Math.max(max, nums[stack.pop()] * (nums.length -  stack.peek() - 1));
+
+        return max;
+    }
+
+}
+```
+
+
 
 
 

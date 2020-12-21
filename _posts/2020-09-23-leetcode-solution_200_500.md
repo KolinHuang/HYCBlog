@@ -34,6 +34,8 @@ pin: true
 
 [257.二叉树的所有路径](#jump257)
 
+[316. 去除重复字母](#jump316)
+
 [321.拼接最大数[tag]](#jump321)
 
 [327.区间和的个数[tag]](#jump327)
@@ -1119,6 +1121,96 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+<span id = "jump316"></span>
+
+## 316. 去除重复字母
+
+给你一个字符串 s ，请你去除字符串中重复的字母，使得每个字母只出现一次。需保证 返回结果的字典序最小（要求不能打乱其他字符的相对位置）。
+
+注意：该题与 1081 https://leetcode-cn.com/problems/smallest-subsequence-of-distinct-characters 相同
+
+ 
+
+示例 1：
+
+```java
+输入：s = "bcabc"
+输出："abc"
+```
+
+
+
+
+示例 2：
+
+```java
+输入：s = "cbacdcbc"
+输出："acdb"
+```
+
+
+
+
+
+
+提示：
+
+* 1 <= s.length <= 104
+* s 由小写英文字母组成
+
+
+
+单调栈
+
+```java
+class Solution {
+    public String removeDuplicateLetters(String s) {
+        int[] count = new int[26];
+        int n = s.length();
+
+        for(int i = 0; i < n; ++i){
+            count[s.charAt(i) - 'a']++;
+        }
+        StringBuilder sb = new StringBuilder();
+
+        boolean[] visited = new boolean[26];
+        //维护一个单调栈，如果当前字母小于栈顶字母，就将栈顶字母出栈
+        //  但是如果当前栈顶字母的计数已经为0了，那就不能出栈了
+      	//	如果当前字母已经在栈中了，没必要访问了，计数-1
+        for(int i = 0; i < n; ++i){
+            char cur = s.charAt(i);
+            if(!visited[cur - 'a']){
+                while(sb.length() > 0 && sb.charAt(sb.length() - 1) > cur){
+                    if(count[sb.charAt(sb.length() - 1) - 'a'] > 0){
+                        visited[sb.charAt(sb.length() - 1) - 'a'] = false;
+                        sb.deleteCharAt(sb.length() - 1);
+                    }else{
+                        break;
+                    }
+
+                }
+                sb.append(cur);
+                visited[cur - 'a'] = true;
+            }
+
+            count[cur - 'a']--;
+        }
+
+        return sb.toString();
+    }
+}
+```
+
+
+
+
 
 
 

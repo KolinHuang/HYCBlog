@@ -69,9 +69,9 @@ Class的结构不像XML等描述语言，由于它没有任何分隔符号，所
 
 ![image-20201218091954804](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218091954804.png)
 
-![image-20201218092012816](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218092012816.png)
+![image-20201218092012816](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218092012816.png)
 
-![image-20201218092025218](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218092025218.png)
+![image-20201218092025218](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218092025218.png)
 
 由于Class文件中方法、字段等都需要引用CONSTANT_Utf8_info型常量来描述名 称，所以CONSTANT_Utf8_info型常量的最大长度也就是Java中方法、字段名的最大长度。而这里的 最大长度就是length的最大值，既u2类型能表达的最大值65535。所以Java程序中如果定义了超过64KB 英文字符的变量或方法名，即使规则和全部字符都是合法的，也会无法编译。
 
@@ -124,7 +124,7 @@ function	这是方法function(xxx)的简单名称
 
 描述符：基本数据类型（byte、char、double、float、int、long、short、boolean）以及代表无返回值的void**类型都用一个大写字符来表示**，而对象类型则用**字符L加对象的全限定名**来表示
 
-![image-20201218093840471](/Users/huangyucai/Library/Application Support/typora-user-images/image-20201218093840471.png)
+![image-20201218093840471](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20201218093840471.png)
 
 对于数组类型，每一维度将使用一个前置的“[”字符来描述，如一个定义为**“java.lang.String[][]”类型** 的二维数组将被记录成“**[[Ljava/lang/String；**”，一个整型数组“int[]”将被记录成“[I”。
 
