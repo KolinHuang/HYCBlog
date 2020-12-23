@@ -103,6 +103,8 @@ pin: true
 
 [122.买卖股票的最佳时机 II](#jump122)
 
+[124. 二叉树中的最大路径和](#jump124)
+
 [136.只出现一次的数字](#jump136)
 
 [141.环形链表](#jump141)
@@ -4114,6 +4116,84 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+
+
+
+
+<span id = "jump124"></span>
+
+## 124. 二叉树中的最大路径和
+
+给定一个非空二叉树，返回其最大路径和。
+
+本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+
+ 
+
+示例 1：
+
+
+
+    输入：[1,2,3]
+    		 1
+        / \
+       2   3
+    输出：6
+
+示例2：
+
+```java
+输入：[-10,9,20,null,null,15,7]
+
+   -10
+   / \
+  9  20
+    /  \
+   15   7
+
+输出：42
+```
+
+
+
+```java
+class Solution {
+    int res = Integer.MIN_VALUE;
+    //考虑每个节点作为父节点时，能获得的最大路径和
+    public int maxPathSum(TreeNode root) {
+        postOrder(root);
+        return res;
+    }
+
+    //后序遍历
+    int postOrder(TreeNode root){
+        if(root == null){
+            return 0;
+        }
+        //左子节点的贡献
+        int left = Math.max(postOrder(root.left), 0);
+        //右子节点的贡献
+        int right = Math.max(postOrder(root.right), 0);
+        //左子节点的贡献+右子节点的贡献+当前节点值 = 以当前节点为父节点的最大路径
+        int value = left + right + root.val;
+        //更新结果
+        res = Math.max(res, value);
+        //返回此节点的最大贡献 = max(左子树的贡献，右子树的贡献) + 当前节点值
+        return root.val + Math.max(left, right);
+    }
+}
+```
+
+
+
+
+
+
 
 
 

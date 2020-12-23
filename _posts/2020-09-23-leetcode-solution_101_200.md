@@ -17,6 +17,8 @@ pin: true
 
 ## 目录
 
+[103. 二叉树的锯齿形层序遍历](#jump103)
+
 [106.从中序与后序遍历序列构造二叉树](#jump106)
 
 [107.二叉树的层次遍历 II](#jump107)
@@ -64,6 +66,82 @@ pin: true
 [152.乘积最大子数组](#jump152)
 
 [164.最大间距](#jump164)
+
+
+
+
+
+<span id = "jump103"></span>
+
+## 103. 二叉树的锯齿形层序遍历
+
+给定一个二叉树，返回其节点值的锯齿形层序遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+
+例如：
+给定二叉树 [3,9,20,null,null,15,7],
+
+    		3
+       / \
+      9  20
+        /  \
+       15   7
+
+
+返回锯齿形层序遍历如下：
+
+```java
+[
+  [3],
+  [20,9],
+  [15,7]
+]
+```
+
+
+
+
+
+```java
+class Solution {
+    public List<List<Integer>> zigzagLevelOrder(TreeNode root) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(root == null)    return res;
+        //程序遍历，增加一个布尔变量用于判断当前遍历的是奇数层还是偶数层
+        //如果是奇数层，那么正序遍历，如果是偶数层，则逆序遍历
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        boolean even = false;
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            List<Integer> list = new ArrayList<>();
+            for(int i = 0; i < size; ++i){
+                TreeNode tmp = queue.poll();
+                if(!even){
+                    //正序添加
+                    list.add(tmp.val);
+                }else{
+                    //逆序添加
+                    list.add(0, tmp.val);
+                }
+                if(tmp.left != null)    queue.offer(tmp.left);
+                if(tmp.right != null)   queue.offer(tmp.right);
+            }
+            res.add(list);
+            //奇偶替换
+            even = !even;
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+
+
+
 
 
 
