@@ -7,12 +7,13 @@ tags: [算法题解]
 comments: true
 math: true
 image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
-pin: true
 ---
 
 ## 目录
 
 [501.二叉搜索树中的众数](#jump501)
+
+[509. 斐波那契数](#jump509)
 
 [514.自由之路](#jump514)
 
@@ -234,6 +235,59 @@ class Solution {
     } 
 }
 ```
+
+
+
+
+
+<span id = "jump509"></span>
+
+## 509. 斐波那契数
+
+斐波那契数，通常用 F(n) 表示，形成的序列称为 斐波那契数列 。该数列由 0 和 1 开始，后面的每一项数字都是前面两项数字的和。也就是：
+
+F(0) = 0，F(1) = 1
+F(n) = F(n - 1) + F(n - 2)，其中 n > 1
+给你 n ，请计算 F(n) 。
+
+ 提示：
+
+* 0 <= n <= 30
+
+
+
+```java
+class Solution {
+
+    public int fib(int n) {
+
+        int a = 0;
+        int b = 1;
+
+        for(int i = 2; i <= n; ++i){
+            int tmp = a + b;
+            a = b;
+            b = tmp;
+        }
+
+        return n == 0 ? a : b;
+    }
+}
+```
+
+![image-20210104090303916](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20210104090303916.png)
+
+```java
+class Solution {
+    public int fib(int n) {
+        double sqrt5 = Math.sqrt(5);
+        double fibN = Math.pow((1 + sqrt5) / 2, n) - Math.pow((1 - sqrt5) / 2, n);
+        return (int) Math.round(fibN / sqrt5);
+    }
+}
+```
+
+
 
 
 
