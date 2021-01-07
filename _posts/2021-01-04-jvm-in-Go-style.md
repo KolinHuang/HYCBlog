@@ -114,7 +114,7 @@ javaw [-options] -jar jarfile [args]
 type Cmd struct {
 	helpFlag	bool//用于指定是否显示帮助信息
 	versionFlag	bool//用于指定是否显示版本信息
-	cpOption	string//用于指定类路径
+	clspath	string//用于指定类路径
 	class		string//用于指定主类
 	args		[]string//用于指定其他参数
 }

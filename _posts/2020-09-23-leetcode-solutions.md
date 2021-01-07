@@ -1,5 +1,5 @@
 ---
-title: Leetcode题解:1~500
+title: Leetcode题解
 author: Kol Huang
 date: 2020-09-23 08:29:00 +0800
 categories: [Blogging, leetcode]
@@ -166,6 +166,8 @@ pin: true
 
 [389. 找不同](#jump389)
 
+[399. 除法求值](#jump399)
+
 [344.反转字符串](#jumo344)
 
 [402.移掉K位数字](#jump402)
@@ -208,6 +210,8 @@ pin: true
 
 [546.移除盒子](#jump546)
 
+[547. 省份数量](#jump547)
+
 [557.反转字符串中的单词 III](#jump557)
 
 [605. 种花问题](#jump605)
@@ -245,6 +249,8 @@ pin: true
 [763.划分字母区间](#jump763)
 
 [767.重构字符串](#jump767)
+
+[830. 较大分组的位置](#jump830)
 
 [834.树中距离之和tag](#jump834)
 
@@ -6909,6 +6915,173 @@ func findTheDifference(s string, t string) byte {
 
 
 
+<span id = "jump399"></span>
+
+## 399. 除法求值
+
+给你一个变量对数组 equations 和一个实数值数组 values 作为已知条件，其中 equations[i] = [Ai, Bi] 和 values[i] 共同表示等式 Ai / Bi = values[i] 。每个 Ai 或 Bi 是一个表示单个变量的字符串。
+
+另有一些以数组 queries 表示的问题，其中 queries[j] = [Cj, Dj] 表示第 j 个问题，请你根据已知条件找出 Cj / Dj = ? 的结果作为答案。
+
+返回 所有问题的答案 。如果存在某个无法确定的答案，则用 -1.0 替代这个答案。
+
+ 
+
+注意：输入总是有效的。你可以假设除法运算中不会出现除数为 0 的情况，且不存在任何矛盾的结果。
+
+ 
+
+示例 1：
+
+```java
+输入：equations = [["a","b"],["b","c"]], values = [2.0,3.0], queries = [["a","c"],["b","a"],["a","e"],["a","a"],["x","x"]]
+输出：[6.00000,0.50000,-1.00000,1.00000,-1.00000]
+解释：
+条件：a / b = 2.0, b / c = 3.0
+问题：a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ?
+结果：[6.0, 0.5, -1.0, 1.0, -1.0 ]
+```
+
+
+
+
+示例 2：
+
+```java
+输入：equations = [["a","b"],["b","c"],["bc","cd"]], values = [1.5,2.5,5.0], queries = [["a","c"],["c","b"],["bc","cd"],["cd","bc"]]
+输出：[3.75000,0.40000,5.00000,0.20000]
+示例 3：
+
+输入：equations = [["a","b"]], values = [0.5], queries = [["a","b"],["b","a"],["a","c"],["x","y"]]
+输出：[0.50000,2.00000,-1.00000,-1.00000]
+```
+
+
+
+
+提示：
+
+* 1 <= equations.length <= 20
+* equations[i].length == 2
+* 1 <= Ai.length, Bi.length <= 5
+* values.length == equations.length
+* 0.0 < values[i] <= 20.0
+* 1 <= queries.length <= 20
+* queries[i].length == 2
+* 1 <= Cj.length, Dj.length <= 5
+* Ai, Bi, Cj, Dj 由小写英文字母与数字组成
+
+
+
+并查集：
+
+a / b = 2.0 说明 a = 2b， a 和 b 在一个集合中；
+
+b / c = 3.0 说明 b = 3c ，b 和 c 在一个集合中。
+
+![image-20210106100326546](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20210106100326546.png)
+
+![image-20210106100432917](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/image-20210106100432917.png)
+
+```java
+class Solution {
+    public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
+        int e_size = equations.size();
+        UnionFind unionFind = new UnionFind(2 * e_size);
+        //预处理，将变量值与id进行映射
+        Map<String, Integer> map = new HashMap<>(2 * e_size);
+        int id = 0;
+
+        for(int i = 0; i < e_size; ++i){
+            List<String> equation = equations.get(i);
+            String s1 = equation.get(0);
+            String s2 = equation.get(1);
+
+            if(!map.containsKey(s1)){
+                map.put(s1, id);
+                id++;
+            }
+            if(!map.containsKey(s2)){
+                map.put(s2, id);
+                id++;
+            }
+
+            unionFind.union(map.get(s1), map.get(s2), values[i]);
+        }
+        //做查询
+        int q_size = queries.size();
+        double[] res = new double[q_size];
+
+        for(int i = 0; i < q_size; ++i){
+            String s1 = queries.get(i).get(0);
+            String s2 = queries.get(i).get(1);
+
+            Integer id1 = map.get(s1);
+            Integer id2 = map.get(s2);
+
+            if(id1 == null || id2 == null){
+                res[i] = -1.0d;
+            }else{
+                res[i] = unionFind.isConnected(id1, id2);
+            }
+        }
+
+        return res;
+        
+    }
+    private class UnionFind{
+        private int[] parent;
+        //指向父节点的权值
+        private double[] weight;
+
+        public UnionFind(int n){
+            this.parent = new int[n];
+            this.weight = new double[n];
+            for(int i = 0; i < n; ++i){
+                parent[i] = i;
+                weight[i] = 1.0d;
+            }
+        }
+
+        public void union(int x, int y, double value){
+            //找到x和y的根结点
+            int rootX = find(x);
+            int rootY = find(y);
+            if(rootX == rootY){
+                //如果根结点相同，直接返回
+                return;
+            }
+            //如果根结点不相同，就指定x的根结点作为rootY的根结点
+            parent[rootX] = rootY;
+            weight[rootX] = weight[y] * value / weight[x];
+        }
+        //查找根结点，同时进行路径压缩
+        public int find(int x){
+            if(x != parent[x]){
+                int origin = parent[x];
+                parent[x] = find(parent[x]);
+                weight[x] *= weight[origin];
+            }
+            return parent[x];
+        }
+
+        public double isConnected(int x, int y){
+            int rootX = find(x);
+            int rootY = find(y);
+            if(rootX == rootY){
+                return weight[x] / weight[y];
+            }else{
+                return -1.0d;
+            }
+        }
+
+
+    }
+}
+```
+
+
+
 
 
 
@@ -8736,6 +8909,128 @@ class Solution {
 
 
 
+<span id = "jump547"></span>
+
+## 547. 省份数量
+
+有 n 个城市，其中一些彼此相连，另一些没有相连。如果城市 a 与城市 b 直接相连，且城市 b 与城市 c 直接相连，那么城市 a 与城市 c 间接相连。
+
+省份 是一组直接或间接相连的城市，组内不含其他没有相连的城市。
+
+给你一个 n x n 的矩阵 isConnected ，其中` isConnected[i][j] = 1` 表示第 i 个城市和第 j 个城市直接相连，而 `isConnected[i][j] = 0` 表示二者不直接相连。
+
+返回矩阵中 省份 的数量。
+
+示例 1：
+
+```java
+输入：isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+输出：2
+```
+
+
+示例 2：
+
+```java
+输入：isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+输出：3
+```
+
+
+提示：
+
+* 1 <= n <= 200
+* n == isConnected.length
+* n == isConnected[i].length
+* `isConnected[i][j]` 为 1 或 0
+* `isConnected[i][i] == 1`
+* `isConnected[i][j] == isConnected[j][i]`
+
+
+
+
+
+深度优先搜索着色
+
+```java
+class Solution {
+    boolean[] visited;
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+        visited = new boolean[n];
+        int cnt = 0;
+        //统计需要着色几次才能全都着上色
+        for(int i = 0; i < n; ++i){
+            if(!visited[i]){
+                dfs(isConnected, i);
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+    //着色，将这一轮dfs访问的城市都着色
+    void dfs(int[][] isConnected, int k){
+        visited[k] = true;
+        for(int j = 0; j < isConnected.length; ++j){
+            if(isConnected[k][j] == 1 && !visited[j]){
+                dfs(isConnected, j);
+            }
+        }
+    }
+}
+```
+
+
+
+并查集
+
+```java
+class Solution {
+    //并查集
+    public int findCircleNum(int[][] isConnected) {
+        int n = isConnected.length;
+
+        int[] parent = new int[n];
+        for(int i = 0; i < n; ++i){
+            parent[i] = i;
+        }
+
+        for(int i = 0; i < n; ++i){
+            for(int j = i + 1; j < n; ++j){
+                if(isConnected[i][j] == 1){
+                    //i和j之间有连接，就将其合并
+                    union(parent, i, j);
+                }
+            }
+        }
+
+        int res = 0;
+        for(int i = 0; i < n; ++i){
+            res += parent[i] == i ? 1 : 0;
+        }
+        return res;
+    }
+    //合并的过程，就是找出各自的祖先，然后将其合并
+    void union(int[] parent, int x, int y){
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if(px == py)    return;
+        parent[px] = py;
+    }
+    //在找祖先的时候，执行路径压缩
+    int find(int[] parent, int idx){
+        if(parent[idx] != idx){
+            parent[idx] = find(parent, parent[idx]);
+        }
+        return parent[idx];
+    }
+}
+```
+
+
+
+
+
 <span id="jump557"></span>
 
 ## 557.反转字符串中的单词 III
@@ -10219,6 +10514,95 @@ class Solution {
         }
         return new String(res);
 
+    }
+}
+```
+
+
+
+
+
+<span id = "jump830"></span>
+
+## 830. 较大分组的位置
+
+在一个由小写字母构成的字符串 s 中，包含由一些连续的相同字符所构成的分组。
+
+例如，在字符串 s = "abbxxxxzyy" 中，就含有 "a", "bb", "xxxx", "z" 和 "yy" 这样的一些分组。
+
+分组可以用区间 [start, end] 表示，其中 start 和 end 分别表示该分组的起始和终止位置的下标。上例中的 "xxxx" 分组用区间表示为 [3,6] 。
+
+我们称所有包含大于或等于三个连续字符的分组为 较大分组 。
+
+找到每一个 较大分组 的区间，按起始位置下标递增顺序排序后，返回结果。
+
+ 
+
+示例 1：
+
+```java
+输入：s = "abbxxxxzzy"
+输出：[[3,6]]
+解释："xxxx" 是一个起始于 3 且终止于 6 的较大分组。
+```
+
+示例 2：
+
+```java
+输入：s = "abc"
+输出：[]
+解释："a","b" 和 "c" 均不是符合要求的较大分组。
+```
+
+
+示例 3：
+
+```java
+输入：s = "abcdddeeeeaabbbcd"
+输出：[[3,5],[6,9],[12,14]]
+解释：较大分组为 "ddd", "eeee" 和 "bbb"
+```
+
+提示：
+
+* 1 <= s.length <= 1000
+* s 仅含小写英文字母
+
+
+
+双指针
+
+```java
+class Solution {
+    public List<List<Integer>> largeGroupPositions(String s) {
+        List<List<Integer>> res = new ArrayList<>();
+        if(s.length() == 0) return res;
+        
+        char[] arr = s.toCharArray();
+
+        int l = 0, r = 0;
+
+        while(r < arr.length && l < arr.length){
+
+            int cnt = 0;
+            //固定左指针，移动右指针找相同字符的最大个数
+            while(r < arr.length && arr[r] == arr[l]){
+                cnt++;
+                r++;
+            }
+            //如果最大个数大于等于3，说明属于一个分组
+            if(cnt >= 3){
+                List<Integer> list = new ArrayList<>();
+                list.add(l);
+                list.add(r - 1);
+                res.add(list);
+            }
+            
+            if(r >= arr.length) break;
+            l = r;
+        }
+
+        return res;
     }
 }
 ```
