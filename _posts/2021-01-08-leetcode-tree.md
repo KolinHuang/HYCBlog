@@ -1,5 +1,5 @@
 ---
-title: Leetcode题解
+title: Leetcode：树专题整理
 author: Kol Huang
 date: 2021-01-08 16:21:00 +0800
 categories: [Blogging, leetcode]
@@ -7,8 +7,6 @@ tags: [算法题解]
 comments: true
 math: true
 image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
-
-
 ---
 
 

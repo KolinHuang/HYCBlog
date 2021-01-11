@@ -288,6 +288,8 @@ pin: true
 
 [1030.距离顺序排列矩阵单元格](#jump1030)
 
+[1202. 交换字符串中的元素](#jump1202)
+
 [1207.独一无二的出现次数](#jump1207)
 
 [1356.根据数字二进制下 1 的数目排序](#jump1356)
@@ -12430,6 +12432,125 @@ class Solution {
 ```
 
 
+
+
+
+<span id = "jump1202"></span>
+
+## 1202. 交换字符串中的元素
+
+给你一个字符串 s，以及该字符串中的一些「索引对」数组 pairs，其中 pairs[i] = [a, b] 表示字符串中的两个索引（编号从 0 开始）。
+
+你可以 任意多次交换 在 pairs 中任意一对索引处的字符。
+
+返回在经过若干次交换后，s 可以变成的按字典序最小的字符串。
+
+ 
+
+示例 1:
+
+```java
+输入：s = "dcab", pairs = [[0,3],[1,2]]
+输出："bacd"
+解释： 
+交换 s[0] 和 s[3], s = "bcad"
+交换 s[1] 和 s[2], s = "bacd"
+```
+
+示例 2：
+
+```java
+输入：s = "dcab", pairs = [[0,3],[1,2],[0,2]]
+输出："abcd"
+解释：
+交换 s[0] 和 s[3], s = "bcad"
+交换 s[0] 和 s[2], s = "acbd"
+交换 s[1] 和 s[2], s = "abcd"
+```
+
+示例 3：
+
+```java
+输入：s = "cba", pairs = [[0,1],[1,2]]
+输出："abc"
+解释：
+交换 s[0] 和 s[1], s = "bca"
+交换 s[1] 和 s[2], s = "bac"
+交换 s[0] 和 s[1], s = "abc"
+```
+
+
+
+
+
+
+提示：
+
+* 1 <= s.length <= 10^5
+* 0 <= pairs.length <= 10^5
+* 0 <= `pairs[i][0]`,` pairs[i][1]` < s.length
+* s 中只含有小写英文字母
+
+
+
+并查集：一开始想的是将每个连通分量的字符序列进行排序，再依次填回去，发现超时了。
+
+可以将排序用优先队列替换，将每个连通分量的代表元放入哈希表，将优先队列与其对应，直接查询能够大大减少时间复杂度。
+
+```java
+class Solution {
+    int[] parent;
+    public String smallestStringWithSwaps(String s, List<List<Integer>> pairs) {
+        int len = s.length();
+        char[] arr = s.toCharArray();
+        parent = new int[len];
+
+        for(int i = 0; i < len; ++i){
+            parent[i] = i;
+        }
+
+        //对每个连通分量内的索引代表的字符进行排序，并且填入arr中
+        for(List<Integer> pair : pairs){
+            union(parent, pair.get(0), pair.get(1));
+        }
+        //遍历每个连通分量的代表元，将子元素都放入代表元下的优先队列中，用哈希表优化映射，直接搜索代表元的子元素会超时
+        HashMap<Integer, PriorityQueue<Character>> hashMap = new HashMap<>();
+        for(int i = 0; i < len; ++i){
+            int root = find(parent, i);
+            if(hashMap.containsKey(root)){
+                hashMap.get(root).offer(arr[i]);
+            }else{
+                hashMap.computeIfAbsent(root, key -> new PriorityQueue<>()).offer(arr[i]);
+            }
+        }
+
+        //重组字符串
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < len; ++i){
+            int root = find(parent, i);
+            sb.append(hashMap.get(root).poll());
+        }
+        return sb.toString();
+
+    }
+
+
+    void union(int[] parent, int x, int y){
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if(px == py)    return;
+        parent[px] = py;
+    }
+
+    int find(int[] parent, int idx){
+        if(parent[idx] != idx){
+            parent[idx] = find(parent, parent[idx]);
+        }
+        return parent[idx];
+    }
+}
+```
 
 
 
