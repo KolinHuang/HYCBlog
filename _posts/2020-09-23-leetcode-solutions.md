@@ -290,6 +290,8 @@ pin: true
 
 [1202. 交换字符串中的元素](#jump1202)
 
+[1203. 项目管理](#jump1203)
+
 [1207.独一无二的出现次数](#jump1207)
 
 [1356.根据数字二进制下 1 的数目排序](#jump1356)
@@ -12553,6 +12555,161 @@ class Solution {
 ```
 
 
+
+<span id = "jump1203"></span>
+
+## 1203. 项目管理
+
+公司共有 n 个项目和  m 个小组，每个项目要不无人接手，要不就由 m 个小组之一负责。
+
+group[i] 表示第 i 个项目所属的小组，如果这个项目目前无人接手，那么 group[i] 就等于 -1。（项目和小组都是从零开始编号的）小组可能存在没有接手任何项目的情况。
+
+请你帮忙按要求安排这些项目的进度，并返回排序后的项目列表：
+
+同一小组的项目，排序后在列表中彼此相邻。
+项目之间存在一定的依赖关系，我们用一个列表 beforeItems 来表示，其中 beforeItems[i] 表示在进行第 i 个项目前（位于第 i 个项目左侧）应该完成的所有项目。
+如果存在多个解决方案，只需要返回其中任意一个即可。如果没有合适的解决方案，就请返回一个 空列表 。
+
+**示例 1：**
+
+![img](https://hyc-pic.oss-cn-hangzhou.aliyuncs.com/1359_ex1-20210112100308782.png)
+
+```java
+输入：n = 8, m = 2, group = [-1,-1,1,0,0,1,0,-1], beforeItems = [[],[6],[5],[6],[3,6],[],[],[]]
+输出：[6,3,4,1,5,2,0,7]
+```
+
+示例 2：
+
+```java
+输入：n = 8, m = 2, group = [-1,-1,1,0,0,1,0,-1], beforeItems = [[],[6],[5],[6],[3],[],[4],[]]
+输出：[]
+解释：与示例 1 大致相同，但是在排序后的列表中，4 必须放在 6 的前面。
+```
+
+
+提示：
+
+* 1 <= m <= n <= 3 * 104
+* group.length == beforeItems.length == n
+* -1 <= group[i] <= m - 1
+* 0 <= beforeItems[i].length <= n - 1
+* 0 <= `beforeItems[i][j]` <= n - 1
+* i != `beforeItems[i][j]`
+* beforeItems[i] 不含重复元素
+
+
+
+拓扑排序，根据组内依赖关系建立组内拓扑图、根据组间依赖关系建立组间拓扑图。在建图时将group[i]==-1的项目从m开始编号。
+
+分别对组间、组内拓扑图执行拓扑排序。
+
+```java
+class Solution {
+    //有几个关键点：
+    //（1）相同小组的项目要相邻
+    //（2）进行第i个项目前，需要beforeItem[i]中的项目都以完成
+    //（3）beforeItem[i]为空的项目可以较为自由地安排，但需受限于关键点（1）
+    //利用拓扑排序，首先解决组间依赖，再解决组内依赖
+    public int[] sortItems(int n, int m, int[] group, List<List<Integer>> beforeItems) {
+        List<List<Integer>> groupItem = new ArrayList<>();
+        for(int i = 0; i < n + m; ++i){
+            groupItem.add(new ArrayList<>());
+        }
+        //建图
+        //组间依赖图
+        List<List<Integer>> groupGraph = new ArrayList<>();
+        for(int i = 0; i < n + m; ++i){
+            groupGraph.add(new ArrayList<>());
+        }
+        //组内依赖图
+        List<List<Integer>> itemGraph = new ArrayList<>();
+        for(int i = 0; i < n + m; ++i){
+            itemGraph.add(new ArrayList<>());
+        }
+        //组间和组内入度数组
+        int[] groupDeg = new int[n + m];
+        int[] itemDeg = new int[n + m];
+        //对group[i]=-1的项目进行编号
+        List<Integer> id = new ArrayList<>();
+        for(int i = 0; i < n + m; ++i){
+            id.add(i);
+        }
+        int leftId = m;
+        //将项目分组
+        for(int i = 0; i < n; ++i){
+            if(group[i] == -1){
+                group[i] = leftId++;
+            }
+            groupItem.get(group[i]).add(i);
+        }
+        //遍历所有项目，
+        for(int i = 0; i < n; ++i){
+            int curGroupId = group[i];
+            //遍历第i个项目的条件
+            for(int item : beforeItems.get(i)){
+                int beforeGroupId = group[item];
+                //如果第i个项目的条件与第i个项目属于同一个小组，就建立组内依赖关系
+                if(beforeGroupId == curGroupId){
+                    itemDeg[i]++;
+                    itemGraph.get(item).add(i);
+                }else{
+                    //否则就建立组间依赖关系
+                    groupDeg[curGroupId]++;
+                    groupGraph.get(beforeGroupId).add(curGroupId);
+                }
+            }
+        }
+
+        //组间拓扑排序
+        List<Integer> groupTopSort = topSort(groupDeg, groupGraph, id);
+        if(groupTopSort.size() == 0){//组间不存在拓扑排序，就返回空数组
+            return new int[0];
+        }
+        int[] res = new int[n];
+        int idx = 0;
+        //组内拓扑排序
+        for(int curGroupId : groupTopSort){
+            int size = groupItem.get(curGroupId).size();
+            if(size == 0){
+                continue;
+            }
+            List<Integer> list = topSort(itemDeg, itemGraph, groupItem.get(curGroupId));
+            if(list.size() == 0){
+                return new int[0];
+            }
+
+            for(int item : list){
+                res[idx++] = item;
+            }
+        }
+        return res;
+    }
+    //拓扑排序
+    public List<Integer> topSort(int[] deg, List<List<Integer>> graph, List<Integer> items){
+        Queue<Integer> queue = new LinkedList<>();
+        //将入度为0的项目入队
+        for(int item : items){
+            if(deg[item] == 0){
+                queue.offer(item);
+            }
+        }
+        List<Integer> res = new ArrayList<>();
+        while(!queue.isEmpty()){
+            int u = queue.poll();
+            res.add(u);
+            //遍历顶点u的所有邻接点
+            for(int v : graph.get(u)){
+                //入度-1
+                if(--deg[v] == 0){
+                    queue.offer(v);
+                }
+            }
+        }
+        return res.size() == items.size() ? res : new ArrayList<Integer>();
+    }
+}
+```
 
 
 
