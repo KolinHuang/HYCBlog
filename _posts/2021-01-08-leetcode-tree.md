@@ -13,13 +13,19 @@ image: /HYCBlog/assets/img/leetcode/leetcode_cover.jpg
 
 
 
+
+
 ## 二叉树遍历***
 
 **114.二叉树展开为链表**
 
 给定一个二叉树，原地将它展开为一个单链表。
 
+**404.左叶子之和**
 
+计算给定二叉树的所有左叶子之和。
+
+<br>
 
 
 
@@ -41,6 +47,39 @@ class Solution {
     }
 }
 ```
+
+
+
+第二题无论采用何种遍历都行，只需要在访问左子树的时候，给一个标记即可。
+
+```java
+class Solution {
+    int res = 0;
+    public int sumOfLeftLeaves(TreeNode root) {
+        preOrder(root, false);
+
+        return res;
+    }
+
+    void preOrder(TreeNode root, boolean isLeft){
+        if(root == null)    return;
+
+        if(root.left == null && root.right == null && isLeft){
+            res += root.val;
+        }
+        preOrder(root.left, true);
+        preOrder(root.right, false);
+    }
+}
+```
+
+
+
+
+
+第三题：
+
+
 
 
 
@@ -203,6 +242,14 @@ struct Node {
 * 你只能使用常量级额外空间。
 * 使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
 
+**222.完全二叉树的节点个数**
+
+给出一个完全二叉树，求出该树的节点个数。
+
+**637. 二叉树的层平均值**
+
+给定一个非空二叉树, 返回一个由每层节点平均值组成的数组。
+
 
 
 
@@ -312,6 +359,20 @@ class Solution {
 ```
 
 
+
+
+
+第七题：层序遍历，由于是完全二叉树，其节点个数范围可计算为：
+
+```markdown
+2^(depth-1) - 1 ~ 2^depth - 1
+```
+
+所以可以先求深度，再求叶节点的个数：遍历到倒数第二层节点后，统计第二层节点的子节点数目。
+
+
+
+第八题：层序遍历的模版题。
 
 
 
@@ -440,6 +501,22 @@ class Solution {
 
 给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。
 
+**124.二叉树中的最大路径和**
+
+给定一个非空二叉树，返回其最大路径和。本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
+
+**129.求根到叶子节点数字之和**
+
+给定一个二叉树，它的每个结点都存放一个 0-9 的数字，每条从根到叶子节点的路径都代表一个数字。例如，从根到叶子节点路径 1->2->3 代表数字 123。计算从根到叶子节点生成的所有数字之和。
+
+**437.路径总和 III**
+
+给定一个二叉树，它的每个结点都存放着一个整数值。找出路径和等于给定数值的路径总数。路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+**543.二叉树的直径**
+
+给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+
 
 
 第一题只需要判断是否存在这样的路径即可，而第二题需要找出所有这样的路径。要找出所有这样的路径，只需要遍历所有路径，判断路径和是否符合要求。我这里用了先序遍历，当还未到达叶节点时，就将本节点的值累加到cnt上，并记录本节点到list中，然后再遍历左右子树；当到达叶节点时，比较cnt和target，如果相等就将list中的路径放入结果集，如果不相等就返回。在一层递归结束时，需要将本层的节点从list中删除。
@@ -481,6 +558,254 @@ class Solution {
 
 
 
+第3题：找出一条任意长度（不为0）的路径，其和最大。考虑每个节点作为父节点时，能获得的最大路径和，左子节点的贡献+右子节点的贡献+当前节点值 = 以当前节点为父节点的最大路径，当左右节点的贡献为负数时就取贡献为0，表示不经过左/右节点。
+
+```java
+class Solution {
+    int res = Integer.MIN_VALUE;
+    //考虑每个节点作为父节点时，能获得的最大路径和
+    public int maxPathSum(TreeNode root) {
+        postOrder(root);
+        return res;
+    }
+
+    //后序遍历
+    int postOrder(TreeNode root){
+        if(root == null){
+            return 0;
+        }
+        //左子节点的贡献
+        int left = Math.max(postOrder(root.left), 0);
+        //右子节点的贡献
+        int right = Math.max(postOrder(root.right), 0);
+        //左子节点的贡献+右子节点的贡献+当前节点值 = 以当前节点为父节点的最大路径
+        int value = left + right + root.val;
+        //更新结果
+        res = Math.max(res, value);
+        //返回此节点的最大贡献 = max(左子树的贡献，右子树的贡献) + 当前节点值
+        return root.val + Math.max(left, right);
+    }
+}
+```
+
+
+
+
+
+第4题：无非就是遍历每一条路径，将数字累加，非常经典的回溯题。只不过在处理字符组合为数字时，可以使用*10的方法，而不是用处理字符串的方法，这样会节省空间和时间。
+
+
+
+第5题：遍历二叉树，抵达当前节点(即B节点)后，将前缀和累加，然后查找在前缀和上，有没有前缀和currSum-target的节点(即A节点)，存在即表示从A到B有一条路径之和满足条件的情况。
+
+```java
+class Solution {
+    int sum;
+    int res = 0;
+    //用于记录每个节点的前缀和，用前缀和-sum来判断路径是否存在
+    Map<Integer, Integer> map = new HashMap<>();
+    public int pathSum(TreeNode root, int sum) {
+        this.sum = sum;
+        map.put(0, 1);
+        dfs(root, 0);
+        return res;
+    }
+
+    void dfs(TreeNode root, int preSum){
+        if(root == null)    return;
+
+        preSum += root.val;
+        //此节点的前缀和 - sum是否存在于哈希表中，如果存在，说和为sum的路径存在
+        if(map.containsKey(preSum - sum)){
+            res += map.get(preSum - sum);
+        }
+        map.put(preSum, map.getOrDefault(preSum, 0) + 1);
+        
+        dfs(root.left, preSum);
+        dfs(root.right, preSum);
+        //回溯
+        map.put(preSum, map.get(preSum) - 1);
+    }
+}
+```
+
+
+
+
+
+第六题：实际上就是找左右子树深度最大的节点。但是，直径指的是边的个数，而不是节点的个数。所以在按节点数求最大深度之后，需要将结果-1表示边数的最大值。
+
+```java
+class Solution {
+    int res = 0;
+    //实际上是要找出左右子树深度和最大的结点
+    public int diameterOfBinaryTree(TreeNode root) {
+        getDepth(root);
+        return res - 1;
+    }
+
+    int getDepth(TreeNode root){
+        if(root == null){
+            return 0;
+        }
+        int left = getDepth(root.left);
+        int right = getDepth(root.right);
+
+        res = Math.max(left + right + 1, res);
+
+        return Math.max(left,right) + 1;
+    }
+}
+```
+
+
+
+
+
+## 树形动态规划***
+
+**834. 树中距离之和**
+
+给定一个无向、连通的树。树中有 N 个标记为 0...N-1 的节点以及 N-1 条边 。第 i 条边连接节点 `edges[i][0]` 和 `edges[i][1]` 。返回一个表示节点 i 与其他所有节点距离之和的列表 ans。
+
+**968.监控二叉树**
+
+给定一个二叉树，我们在树的节点上安装摄像头。节点上的每个摄影头都可以监视**其父对象、自身及其直接子对象。**计算监控树的所有节点所需的最小摄像头数量。
+
+
+
+
+
+第一题：将每个节点的距离和分为：（1）以本节点为根结点的子树所有子节点到本节点的距离和；（2）本节点到子树外的所有节点的距离和。
+
+```java
+class Solution {
+    //树形动态规划
+    List<List<Integer>> graph = new ArrayList<>();
+    //node[i]表示以i为根结点的子树中节点的总数
+    int[] node;
+    //dist[i]表示以i为根结点的子树中，所有子节点到节点i的距离之和
+    int[] dist;
+    public int[] sumOfDistancesInTree(int N, int[][] edges) {
+        //建立邻接表
+        for(int i = 0; i < N; ++i){
+            graph.add(new ArrayList<>());
+        }
+
+        //建立双向邻接关系
+        for(int i = 0; i < edges.length; ++i){
+            int x = edges[i][0];
+            int y = edges[i][1];
+
+            graph.get(x).add(y);
+            graph.get(y).add(x);
+        }
+
+        node = new int[N];
+        dist = new int[N];
+        Arrays.fill(node, 1);
+        //后序遍历计算子树的距离和
+        postOrder(0, -1);
+        //先序遍历计算除子树之外的距离和
+        //由于根结点的距离和我们已经知道了，所以可以根据根结点的距离和来推出每个子节点的距离和
+        preOrder(0, -1);
+
+        return dist;
+    }
+
+    void postOrder(int root, int parent){
+        List<Integer> children = graph.get(root);
+
+        for(Integer child : children){
+            if(child == parent) continue;
+            //后序遍历
+            postOrder(child, root);
+
+            //计算子树节点总数
+            node[root] += node[child];
+            //计算子树节点到根结点root的距离和
+            //比如根结点有子节点1，2，3，子节点有子节点4
+            //那么节点1，2，3，4到节点1的距离分别为0，1，1，2
+            //特别注意：边1-3被经过了两次，因为以3为根结点的子树，节点数目为2，所以必须经过两次才能到达所有节点。
+            //所以根结点的距离和为所有子节点的自身的dist之和，再加上子节点到根节点的边被经过了几次，也就是子树的节点个数！
+            dist[root] += node[child] + dist[child];
+        }
+    }
+
+    void preOrder(int root, int parent){
+        List<Integer> children = graph.get(root);
+        for(Integer child : children){
+            if(child == parent) continue;
+            //计算每个子节点的距离和，子节点的子树内距离和我们已经得到了，就是dist[child]
+            //我们要计算的就是子树外的距离和
+            //观察dist[root]和dist[child]，如何通过dist[root]推出dist[child]呢？
+            //首先，root和child之间有一条边，在dist[root]中，root经过这条边访问了child子树的所有节点
+            //  但是在dist[child]中，我们是不需要以上这些路径的，所以这部分可以减掉：dist[root] - node[child]
+            //其次，还是root和child之间的这条边，在dist[child]中，child需要经过这条边访问child子树外的所有节点
+            //  所以这部分还需要加上 N - node[child]
+            dist[child] = dist[root] + graph.size() - 2 * node[child];
+            preOrder(child, root);
+        }
+    }
+
+}
+```
+
+
+
+
+
+第二题：
+
+假设节点有3种状态：1.节点已被覆盖，2.节点未被覆盖，3.节点上有相机。每个节点的状态由两个子节点的状态推出。
+
+```markdown
+1. 若两个节点至少有一个未被覆盖，当前节点必须装相机。
+2. 若两个节点都已经被覆盖，则当前节点就不一定需要装相机，就设置为为覆盖，交由父节点处理。
+3. 若其中一个子节点有相机，就设置当前节点为已覆盖
+```
+
+由于需要知道两个子节点的状态才能决定当前节点的状态，所以采用后序遍历。
+
+```java
+class Solution {
+    int res = 0;
+    public int minCameraCover(TreeNode root) {
+         if(backOrder(root) == 2){
+            res++;
+         }
+         return res;
+    }
+
+    //节点有三种状态：1.节点已被覆盖，2.节点未被覆盖，3.节点上有相机
+    int backOrder(TreeNode root){
+        
+        if(root == null){
+            return 1;
+        }
+        int left = backOrder(root.left);
+        int right = backOrder(root.right);
+        //两个节点至少有一个没有被覆盖
+        if(left == 2 || right == 2){
+            res++;
+            return 3;
+        }
+        //两个节点已经被覆盖，那这个节点就不一定需要装相机了
+        else if(left == 1 && right == 1){
+            return 2;
+        }
+        else if(left == 3 || right == 3){
+            return 1;
+        }
+        return 0;
+    }
+}
+```
+
+
+
+
+
 
 
 ## 树的结构**
@@ -497,7 +822,9 @@ B是A的子结构， 即 A中有出现和B相同的结构和节点值。
 
 如果两个树在结构上相同，并且节点具有相同的值，则认为它们是相同的。
 
+**617.合并二叉树**
 
+给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则不为 NULL 的节点将直接作为新二叉树的节点。
 
 
 
@@ -548,6 +875,22 @@ func isSameTree(p *TreeNode, q *TreeNode) bool {
 
 
 
+第三题：合并一棵树需要以下步骤：（1）合并当前节点。（2）合并当前节点的左子树，并作为当前节点的新左子树。（3）合并当前节点的右子树，并作为当前节点的新右子树。
+
+```java
+class Solution {
+    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+        if(t1 == null)  return t2;
+        if(t2 == null)  return t1;
+
+        t1.val += t2.val;
+        t1.left = mergeTrees(t1.left, t2.left);
+        t1.right = mergeTrees(t1.right, t2.right);
+        return t1;
+    }
+}
+```
+
 
 
 
@@ -589,6 +932,20 @@ func isSameTree(p *TreeNode, q *TreeNode) bool {
 **109.  有序链表转换二叉搜索树**
 
 给定一个单链表，其中的元素按升序排序，将其转换为高度平衡的二叉搜索树。本题中，一个高度平衡二叉树是指一个二叉树每个节点的左右两个子树的高度差的绝对值不超过 1。
+
+**501.二叉搜索树中的众数**
+
+给定一个有相同值的二叉搜索树（BST），找出 BST 中的所有众数（出现频率最高的元素）。
+
+**530.二叉搜索树的最小绝对差**
+
+给你一棵所有节点为非负值的二叉搜索树，请你计算树中任意两节点的差的绝对值的最小值。
+
+**538.把二叉搜索树转换为累加树**
+
+给定一个二叉搜索树（Binary Search Tree），把它转换成为累加树（Greater Tree)，使得每个节点的值是原来的节点值加上所有大于它的节点值之和。
+
+**701.二叉搜索树中的插入操作**
 
 
 
@@ -889,6 +1246,141 @@ class Solution {
 
 }
 ```
+
+
+
+第九题的解法比较有意思：还是利用二叉搜索树中序遍历是升序序列的特性，首先统计众数的个数以及众数出现的次数，其次将众数记录。这两个步骤放到同一个中序遍历函数中，用结果集是否为空来标识是哪个步骤，挺有想法的，这样可以避免写两个功能差不多的函数。
+
+```java
+class Solution {
+    int maxTimes = 0;
+    int times = 0;
+    int resLen = 0;
+    int[] res;
+    TreeNode pre = null;
+    public int[] findMode(TreeNode root) {
+        if(root == null)    return new int[0];
+        inOrder(root);
+        res = new int[resLen];
+        pre = null;
+        times = 0;
+        resLen = 0;
+        inOrder(root);
+        return res;
+    }
+
+    void inOrder(TreeNode root){
+        if(root == null)    return;
+        inOrder(root.left);
+        
+        if(pre != null && pre.val == root.val){
+            times++;
+        }else{
+            times = 1;
+        }
+
+        if(times > maxTimes){
+            maxTimes = times;
+            resLen = 1;
+        }else if(times == maxTimes){
+            if(res != null){
+                res[resLen] = root.val;
+            }
+            resLen++;
+        }
+
+        pre = root;
+        inOrder(root.right);
+
+    }
+}
+```
+
+
+
+第十题很简单，就是利用中序遍历的性质来计算两数之差。
+
+```java
+class Solution {
+    TreeNode pre;
+    int min = Integer.MAX_VALUE;
+    public int getMinimumDifference(TreeNode root) {
+        if(root == null)    return min;
+        inOrder(root);
+        return min;
+    }
+
+    void inOrder(TreeNode root){
+        if(root != null){
+            inOrder(root.left);
+            if(pre != null){
+                min = Math.min(min, Math.abs(root.val - pre.val));
+            }
+            pre = root;
+            inOrder(root.right);
+        }
+    }
+}
+```
+
+
+
+第十一题：逆中序遍历，将后缀和不断加到当前节点上。
+
+```java
+class Solution {
+
+    int sum = 0;
+    public TreeNode convertBST(TreeNode root) {
+        if(root != null){
+            convertBST(root.right);
+            sum += root.val;
+            root.val = sum;
+            convertBST(root.left);
+        }   
+        return root;
+    }    
+}
+```
+
+
+
+第十二题：二分查找插入叶节点。
+
+```java
+class Solution {
+    public TreeNode insertIntoBST(TreeNode root, int val) {
+        if(root == null)    return new TreeNode(val);
+        TreeNode cur = root;
+        //二分搜索插入的位置
+        while(cur != null){
+            if(cur.val > val){
+                if(cur.left == null){
+                    cur.left = new TreeNode(val);
+                    break;
+                }else{
+                    cur = cur.left;
+                }
+            }else{
+                if(cur.right == null){
+                    cur.right = new TreeNode(val);
+                    break;
+                }else{
+                    cur = cur.right;
+                }
+            }
+        }
+
+        return root;
+    }
+}
+```
+
+
+
+
+
+
 
 
 
