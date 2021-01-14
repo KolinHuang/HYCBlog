@@ -234,6 +234,8 @@ pin: true
 
 [679.24点游戏](#jump679)
 
+[684. 冗余连接](#jump684)
+
 [685.冗余连接2](#jump685)
 
 [696.计数二进制子串](#jump696)
@@ -283,6 +285,8 @@ pin: true
 [977.有序数组的平方](#jump977)
 
 [1002.查找常用字符](#jump1002)
+
+[1018. 可被 5 整除的二进制前缀](#jump1018)
 
 [1024.视频拼接](#jump1024)
 
@@ -9685,6 +9689,94 @@ class Solution {
 
 
 
+<span id = "jump684"></span>
+
+## 684. 冗余连接
+
+在本问题中, 树指的是一个连通且无环的无向图。
+
+输入一个图，该图由一个有着N个节点 (节点值不重复1, 2, ..., N) 的树及一条附加的边构成。附加的边的两个顶点包含在1到N中间，这条附加的边不属于树中已存在的边。
+
+结果图是一个以边组成的二维数组。每一个边的元素是一对[u, v] ，满足 u < v，表示连接顶点u 和v的无向图的边。
+
+返回一条可以删去的边，使得结果图是一个有着N个节点的树。如果有多个答案，则返回二维数组中最后出现的边。答案边 [u, v] 应满足相同的格式 u < v。
+
+示例 1：
+
+```java
+输入: [[1,2], [1,3], [2,3]]
+输出: [2,3]
+解释: 给定的无向图为:
+  1
+ / \
+2 - 3
+```
+
+示例 2：
+
+```java
+输入: [[1,2], [2,3], [3,4], [1,4], [1,5]]
+输出: [1,4]
+解释: 给定的无向图为:
+5 - 1 - 2
+    |   |
+    4 - 3
+```
+
+
+注意:
+
+* 输入的二维数组大小在 3 到 1000。
+* 二维数组中的整数在1到N之间，其中N是输入数组的大小。
+
+
+
+```java
+class Solution {
+    //并查集：
+    //在一棵树上加1条边，使其形成环
+    //初始时让每个节点都属于不同的连通分量
+    //遍历每一条边，若当前边的两个顶点属于不同的连通分量，则这条边不会导致环路出现
+    //若当前边的两个顶点已经属于同一个连通分量，说明这条边加上后会导致环路出现
+
+    int[] parent;
+    public int[] findRedundantConnection(int[][] edges) {
+        int N = edges.length;//图中顶点的个数
+        parent = new int[N+1];
+
+        for(int i = 1; i <= N; ++i){
+            parent[i] = i;
+        }
+
+        for(int i = 0; i < N; ++i){
+            if(union(parent, edges[i][0], edges[i][1])){
+                return new int[]{edges[i][0], edges[i][1]};
+            }
+        }
+        return new int[]{};
+    }
+
+    boolean union(int[] parent, int x, int y){
+        int px = find(parent, x);
+        int py = find(parent, y);
+        if(px == py)    return true;
+        parent[px] = py;
+        return false;
+    }
+
+    int find(int[] parent, int idx){
+        if(parent[idx] != idx){
+            parent[idx] = find(parent, parent[idx]);
+        }
+        return parent[idx];
+    }
+}
+```
+
+
+
+
+
 
 
 <span id = "jump685"></span>
@@ -12197,6 +12289,64 @@ class Solution {
             char c = (char)(i+97);
             for(int j = 0; j < counts[i]; ++j){
                 res.add(String.valueOf(c));
+            }
+        }
+        return res;
+    }
+}
+```
+
+
+
+
+
+<span id = "jump1018"></span>
+
+## 1018. 可被 5 整除的二进制前缀
+
+给定由若干 0 和 1 组成的数组 A。我们定义 N_i：从 A[0] 到 A[i] 的第 i 个子数组被解释为一个二进制数（从最高有效位到最低有效位）。
+
+返回布尔值列表 answer，只有当 N_i 可以被 5 整除时，答案 answer[i] 为 true，否则为 false。
+
+ 
+
+示例 1：
+
+```java
+输入：[0,1,1]
+输出：[true,false,false]
+解释：
+输入数字为 0, 01, 011；也就是十进制中的 0, 1, 3 。只有第一个数可以被 5 整除，因此 answer[0] 为真。
+```
+
+示例 2：
+
+```java
+输入：[1,1,1]
+输出：[false,false,false]
+```
+
+
+提示：
+
+* 1 <= A.length <= 30000
+* A[i] 为 0 或 1
+
+
+
+循环左移，低位补A[i]，再循环取模。
+
+```java
+class Solution {
+    public List<Boolean> prefixesDivBy5(int[] A) {
+        List<Boolean> res = new ArrayList<>(A.length);
+        int num = 0;
+        for(int i = 0; i < A.length; ++i){
+            num = ((num << 1) + A[i]) % 5;
+            if(num == 0){
+                res.add(Boolean.TRUE);
+            }else{
+                res.add(Boolean.FALSE);
             }
         }
         return res;
