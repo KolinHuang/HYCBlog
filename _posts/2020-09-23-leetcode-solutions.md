@@ -138,6 +138,8 @@ pin: true
 
 [222.完全二叉树的节点个数](#jump222)
 
+[228. 汇总区间](#jump228)
+
 [235.二叉树的最近公共祖先](#jump235)
 
 [242.有效的字母异位词](#jump242)
@@ -275,6 +277,8 @@ pin: true
 [925.长按键入](jump925)
 
 [941.有效的山脉数组](#jump941)
+
+[947. 移除最多的同行或同列石头](#jump947)
 
 [968.监控二叉树](#jump968)
 
@@ -5220,6 +5224,91 @@ class Solution {
     }
 }
 ```
+
+
+
+
+
+<span id = "jump228"></span>
+
+## 228. 汇总区间
+
+给定一个无重复元素的有序整数数组 nums 。
+
+返回 恰好覆盖数组中所有数字 的 最小有序 区间范围列表。也就是说，nums 的每个元素都恰好被某个区间范围所覆盖，并且不存在属于某个范围但不属于 nums 的数字 x 。
+
+列表中的每个区间范围 [a,b] 应该按如下格式输出：
+
+"a->b" ，如果 a != b
+"a" ，如果 a == b
+
+示例 1：
+
+```java
+输入：nums = [0,1,2,4,5,7]
+输出：["0->2","4->5","7"]
+解释：区间范围是：
+[0,2] --> "0->2"
+[4,5] --> "4->5"
+[7,7] --> "7"
+```
+
+示例 2：
+
+```java
+输入：nums = [0,2,3,4,6,8,9]
+输出：["0","2->4","6","8->9"]
+解释：区间范围是：
+[0,0] --> "0"
+[2,4] --> "2->4"
+[6,6] --> "6"
+[8,9] --> "8->9"
+```
+
+
+提示：
+
+* 0 <= nums.length <= 20
+* -231 <= nums[i] <= 231 - 1
+* nums 中的所有值都 互不相同
+* nums 按升序排列
+
+
+
+
+
+双指针
+
+```java
+class Solution {
+    public List<String> summaryRanges(int[] nums) {
+
+        List<String> res = new ArrayList<>();
+        int n = nums.length;
+
+        if(n == 0)  return res;
+        int idx = 0;
+
+        while(idx < n){
+            int low = idx;
+            idx++;
+            while(idx < n && nums[idx] == nums[idx-1] + 1){
+                idx++;
+            }
+            int high = idx - 1;
+            StringBuilder sb = new StringBuilder();
+            sb.append(Integer.toString(nums[low]));
+            if(low < high){
+                sb.append("->");
+                sb.append(Integer.toString(nums[high]));
+            }
+            res.add(sb.toString());
+        }
+        return res;
+    }
+}
+```
+
 
 
 
@@ -11791,6 +11880,144 @@ class Solution {
 
 
 
+
+<span id = "jump947"></span>
+
+## 947. 移除最多的同行或同列石头
+
+n 块石头放置在二维平面中的一些整数坐标点上。每个坐标点上最多只能有一块石头。
+
+如果一块石头的 同行或者同列 上有其他石头存在，那么就可以移除这块石头。
+
+给你一个长度为 n 的数组 stones ，其中 stones[i] = [xi, yi] 表示第 i 块石头的位置，返回 可以移除的石子 的最大数量。
+
+ 
+
+示例 1：
+
+```java
+输入：stones = [[0,0],[0,1],[1,0],[1,2],[2,1],[2,2]]
+输出：5
+解释：一种移除 5 块石头的方法如下所示：
+
+1. 移除石头 [2,2] ，因为它和 [2,1] 同行。
+2. 移除石头 [2,1] ，因为它和 [0,1] 同列。
+3. 移除石头 [1,2] ，因为它和 [1,0] 同行。
+4. 移除石头 [1,0] ，因为它和 [0,0] 同列。
+5. 移除石头 [0,1] ，因为它和 [0,0] 同行。
+石头 [0,0] 不能移除，因为它没有与另一块石头同行/列。
+示例 2：
+```
+
+
+
+
+提示：
+
+* 1 <= stones.length <= 1000
+* 0 <= xi, yi <= 104
+* 不会有两块石头放在同一个坐标点上
+
+
+
+连通在一起的石头可以被移除到只剩一个，因此这题是计算连通分量的个数。
+
+将每个石头视作一个顶点，两个石头的坐标中x或y相等，则这两个顶点之间有边。因此可以根据此建立并查集计算连通分量。
+
+```java
+class Solution {
+    //并查集
+    //计算连通分量的个数
+    int[] parent;
+    public int removeStones(int[][] stones) {
+        int n = stones.length;
+        parent = new int[n];
+        for(int i = 0; i < n; ++i){
+            parent[i] = i;
+        }
+        //n块石头视为图的n个顶点，顶点间的边关系由坐标得到，x相等或者y相等的视为两点之间有边
+        for(int i = 0; i < n; ++i){
+            for(int j = i+1; j < n; ++j){
+                if(stones[i][0] == stones[j][0]){
+                    union(parent, i, j);
+                }else if(stones[i][1] == stones[j][1]){
+                    union(parent, i, j);
+                }
+            }
+        }
+        int res = 0;
+        for(int i = 0; i < n; ++i){
+            if(parent[i] == i){
+                res++;
+            }
+        }
+        return n - res;
+    }
+    void union(int[] parent, int x, int y){
+        int px = find(parent, x);
+        int py = find(parent, y);
+
+        if(px == py)    return;
+
+        parent[py] = px;
+    }
+
+    int find(int[] parent, int idx){
+        if(parent[idx] != idx){
+            parent[idx] = find(parent, parent[idx]);
+        }
+        return parent[idx];
+    }
+}
+```
+
+
+
+优化：遍历每块石头与其他石头的关系时间消耗太大，我们可以将处于同一行或者同一列的石头视为连通的，因此我们可以将行数或者列数作为parent。
+
+但是行数和列数可能会重叠，如坐标(2,2)行数和列数是相同的。观察到坐标范围在1到10000之间，所以我们可以将x或y的坐标映射到其他区间内，这样就能错开行列了。
+
+同时行和列可能是稀疏分布的，因此要用Map替代数组实现并查集。
+
+```java
+class Solution {
+    //并查集
+    //计算连通分量的个数
+    int count = 0;
+    Map<Integer, Integer> parent = new HashMap<>();
+    public int removeStones(int[][] stones) {
+        int n = stones.length;
+
+        //n块石头视为图的n个顶点，顶点间的边关系由坐标得到，x相等或者y相等的视为两点之间有边
+        for(int i = 0; i < n; ++i){
+            union(parent, stones[i][0], stones[i][1] + 10001);
+        }
+
+        return n - count;
+    }
+
+    void union(Map<Integer, Integer> parent, int x, int y){
+        int px = find(parent, x);
+        int py = find(parent, y);
+
+        if(px == py)    return;
+        //两个节点需要合并，那么count需要减1
+        parent.put(py, px);
+        count--;
+    }
+
+    int find(Map<Integer, Integer> parent, int idx){
+        if(!parent.containsKey(idx)){//并查集中没有这个节点，就计数并放入并查集
+            parent.put(idx, idx);
+            count++;
+        }
+        if(parent.get(idx) != idx){
+            parent.put(idx, find(parent, parent.get(idx)));
+        }
+        return parent.get(idx);
+    }
+}
+```
 
 
 
