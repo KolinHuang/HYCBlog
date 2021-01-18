@@ -250,6 +250,8 @@ pin: true
 
 [718.最长公共连续子数组](#jump718)
 
+[721. 账户合并](#jump721)
+
 [733.图像渲染](#jump733)
 
 [763.划分字母区间](#jump763)
@@ -10490,6 +10492,150 @@ class Solution {
 ### 二分法+哈希
 
 待补充
+
+
+
+<span id = "jump721"></span>
+
+## 721. 账户合并
+
+给定一个列表 accounts，每个元素 accounts[i] 是一个字符串列表，其中第一个元素 accounts[i][0] 是 名称 (name)，其余元素是 emails 表示该账户的邮箱地址。
+
+现在，我们想合并这些账户。如果两个账户都有一些共同的邮箱地址，则两个账户必定属于同一个人。请注意，即使两个账户具有相同的名称，它们也可能属于不同的人，因为人们可能具有相同的名称。一个人最初可以拥有任意数量的账户，但其所有账户都具有相同的名称。
+
+合并账户后，按以下格式返回账户：每个账户的第一个元素是名称，其余元素是按顺序排列的邮箱地址。账户本身可以以任意顺序返回。
+
+ 
+
+示例 1：
+
+```java
+输入：
+accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]]
+输出：
+[["John", 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com'],  ["John", "johnnybravo@mail.com"], ["Mary", "mary@mail.com"]]
+解释：
+第一个和第三个 John 是同一个人，因为他们有共同的邮箱地址 "johnsmith@mail.com"。 
+第二个 John 和 Mary 是不同的人，因为他们的邮箱地址没有被其他帐户使用。
+可以以任何顺序返回这些列表，例如答案 [['Mary'，'mary@mail.com']，['John'，'johnnybravo@mail.com']，
+['John'，'john00@mail.com'，'john_newyork@mail.com'，'johnsmith@mail.com']] 也是正确的。
+```
+
+
+提示：
+
+* accounts的长度将在[1，1000]的范围内。
+* accounts[i]的长度将在[1，10]的范围内。
+* `accounts[i][j]`的长度将在[1，30]的范围内。
+
+
+
+并查集+哈希表，将邮件地址作为顶点进行编号，然后将同一个账户的邮件地址通过并查集合并，最后将同一个账户的邮件地址进行排序。
+
+需要邮件地址->编号的映射，在合并邮件时，需要读取邮件的编号。
+
+需要邮件地址->账户名的映射，最终记录结果时，需要将账户名放在列表首位。
+
+需要parent->邮件列表的映射，同一个账户的邮件地址放入同一个列表中。
+
+所以需要三个哈希表。
+
+
+
+```java
+class Solution {
+    //并查集，将每个邮件地址作为顶点，若同属于一个账户，就进行合并
+    int[] parent;
+    public List<List<String>> accountsMerge(List<List<String>> accounts) {
+        //两个哈希表
+        //邮件对编号
+        Map<String, Integer> emailToIndex = new HashMap<>();
+        //邮件对名称
+        Map<String, String> emailToName = new HashMap<>();
+        //对邮件进行编号
+        int emailCount = 0;
+        //遍历所有邮件
+        for(List<String> account : accounts){
+            String name = account.get(0);
+            int size = account.size();
+            for(int i = 1; i < size; ++i){
+                String email = account.get(i);
+                //建立邮件对编号、邮件对账户名的映射
+                //即使在不同列表中的邮件地址，只要邮件地址相同，编号就一样
+                if(!emailToIndex.containsKey(email)){
+                    emailToIndex.put(email, emailCount++);
+                    emailToName.put(email, name);
+                }
+            }
+        }
+
+        //并查集
+        parent = new int[emailCount];
+        for(int i = 0; i < emailCount; ++i){
+            parent[i] = i;
+        }
+        //将同个账户的邮件编号在并查集中合并
+        for(List<String> account : accounts){
+            String firstEmail = account.get(1);
+            int firstIndex = emailToIndex.get(firstEmail);
+            int size = account.size();
+            for(int i = 2; i < size; ++i){
+                String nextEmail = account.get(i);
+                int nextIndex = emailToIndex.get(nextEmail);
+                //将邮箱地址进行合并
+                union(firstIndex, nextIndex);
+            }
+        }
+        //将parent作为key，邮件列表作为value
+        Map<Integer, List<String>> indexToEmails = new HashMap<>();
+        //遍历所有邮件，将相同parent的邮件地址放入同一个列表中
+        for(String email : emailToIndex.keySet()){
+            //找到每个邮件地址的parent，将邮件地址放入哈希表中
+            int index = find(emailToIndex.get(email));
+            List<String> account = indexToEmails.getOrDefault(index, new ArrayList<String>());
+            account.add(email);
+            indexToEmails.put(index, account);
+        }
+
+
+        List<List<String>> merged = new ArrayList<>();
+        for(List<String> emails : indexToEmails.values()){
+            //将邮件地址排序
+            Collections.sort(emails);
+            String name = emailToName.get(emails.get(0));
+            List<String> account = new ArrayList<>();
+            //组装放入account
+            account.add(name);
+            account.addAll(emails);
+
+            //放入结果集
+            merged.add(account);
+        }
+
+        return merged;
+
+
+    }
+
+    void union(int x, int y){
+        int px = find(x);
+        int py = find(y);
+
+        if(px == py) return;
+
+        parent[py] = px;
+    }
+
+    int find(int idx){
+        if(parent[idx] != idx){
+            parent[idx] = find(parent[idx]);
+        }
+
+        return parent[idx];
+    }
+
+}
+```
 
 
 
